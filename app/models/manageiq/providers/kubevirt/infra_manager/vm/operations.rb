@@ -14,11 +14,12 @@
 # limitations under the License.
 #
 
-#
-# This class is responsible for collecting the inventory for a host.
-#
-class ManageIQ::Providers::Kubevirt::Inventory::Collector::Host < ManagerRefresh::Inventory::Collector
-  def initialize(ems, target)
-    @ems = ems
+module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
+  extend ActiveSupport::Concern
+
+  include_concern 'Power'
+
+  def raw_destroy
+    with_provider_object(&:destroy)
   end
 end

@@ -15,17 +15,21 @@
 #
 
 #
-# This class is responsible for persisting the inventory for a host.
+# This module contains constants that are useful in multiple places inside the provider.
 #
-class ManageIQ::Providers::Kubevirt::Inventory::Persister::Host < ManagerRefresh::Inventory::Persister
-  def initialize_inventory_collections
-    add_inventory_collections(
-      ManageIQ::Providers::Kubevirt::Inventory::Collections,
-      %i(
-        hardwares
-        host_operating_systems
-        hosts
-      )
-    )
-  end
+module ManageIQ::Providers::Kubevirt::Constants
+  #
+  # The vendor name.
+  #
+  VENDOR = 'kubevirt'.freeze
+
+  #
+  # The product name.
+  #
+  PRODUCT = 'KubeVirt'.freeze
+
+  #
+  # The version of KubeVirt.
+  #
+  VERSION = '0.1.0'.freeze
 end

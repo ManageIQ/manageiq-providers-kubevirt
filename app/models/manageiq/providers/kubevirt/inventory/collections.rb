@@ -15,11 +15,24 @@
 #
 
 #
-# This class contains static methods that build the data structures used by the graph refresh
-# persister to map collected objects to the corresponding database objects.
+# This class contains methods that build the attributes that will be used to create
+# `InventoryCollection` objects used frequently in the provider.
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::InventoryCollectionDefault::InfraManager 
   class << self
+    def ems_clusters(extra_attributes = {})
+      attributes = {
+        model_class: ::EmsCluster,
+        inventory_object_attributes: [
+          :ems_ref,
+          :ems_ref_obj,
+          :name,
+          :uid_ems,
+        ]
+      }
+      super(attributes.merge!(extra_attributes))
+    end
+
     def hardwares(extra_attributes = {})
       attributes = {
         model_class: ::Hardware,
@@ -63,6 +76,37 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
           :product_type,
           :system_type,
           :version,
+        ]
+      }
+      super(attributes.merge!(extra_attributes))
+    end
+
+    def host_storages(extra_attributes = {})
+      attributes = {
+        model_class: ::HostStorage,
+        parent_inventory_collections: [:hosts],
+        targeted_arel: lambda do |collection|
+          host_ids = collection.parent_inventory_collections.flat_map { |c| c.manager_uuids.to_a }
+          collection.parent.host_storages.references(:host).where(
+            hosts: { ems_ref: host_ids }
+          )
+        end
+      }
+      super(attributes.merge!(extra_attributes))
+    end
+
+    def storages(extra_attributes = {})
+      attributes = {
+        model_class: ::Storage,
+        inventory_object_attributes: [
+          :ems_ref,
+          :ems_ref_obj,
+          :free_space,
+          :location,
+          :name,
+          :store_type,
+          :total_space,
+          :uncommitted,
         ]
       }
       super(attributes.merge!(extra_attributes))

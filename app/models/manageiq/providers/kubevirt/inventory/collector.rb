@@ -15,15 +15,15 @@
 #
 
 #
-# This class is responsible for persisting the inventory for a virtual machine.
+# This class contains the data needed to perform a refresh. The data are the collections of nodes, virtual machines and
+# templates retrieved using the KubeVirt API.
 #
-class ManageIQ::Providers::Kubevirt::Inventory::Persister::Vm < ManagerRefresh::Inventory::Persister
-  def initialize_inventory_collections
-    add_inventory_collections(
-      ManageIQ::Providers::Kubevirt::Inventory::Collections,
-      %i(
-        vms
-      )
-    )
-  end
+# Note that unlike other typical collectors it doesn't really retrieve that data itself: the refresh worker will create
+# with the data that it already obtained from the KubeVirt API.
+#
+class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManagerRefresh::Inventory::Collector
+  attr_accessor :nodes
+  attr_accessor :stored_vms
+  attr_accessor :live_vms
+  attr_accessor :templates
 end

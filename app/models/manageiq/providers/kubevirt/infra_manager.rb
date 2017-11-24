@@ -34,7 +34,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @return [String] The provider type.
   #
   def self.ems_type
-    @ems_type ||= 'kubevirt'.freeze
+    @ems_type ||= ManageIQ::Providers::Kubevirt::Constants::VENDOR
   end
 
   #
@@ -43,7 +43,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @return [String] The provider description.
   #
   def self.description
-    @description ||= 'KubeVirt'.freeze
+    @description ||= ManageIQ::Providers::Kubevirt::Constants::PRODUCT
   end
 
   #
