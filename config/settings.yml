@@ -1,6 +1,6 @@
 ---
 :ems:
-  :ems_kube_virt:
+  :ems_kubevirt:
     :blacklisted_event_names: []
     :event_handling:
       :event_groups:
@@ -8,4 +8,4 @@
   :worker_base:
     :queue_worker_base:
       :ems_refresh_worker:
-        :ems_refresh_worker_kube_virt: {}
+        :ems_refresh_worker_kubevirt: {}

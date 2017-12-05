@@ -1,2 +1,2 @@
-require "manageiq/providers/kube_virt/engine"
-require "manageiq/providers/kube_virt/version"
+require "manageiq/providers/kubevirt/engine"
+require "manageiq/providers/kubevirt/version"

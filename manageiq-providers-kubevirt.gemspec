@@ -1,14 +1,14 @@
 $:.push File.expand_path("../lib", __FILE__)
 
-require "manageiq/providers/kube_virt/version"
+require "manageiq/providers/kubevirt/version"
 
 Gem::Specification.new do |s|
   s.name        = "manageiq-providers-kubevirt"
-  s.version     = ManageIQ::Providers::KubeVirt::VERSION
+  s.version     = ManageIQ::Providers::Kubevirt::VERSION
   s.authors     = ["KubeVirt Developers"]
   s.homepage    = "https://github.com/jhernand/manageiq-providers-kubevirt"
-  s.summary     = "KubeVirt Provider for ManageIQ"
-  s.description = "KubeVirt Provider for ManageIQ"
+  s.summary     = "KubeVirt provider for ManageIQ"
+  s.description = "KubeVirt provider for ManageIQ"
   s.licenses    = ["Apache-2.0"]
 
   s.files = Dir["{app,config,lib}/**/*"]
