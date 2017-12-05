@@ -43,24 +43,24 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     name = options[:name]
 
     # Retrieve the details of the source template:
-    template = nil
+    virtual_machine_template = nil
     source.with_provider_connection do |connection|
-      template = connection.template(source.name)
+      virtual_machine_template = connection.virtual_machine_template(source.name)
     end
 
-    # Create the representation of the new virtual machine, copying the spec from the template:
-    vm = {
+    # Create the representation of the new stored virtual machine, copying the spec from the template:
+    stored_virtual_machine = {
       metadata: {
         name: name,
-        namespace: 'default'
+        namespace: virtual_machine_template.metadata.namespace
       },
-      spec: template.spec.to_h
+      spec: virtual_machine_template.spec.to_h
     }
 
     # If the memory has been explicitly specified in the options, then replace the value defined by the template:
     memory = get_option(:vm_memory)
     if memory
-      vm.deep_merge!(
+      stored_virtual_machine.deep_merge!(
         spec: {
           domain: {
             memory: {
@@ -74,11 +74,11 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
 
     # Send the request to create the stored virtual machine:
     source.with_provider_connection do |connection|
-      vm = connection.create_stored_virtual_machine(vm)
+      stored_virtual_machine = connection.create_stored_virtual_machine(stored_virtual_machine)
     end
 
-    # Save the identifier of the new virtual machine to the request context, so
-    # that it can later be used to check if it has been already created:
-    phase_context[:new_vm_ems_ref] = vm.metadata.uid
+    # Save the identifier of the new virtual machine to the request context, so that it can later
+    # be used to check if it has been already created:
+    phase_context[:new_vm_ems_ref] = stored_virtual_machine.metadata.uid
   end
 end
