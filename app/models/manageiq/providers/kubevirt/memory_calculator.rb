@@ -23,7 +23,8 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
   #
   # @param value [Integer] The value to convert.
   # @param from_unit [String] ('B') The name of the unit used by the value, for example `KB`.
-  # @param to_unit [String] ('B') The name of the unit to convert to, for exampple `GiB`.
+  # @param to_unit [String] ('B') The name of the unit to convert to, for example `GiB`.
+  # @return [Integer] The converted value, rounded down to the nearest integer.
   #
   def self.convert(value, from_unit, to_unit)
     from_unit ||= 'B'
