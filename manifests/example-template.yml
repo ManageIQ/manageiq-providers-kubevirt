@@ -1,0 +1,42 @@
+apiVersion: kubevirt.io/v1alpha1
+kind: VirtualMachineTemplate
+metadata:
+  name: mytemplate
+spec:
+  template:
+    spec:
+      domain:
+        devices:
+          consoles:
+          - type: pty
+          disks:
+          - device: disk
+            driver:
+              cache: none
+              name: qemu
+              type: raw
+            snapshot: external
+            source:
+              host:
+                name: iscsi-demo-target.default
+                port: "3260"
+              name: iqn.2017-01.io.kubevirt:sn.42/2
+              protocol: iscsi
+            target:
+              dev: vda
+            type: network
+          graphics:
+          - type: spice
+          interfaces:
+          - source:
+              network: default
+            type: network
+          video:
+          - type: qxl
+        memory:
+          unit: MB
+          value: 64
+        os:
+          type:
+            os: hvm
+        type: qemu

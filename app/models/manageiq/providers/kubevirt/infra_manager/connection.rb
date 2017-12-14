@@ -109,7 +109,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   #
   # @return [Array] The array of templates.
   #
-  def virtual_machine_templates
+  def templates
     kubevirt_client.get_virtual_machine_templates(namespace: @namespace)
   end
 
@@ -119,7 +119,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @param name [String] The name of the template.
   # @return [Object] The template object.
   #
-  def virtual_machine_template(name)
+  def template(name)
     kubevirt_client.get_virtual_machine_template(name, @namespace)
   end
 
@@ -129,46 +129,55 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
-  def watch_virtual_machine_templates(opts = {})
+  def watch_templates(opts = {})
     kubevirt_client.watch_virtual_machine_templates(opts)
   end
 
   #
-  # Returns an array containing the stored virtual machines available in the KubeVirt environment.
+  # Returns an array containing the offline virtual machines available in the KubeVirt environment.
   #
-  # @return [Array] The array of persistent virtual machines.
+  # @return [Array] The array of offline virtual machines.
   #
-  def stored_virtual_machines
-    kubevirt_client.get_stored_virtual_machines(namespace: @namespace)
+  def offline_vms
+    kubevirt_client.get_offline_virtual_machines(namespace: @namespace)
   end
 
   #
-  # Retrieves the stored virtual machine with the given name.
+  # Retrieves the offline virtual machine with the given name.
   #
   # @param name [String] The name of the virtual machine.
   # @return [Object] The virtual machine object.
   #
-  def stored_virtual_machine(name)
-    kubevirt_client.get_stored_virtual_machine(name, @namespace)
+  def offline_vm(name)
+    kubevirt_client.get_offline_virtual_machine(name, @namespace)
   end
 
   #
-  # Returns a watcher for stored virtual machines.
+  # Returns a watcher for offline virtual machines.
   #
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
-  def watch_stored_virtual_machines(opts = {})
-    kubevirt_client.watch_stored_virtual_machines(opts)
+  def watch_offline_vms(opts = {})
+    kubevirt_client.watch_offline_virtual_machines(opts)
   end
 
   #
-  # Creates a new stored virtual machine.
+  # Creates a new offline virtual machine.
   #
   # @param vm [Hash] A hash containing the description of the virtual machine.
   #
-  def create_stored_virtual_machine(vm)
-    kubevirt_client.create_stored_virtual_machine(vm)
+  def create_offline_vm(vm)
+    kubevirt_client.create_offline_virtual_machine(vm)
+  end
+
+  #
+  # Updates an offline virtual machine.
+  #
+  # @param update [Object] The update to send.
+  #
+  def update_offline_vm(update)
+    kubevirt_client.update_offline_virtual_machine(update)
   end
 
   #
@@ -176,7 +185,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   #
   # @return [Array] The array of live virtual machines.
   #
-  def virtual_machines
+  def live_vms
     kubevirt_client.get_virtual_machines(namespace: @namespace)
   end
 
@@ -186,7 +195,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @param name [String] The name of the virtual machine.
   # @return [Object] The virtual machine object.
   #
-  def virtual_machine(name)
+  def live_vm(name)
     kubevirt_client.get_virtual_machine(name, @namespace)
   end
 
@@ -196,17 +205,26 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
-  def watch_virtual_machines(opts = {})
+  def watch_live_vms(opts = {})
     kubevirt_client.watch_virtual_machines(opts)
   end
 
   #
-  # Creates a new virtual machine.
+  # Creates a new live virtual machine.
   #
   # @param vm [Hash] A hash containing the description of the virtual machine.
   #
-  def create_virtual_machine(vm)
+  def create_live_vm(vm)
     kubevirt_client.create_virtual_machine(vm)
+  end
+
+  #
+  # Deletes a live virtual machine.
+  #
+  # @param name [String] The name of the virtual machine to delete.
+  #
+  def delete_live_vm(name)
+    kubevirt_client.delete_virtual_machine(name)
   end
 
   #

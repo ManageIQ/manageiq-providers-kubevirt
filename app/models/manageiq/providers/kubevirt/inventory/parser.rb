@@ -19,6 +19,8 @@
 # shared by the full and targeted refresh parsers.
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Inventory::Parser
+  include Vmdb::Logging
+
   protected
 
   #
@@ -73,8 +75,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Get the host name and the IP address:
     addresses = status.addresses
-    hostname = addresses.detect { |address| address['type'] == 'Hostname' }['address']
-    ip = addresses.detect { |address| address['type'] == 'InternalIP' }['address']
+    hostname = addresses.detect { |address| address.type == 'Hostname' }.address
+    ip = addresses.detect { |address| address.type == 'InternalIP' }.address
 
     # Get the node info:
     info = status.nodeInfo
@@ -111,18 +113,56 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     )
   end
 
-  def process_stored_vms(objects)
+  def process_offline_vms(objects)
     objects.each do |object|
-      process_stored_vm(object)
+      process_offline_vm(object)
     end
   end
 
-  def process_stored_vm(object)
+  def process_offline_vm(object)
+    # Get the basic information:
+    uid = object.metadata.uid
+    name = object.metadata.name
+    domain = object.spec.template.spec.domain
+
+    # Process the domain:
+    vm_object = process_domain(domain, uid, name)
+
+    # The power status is initially off, it will be set to on later if the live virtual machine exists:
+    vm_object.raw_power_state = 'off'
+  end
+
+  def process_live_vms(objects)
+    objects.each do |object|
+      process_live_vm(object)
+    end
+  end
+
+  def process_live_vm(object)
     # Get the basic information:
     uid = object.metadata.uid
     name = object.metadata.name
     domain = object.spec.domain
 
+    # Get the identifier of the offline virtual machine from the owner reference:
+    owner = find_owner(object, 'OfflineVirtualMachine')
+    unless owner
+      _log.info(
+        "Live virtual machine with name '#{name}' and identifier '#{uid}' isn't owned by an offline virtual " \
+        "machine; it will be ignored"
+      )
+      return
+    end
+
+    # Process the domain:
+    vm_object = process_domain(domain, owner.uid, owner.name)
+
+    # If the live virtual machine exists, then the it is powered on, regardless of the value of the `running` field of
+    # the status:
+    vm_object.raw_power_state = 'on'
+  end
+
+  def process_domain(domain, uid, name)
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
 
@@ -142,16 +182,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory.value, domain.memory.unit, 'MiB')
-  end
 
-  def process_live_vms(objects)
-    objects.each do |object|
-      process_live_vm(object)
-    end
-  end
-
-  def process_live_vm(object)
-    # Nothing yet.
+    # Return the created inventory object:
+    vm_object
   end
 
   def process_templates(objects)
@@ -164,7 +197,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     # Get the basic information:
     uid = object.metadata.uid
     name = object.metadata.name
-    domain = object.spec.domain
+    domain = object.spec.template.spec.domain
 
     # Add the inventory object for the template:
     template_object = template_collection.find_or_build(uid)
@@ -181,5 +214,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     # Add the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(template_object)
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory.value, domain.memory.unit, 'MiB')
+  end
+
+  def find_owner(object, kind)
+    owners = object.metadata.ownerReferences
+    return nil unless owners
+    owners.detect { |owner| owner.kind == kind }
   end
 end
