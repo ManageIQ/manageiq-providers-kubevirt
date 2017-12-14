@@ -236,7 +236,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Client] The client for the given group and version.
   #
   def client(group, version)
-    # Return the client inmediately if it has been created before:
+    # Return the client immediately if it has been created before:
     key = group + '/' + version
     client = @clients[key]
     return client if client
