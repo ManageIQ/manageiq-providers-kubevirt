@@ -23,6 +23,22 @@ require 'uri'
 RestClient.log = 'stdout'
 
 #
+# TODO: This is a hack to fix an issue with the `WatchNotice` class, see the following pull request
+# for details:
+#
+#   Recurse over arrays for watch notices
+#   https://github.com/abonas/kubeclient/pull/279
+#
+# It should be removed when a new version of the `kubeclient` gem is released and used by ManageIQ.
+#
+class ::Kubeclient::Common::WatchNotice
+  def initialize(hash = nil, args = {})
+    args[:recurse_over_arrays] = true
+    super(hash, args)
+  end
+end
+
+#
 # This class hides the fact that when connecting to KubeVirt we need to use different API servers:
 # one for the standard Kubernetes API and another one for the KubeVirt API.
 #
