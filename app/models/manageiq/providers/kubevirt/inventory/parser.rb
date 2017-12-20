@@ -73,8 +73,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Get the host name and the IP address:
     addresses = status.addresses
-    hostname = addresses.detect { |address| address['type'] == 'Hostname' }['address']
-    ip = addresses.detect { |address| address['type'] == 'InternalIP' }['address']
+    hostname = addresses.detect { |address| address.type == 'Hostname' }.address
+    ip = addresses.detect { |address| address.type == 'InternalIP' }.address
 
     # Get the node info:
     info = status.nodeInfo
