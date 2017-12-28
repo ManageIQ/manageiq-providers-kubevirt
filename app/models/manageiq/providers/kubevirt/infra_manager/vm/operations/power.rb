@@ -20,7 +20,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # Retrieve the details of the offline virtual machine:
       offline_vm = connection.offline_vm(name)
 
-      # Change the `running` attribute to `true` so tha the offline virtual machine controller will take it and create
+      # Change the `running` attribute to `true` so that the offline virtual machine controller will take it and create
       # the live virtual machine.
       offline_vm.spec.running = true
       connection.update_offline_vm(offline_vm)
@@ -51,7 +51,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # Retrieve the details of the offline virtual machine:
       offline_vm = connection.offline_vm(name)
 
-      # Change the `running` attribute to `false` so tha the offline virtual machine controller will take it and delete
+      # Change the `running` attribute to `false` so that the offline virtual machine controller will take it and delete
       # the live virtual machine.
       offline_vm.spec.running = false
       connection.update_offline_vm(offline_vm)

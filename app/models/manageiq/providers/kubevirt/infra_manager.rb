@@ -71,7 +71,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   #
-  # This method needs to be overriden because by default the ManageIQ core assumes tha the user name is
+  # This method needs to be overriden because by default the ManageIQ core assumes that the user name is
   # mandatory, but it in KubeVirt it isn't, as we can use a token or a client certificate.
   #
   # @param type [String] The authentication scope, for example `default` or `metrics`.

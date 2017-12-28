@@ -57,7 +57,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
 
   #
   # Creates a new connection with the given options. Note that the actual connection to the
-  # Kubernetes API is created lazily, when needed, so the fact tha this method succeeds does *not*
+  # Kubernetes API is created lazily, when needed, so the fact that this method succeeds does *not*
   # indicate that the connection parameters are correct.
   #
   # @param opts [Hash] The options used to create the connection.
