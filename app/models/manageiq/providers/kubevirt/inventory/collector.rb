@@ -23,7 +23,7 @@
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManagerRefresh::Inventory::Collector
   attr_accessor :nodes
-  attr_accessor :stored_vms
+  attr_accessor :offline_vms
   attr_accessor :live_vms
   attr_accessor :templates
 end

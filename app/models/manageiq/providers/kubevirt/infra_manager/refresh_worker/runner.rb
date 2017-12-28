@@ -20,11 +20,8 @@ require 'thread'
 
 class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < ManageIQ::Providers::BaseManager::RefreshWorker::Runner
   def do_before_work_loop
-    # Load the refresh memory. If it is empty then we need to perform a full refresh, and initialize it.
-    if memory.empty?
-      full_refresh
-      initialize_memory
-    end
+    # If it is empty then we need to perform a full refresh:
+    full_refresh if memory.empty?
 
     # We will put in this queue the notices received from the watchers:
     @queue = Queue.new
@@ -65,9 +62,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     @watches = []
     manager.with_provider_connection do |connection|
       @watches << connection.watch_nodes('resourceVersion' => memory.get_list_version(:nodes))
-      @watches << connection.watch_stored_virtual_machines('resourceVersion' => memory.get_list_version(:stored_vms))
-      @watches << connection.watch_virtual_machines('resourceVersion' => memory.get_list_version(:live_vms))
-      @watches << connection.watch_virtual_machine_templates('resourceVersion' => memory.get_list_version(:templates))
+      @watches << connection.watch_offline_vms('resourceVersion' => memory.get_list_version(:offline_vms))
+      @watches << connection.watch_live_vms('resourceVersion' => memory.get_list_version(:live_vms))
+      @watches << connection.watch_templates('resourceVersion' => memory.get_list_version(:templates))
     end
 
     # Create the threads that run the watches and put the notices in the queue:
@@ -116,16 +113,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   end
 
   #
-  # Initializes the memory, setting the last version to zero for all the watched collections.
-  #
-  def initialize_memory
-    memory.add_list_version(:nodes, collector.nodes.resourceVersion)
-    memory.add_list_version(:stored_vms, collector.stored_vms.resourceVersion)
-    memory.add_list_version(:live_vms, collector.live_vms.resourceVersion)
-    memory.add_list_version(:templates, collector.templates.resourceVersion)
-  end
-
-  #
   # Performs a full refresh.
   #
   def full_refresh
@@ -133,9 +120,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, manager)
     manager.with_provider_connection do |connection|
       collector.nodes = connection.nodes
-      collector.stored_vms = connection.stored_virtual_machines
-      collector.live_vms = connection.virtual_machines
-      collector.templates = connection.virtual_machine_templates
+      collector.offline_vms = connection.offline_vms
+      collector.live_vms = connection.live_vms
+      collector.templates = connection.templates
     end
 
     # Create the parser and persister, wire them, and execute the persist:
@@ -148,7 +135,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
 
     # Update the memory:
     memory.add_list_version(:nodes, collector.nodes.resourceVersion)
-    memory.add_list_version(:stored_vms, collector.stored_vms.resourceVersion)
+    memory.add_list_version(:offline_vms, collector.offline_vms.resourceVersion)
     memory.add_list_version(:live_vms, collector.live_vms.resourceVersion)
     memory.add_list_version(:templates, collector.templates.resourceVersion)
   rescue => error
@@ -186,9 +173,27 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # Create and populate the collector:
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
     collector.nodes = notices_of_kind(relevant, 'Node')
-    collector.stored_vms = notices_of_kind(relevant, 'StoredVirtualMachine')
+    collector.offline_vms = notices_of_kind(relevant, 'OfflineVirtualMachine')
     collector.live_vms = notices_of_kind(relevant, 'VirtualMachine')
     collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
+
+    # In order to calculate correctly things like the power state we need to have for each offline virtual machine its
+    # corresponding live virtual machine. Those may not be included in the set of notices, so we need to check and
+    # create artificial notices for the missing ones:
+    collector.offline_vms.each do |offline_notice|
+      offline_name = offline_notice.object.metadata.name
+      live_notice = collector.live_vms.detect { |notice| notice.object.metadata.name == offline_name }
+      unless live_notice
+        begin
+          live_vm = manager.with_provider_connection { |connection| connection.live_vm(offline_name) }
+          live_notice = Kubeclient::Common::WatchNotice.new
+          live_notice.object = live_vm
+          collector.live_vms.push(live_notice)
+        rescue KubeException
+          # Nothing, the live virtual machine doesn't exist.
+        end
+      end
+    end
 
     # Create the parser and persister, wire them, and execute the persist:
     persister = ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, nil)

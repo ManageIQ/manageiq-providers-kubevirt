@@ -36,8 +36,8 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
     @id = id
 
     # Initialize the hash that contains the last resource version for each kind of list. The keys of
-    # this hash will be strings identifying the kind of object, for example `virtual_machines`. The
-    # values will be the last `resourceVersion` that was obtained when listing that kind of object.
+    # this hash will be strings identifying the kind of object, for example `live_vms`. The values will
+    # be the last `resourceVersion` that was obtained when listing that kind of object.
     @lists = {}
 
     # Initialize the set that contains the keys of the notices that have already been processed.
@@ -59,7 +59,7 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   #
   # Sets the last resource version that has been obtained when listing the given kind of object.
   #
-  # @param kind [String] The kind of object, for example `virtual_machines`.
+  # @param kind [String] The kind of object, for example `live_vms`.
   # @param version [String] The resource version.
   #
   def add_list_version(kind, version)
@@ -71,7 +71,7 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   #
   # Returns the last resource version that was obtained when listing the given kind of object.
   #
-  # @param kind [String] The kind of object, for example `virtual_machines`.
+  # @param kind [String] The kind of object, for example `live_vms`.
   # @return [String] The resource version.
   #
   def get_list_version(kind)

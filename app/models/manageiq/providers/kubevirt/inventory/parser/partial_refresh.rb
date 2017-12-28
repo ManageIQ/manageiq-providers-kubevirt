@@ -21,14 +21,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
   def parse
     # Get the notices from the collector:
     nodes = collector.nodes
-    stored_vms = collector.stored_vms
+    offline_vms = collector.offline_vms
     live_vms = collector.live_vms
     templates = collector.templates
 
     # We need to find the identifiers of the objects *before* removing notices of type `DELETED`, because we need the
     # identifiers of all the objects, even of those that have been deleted.
     host_ids = get_object_ids(nodes)
-    vm_ids = get_object_ids(stored_vms)
+    vm_ids = get_object_ids(offline_vms)
     template_ids = get_object_ids(templates)
 
     # Build the list of identifiers for built-in objects:
@@ -38,14 +38,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     # In order to remove objects from the database we need to include the identifiers, but not the actual data, so we
     # must now discard all the notices of type `DELETED`.
     discard_deleted_notices(nodes)
-    discard_deleted_notices(stored_vms)
+    discard_deleted_notices(offline_vms)
     discard_deleted_notices(live_vms)
     discard_deleted_notices(templates)
 
     # We are no longer interested in the details of the notices, the objects are enough, so we replace the notices with
     # the objects that they contain:
     replace_notices_with_objects(nodes)
-    replace_notices_with_objects(stored_vms)
+    replace_notices_with_objects(offline_vms)
     replace_notices_with_objects(live_vms)
     replace_notices_with_objects(templates)
 
@@ -65,7 +65,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
 
     # Process the real objects:
     process_nodes(nodes)
-    process_stored_vms(stored_vms)
+    process_offline_vms(offline_vms)
     process_live_vms(live_vms)
     process_templates(templates)
   end

@@ -18,12 +18,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   include_concern 'Operations'
 
   def self.calculate_power_state(raw)
-    case raw
-    when 'Running'
-      'on'
-    else
-      'off'
-    end
+    raw
   end
 
   #

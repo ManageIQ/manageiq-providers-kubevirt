@@ -1,0 +1,21 @@
+= Useful manifests
+
+This directory contains Kubernetes manifests useful when working with
+the _KubeVirt_ provider, in particular the
+https://kubernetes.io/docs/concepts/api-extension/custom-resources[custom
+resource definitions] that will be eventually provided by _KubeVirt_,
+but which don't exist yet.
+
+`account-kubernetes.yml`:: Example account with the permissions required
+to work with _KubeVirt_ in _Kubernetes_.
+
+`account-openshift.yml`:: Example account with the permissions required
+to work with _KubeVirt_ in _OpenShift_.
+
+`crd-offline-virtual-machine.yml`:: Custom resource definition for
+offline virtual machines.
+
+`crd-virtual-machine-template.yml`:: Custom resource definition for
+templates.
+
+`example-template.yml`:: Example template.

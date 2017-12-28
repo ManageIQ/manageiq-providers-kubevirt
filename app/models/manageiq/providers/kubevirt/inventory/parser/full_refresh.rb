@@ -21,7 +21,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
   def parse
     # Get the objects from the collector:
     nodes = collector.nodes
-    stored_vms = collector.stored_vms
+    offline_vms = collector.offline_vms
     live_vms = collector.live_vms
     templates = collector.templates
 
@@ -41,7 +41,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
 
     # Process the real objects:
     process_nodes(nodes)
-    process_stored_vms(stored_vms)
+    process_offline_vms(offline_vms)
     process_live_vms(live_vms)
     process_templates(templates)
   end
