@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: linux-vm-template
+  annotations:
+    description: "OCP kubevirt linux, template"
+    tags: "kubevirt,ocp,template,linux"
+objects:
+- apiVersion: kubevirt.io/v1alpha1
+  kind: OfflineVirtualMachine
+  metadata:
+    name: linux-vm-${NAME}
+  spec:
+    template:
+      metadata:
+      labels:
+      spec:
+        domain:
+          resources:
+            memory: ${MEMORY}
+            cpu: ${CPU}
+          os:
+            machine: pc-q35-rhel7.4.0
+          devices:
+            interface:
+              model:
+                type: virtio
+            disks:
+              - name: disk0
+                volumeName: disk0-pvc
+                disk:
+                  dev: vda
+                  bus: virtio
+  volumes:
+    - name: disk0-pvc
+      persistentVolumeClaim:
+        claimName: linux-vm-pvc-${NAME}
+- apiVersion: kubevirt.io/v1alpha1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: linux-vm-pvc-${NAME}
+labels:
+  miq.github.io/kubevirt/is-vm-template: True
+parameters:
+- description: Name for the new VM
+  name: NAME
+- name: MEMORY
+  description: Amount of memory in MB
+  value: 4096Mi
+- name: CPU
+  description: Amount of cores
+  value: 4
