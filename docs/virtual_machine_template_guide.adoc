@@ -1,0 +1,222 @@
+= Virtual Machine Templates
+
+Virtual machine templates are openshift templates (link:https://docs.openshift.org/latest/dev_guide/templates.html[Openshift Templates]) +
+that describe virtual machine specifications which produce the following template objects: +
+**One** OfflineVirtualMachine and **0-N** PersistentVolumeClaims. +
+The following document describes the process of creating a Virtual machine template which will be managed by ManageIQ.
+
+== Writing templates
+You can define new virtual machine templates to make it easy to recreate all relevant objects (OfflineVirtualMachine and PersistentVolumeClaim). The template will define the objects it creates along with some metadata to guide the creation of those objects.
+
+[source,yaml]
+----
+apiVersion: kubevirt.io/v1alpha1
+kind: Template
+metadata:
+  name: RHEL-7 ❶
+  annotations:
+  labels:
+    miq.github.io/kubevirt-os: rhel-7 ❷
+    miq.github.io/kubevirt-is-vm-template: True ❸
+objects:
+- apiVersion: kubevirt.io/v1alpha1
+  kind: OfflineVirtualMachine ❹
+  metadata:
+    name: ${NAME} ➎
+  spec:
+    template:
+      metadata:
+        labels:
+          my: label
+      spec:
+        domain: 
+          resources: ➏
+            requests:
+              memory: ${MEMORY} 
+          cpu: ❼
+            cores: ${CPU}
+          devices:
+            disks: ❽
+              name: disk0
+              volumeName: mypvc 
+      volumes: ➒
+       - name: mypvc
+         presistentVolumeClaim:
+           claimName: rhel-7-pvc-${NAME}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim ➓
+  metadata:
+    name: rhel-7-pvc-${NAME} ⓫
+    #FIXME: add an annotation to specify which volume this pvc should be based on
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi 
+parameters: ...
+
+----
+ 
+❶ The unique name of the template. +
+
+❷ OS identifier of the template. +
+
+❸ Indicator if this is a kubevirt template. +
+
+❹ The OfflineVirtualMachine Object. This object must appear only once in the template. +
+
+➎ OfflineVirtualMachine’s name. +
+
+➏ OfflineVirtualMachine’s resources, currently includes under requirements only memory. +
+   Memory is the minimal amount the Virtual Machine requires. +
+   These attributes are represented as parameters that will either be filled out by the user Or receive default values. +
+   
+❼ Number of cpu cores for the Virtual Machine. +
+  This attribute is represented as parameter that will either be filled out by the user Or receive a default value. +
+  
+❽ Disk contains a "volumeName" attribute, which links it to a volume +
+
+➒ Specification of a disk's volume from the disks section. It contains persistent volume claims.  
+(more about link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Persistent Volume Claims] ) +
+        
+➓ The PersistenVolumeClaim Object that accompanies the OfflineVirtualMachine Object. +
+
+⓫ PersistenVolumeClaims should include: name, permissions and requested amount of storage. +
+
+
+
+=== Labels
+
+Labels will be presented on every OCP virtual machine template in order for ManageIQ to recognize the KubeVirt template characteristics. + 
+The label "miq.github.io/kubevirt-os" is type of OS the template refers to. +
+The label "miq.github.io/kubevirt-is-vm-template" will indicate with a boolean value if it is a virtual machine template.
+
+[source,yaml]
+----
+kind: Template
+metadata:
+  name: RHEL-7
+  labels:
+    miq.github.io/kubevirt-os: rhel-7 
+    miq.github.io/kubevirt-is-vm-template: true
+----
+
+=== Parameters
+
+Parameters allow a value to be supplied by the user or generated when the template is instantiated. +
+Then, that value is substituted wherever the parameter is referenced. +
+The following parameters will be used for the OfflineVirtualMachine name (and as a part of the persistent volume claim names) +
+Default values will be provided for memory and cpu, which will be used if the user does not supply a different value.
+
+[source,yaml]
+----
+parameters:
+- description: Name for the new VM     
+  name: NAME   
+- name: MEMORY
+  description: Amount of memory
+  value: 512Mi  
+- name: CPU
+  description: Amount of cores
+  value: 4    
+----
+
+Additional info on link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[compute resources]
+
+
+== Creating the template object in the cluster
+
+If you have a YAML file that defines a virtual machine template, you can upload the template to an Openshift cluster using the CLI. 
+To upload a template to your current project’s template library, pass the YAML file with the following command: +
+
+----
+$ oc create -f <filename>
+----
+
+
+=== Creating virtual machine template using the Web Console
+TBD  (add screenshots)
+
+=== Generating virtual machine template from CLI 
+The list of parameters that you can override are listed under  Parameters.
+You can list them with the CLI by using the following command and specifying the file to be used:
+----
+  $ oc process --parameters -f <filename>
+----
+
+Or create objects from a template by processing the template and piping the output to oc create:
+
+----
+  $ oc process --parameters -f <filename> | oc create -f -
+----
+
+
+== Modifying an uploaded template
+You can edit a template that has already been uploaded to your project by using the following command: +
+
+----
+$ oc edit template <template>
+----
+
+
+
+== Full virtual machine template example
+
+[source,yaml]
+----
+apiVersion: kubevirt.io/v1alpha1
+kind: Template 
+metadata:
+  name: RHEL-7 
+  # name: Microsoft-Windows-2012r1
+  labels:
+    miq.github.io/kubevirt-os: rhel-7
+    miq.github.io/kubevirt-is-vm-template: true  
+objects:
+- apiVersion: kubevirt.io/v1alpha1
+  kind: OfflineVirtualMachine
+  metadata:
+    name: ${NAME} 
+  spec:
+    template:
+      metadata:
+        labels:
+          my: label
+      spec:
+        domain:
+          resources:
+            requests:
+              memory: ${MEMORY} 
+          cpu:
+            cores: ${CPU}
+          devices:
+            disks:
+              name: disk0
+              volumeName: mypvc 
+      volumes:
+       - name: mypvc
+         presistentVolumeClaim:
+           claimName: rhel-7-pvc-${NAME}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: rhel-7-pvc-${NAME}
+    #FIXME: add an annotation to specify which volume this pvc should be based on
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+parameters:
+- description: Name for the new VM     
+  name: NAME   
+- description: Amount of memory
+  name: MEMORY
+  value: 512Mi  #default
+- description: Amount of cores
+  name: CPU
+  value: 4    #default
+----
