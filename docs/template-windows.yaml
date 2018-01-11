@@ -13,9 +13,9 @@ objects:
   spec:
     template:
       metadata:
-      labels:
+        labels:
+          miq.github.io/kubevirt-is-vm-template: true
       spec:
-        terminationGracePeriodSeconds: 0
         domain:
           features:
             acpi: {}
@@ -36,10 +36,12 @@ objects:
                 tickPolicy: catchup
               hyperv: {}
           firmware:
-            uid: 5d307ca9-b3ef-428c-8861-06e72d69f223
+            uid: ${UID}
           resources:
-            memory: ${MEMORY}
-            cpu: ${CPU}
+            requests:
+              memory: ${MEMORY}
+              cpu:
+                cores: ${CPU}
           os:
             machine: pc-q35-rhel7.4.0
           devices:
@@ -52,16 +54,16 @@ objects:
                 disk:
                   dev: sda
                   bus: sata
-      volumes:
-        - name: disk0-pvc
-          persistentVolumeClaim:
-            claimName: windows-vm-pvc-${NAME}
+        volumes:
+          - name: disk0-pvc
+            persistentVolumeClaim:
+              claimName: windows-vm-pvc-${NAME}
 - apiVersion: kubevirt.io/v1alpha1
   kind: PersistentVolumeClaim
   metadata:
     name: windows-vm-pvc-${NAME}
 labels:
-  miq.github.io/kubevirt/is-vm-template: True
+  miq.github.io/kubevirt-is-vm-template: True
 parameters:
 - description: Name for the new VM
   name: NAME
