@@ -5,16 +5,14 @@ metadata:
   annotations:
     description: "OCP kubevirt windows VM template"
     tags: "kubevirt,ocp,template,windows"
+    miq.github.io/kubevirt-is-vm-template: true
 objects:
 - apiVersion: kubevirt.io/v1alpha1
   kind: OfflineVirtualMachine
   metadata:
-    name: windows-vm-${NAME}
+    name: ${NAME}
   spec:
     template:
-      metadata:
-        labels:
-          miq.github.io/kubevirt-is-vm-template: true
       spec:
         domain:
           features:
@@ -62,8 +60,6 @@ objects:
   kind: PersistentVolumeClaim
   metadata:
     name: windows-vm-pvc-${NAME}
-labels:
-  miq.github.io/kubevirt-is-vm-template: True
 parameters:
 - description: Name for the new VM
   name: NAME
