@@ -39,7 +39,7 @@ objects:
             requests:
               memory: ${MEMORY}
               cpu:
-                cores: ${CPU}
+                cores: ${CPU_CORES}
           os:
             machine: pc-q35-rhel7.4.0
           devices:
@@ -66,6 +66,6 @@ parameters:
 - name: MEMORY
   description: Amount of memory in MB
   value: 4096Mi
-- name: CPU
+- name: CPU_CORES
   description: Amount of cores
   value: 4
