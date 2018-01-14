@@ -238,9 +238,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # Deletes a live virtual machine.
   #
   # @param name [String] The name of the virtual machine to delete.
+  # @param namespace [String] The namespace where virtual machine is defined.
   #
-  def delete_live_vm(name)
-    kubevirt_client.delete_virtual_machine(name)
+  def delete_live_vm(name, namespace = nil)
+    kubevirt_client.delete_virtual_machine(name, namespace)
   end
 
   #

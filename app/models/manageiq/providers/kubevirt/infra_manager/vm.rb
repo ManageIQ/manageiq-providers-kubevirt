@@ -82,4 +82,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
     # Return the generated file:
     file
   end
+
+  #
+  # UI Button Validation Methods
+  #
+
+  # We need this method to workaround VmOrTemplate.validate_task
+  def has_required_host?
+    true
+  end
 end
