@@ -35,11 +35,11 @@ objects:
               hyperv: {}
           cpu:
             cores: ${CPU_CORES}
+          machine:
+            type: q35
           resources:
             requests:
               memory: ${MEMORY}
-          os:
-            machine: pc-q35-rhel7.4.0
           devices:
             interface:
               model:

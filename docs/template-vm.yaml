@@ -20,8 +20,8 @@ objects:
           resources:
             requests:
               memory: ${MEMORY}
-          os:
-            machine: pc-q35-rhel7.4.0
+          machine:
+            type: q35
           devices:
             interface:
               model:
