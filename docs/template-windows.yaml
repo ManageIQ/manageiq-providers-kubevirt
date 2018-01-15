@@ -33,8 +33,6 @@ objects:
               rtc:
                 tickPolicy: catchup
               hyperv: {}
-          firmware:
-            uid: ${UID}
           cpu:
             cores: ${CPU_CORES}
           resources:
