@@ -35,11 +35,11 @@ objects:
               hyperv: {}
           firmware:
             uid: ${UID}
+          cpu:
+            cores: ${CPU_CORES}
           resources:
             requests:
               memory: ${MEMORY}
-              cpu:
-                cores: ${CPU_CORES}
           os:
             machine: pc-q35-rhel7.4.0
           devices:
