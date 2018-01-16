@@ -59,7 +59,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # TODO: We need to delete the virtual machine explicitly because KubeVirt still doesn't have a controller that
       # stops automatically the virtual machines when the `running` attribute is changed to `false`. This should be
       # removed when that controller is added.
-      connection.delete_live_vm(name)
+      connection.delete_live_vm(name, offline_vm.metadata.namespace)
     end
   end
 end
