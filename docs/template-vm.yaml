@@ -5,7 +5,6 @@ metadata:
   annotations:
     description: "OCP kubevirt linux, template"
     tags: "kubevirt,ocp,template,linux"
-    miq.github.io/kubevirt-is-vm-template: true
 objects:
 - apiVersion: kubevirt.io/v1alpha1
   kind: OfflineVirtualMachine
@@ -23,15 +22,11 @@ objects:
           machine:
             type: q35
           devices:
-            interface:
-              model:
-                type: virtio
             disks:
               - name: disk0
                 volumeName: disk0-pvc
                 disk:
                   dev: vda
-                  bus: virtio
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:
@@ -49,3 +44,5 @@ parameters:
 - name: CPU_CORES
   description: Amount of cores
   value: 4
+labels:
+  miq.github.io/kubevirt-is-vm-template: true

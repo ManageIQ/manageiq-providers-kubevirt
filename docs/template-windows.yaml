@@ -5,7 +5,6 @@ metadata:
   annotations:
     description: "OCP kubevirt windows VM template"
     tags: "kubevirt,ocp,template,windows"
-    miq.github.io/kubevirt-is-vm-template: true
 objects:
 - apiVersion: kubevirt.io/v1alpha1
   kind: OfflineVirtualMachine
@@ -41,15 +40,11 @@ objects:
             requests:
               memory: ${MEMORY}
           devices:
-            interface:
-              model:
-                type: e1000
             disks:
               - name: disk0
                 volumeName: disk0-pvc
                 disk:
                   dev: sda
-                  bus: sata
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:
@@ -67,3 +62,5 @@ parameters:
 - name: CPU_CORES
   description: Amount of cores
   value: 4
+labels:
+  miq.github.io/kubevirt-is-vm-template: true
