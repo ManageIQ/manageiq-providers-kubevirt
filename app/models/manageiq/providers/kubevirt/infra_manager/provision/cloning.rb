@@ -65,10 +65,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
           template: {
             spec: {
               domain: {
-                memory: {
-                  value: memory.to_i,
-                  unit: 'MiB'
-                }
+                memory: memory.to_s + 'Mi'
               }
             }
           }

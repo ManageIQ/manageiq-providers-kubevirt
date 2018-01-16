@@ -33,9 +33,7 @@ spec:
             type: network
           video:
           - type: qxl
-        memory:
-          unit: MB
-          value: 64
+        memory: 64MiB
         os:
           type:
             os: hvm

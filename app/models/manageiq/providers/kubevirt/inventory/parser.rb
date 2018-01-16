@@ -181,7 +181,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory.value, domain.memory.unit, 'MiB')
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory, 'Mi')
 
     # Return the created inventory object:
     vm_object
@@ -213,7 +213,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Add the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(template_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory.value, domain.memory.unit, 'MiB')
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator::convert(domain.memory, 'Mi')
   end
 
   def find_owner(object, kind)
