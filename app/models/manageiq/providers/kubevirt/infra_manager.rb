@@ -23,6 +23,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   require_nested :Template
   require_nested :Vm
 
+  include ManageIQ::Providers::Kubernetes::VirtualizationManagerMixin
+
+  belongs_to :parent_manager,
+             :foreign_key => :parent_ems_id,
+             :class_name  => "ManageIQ::Providers::ContainerManager",
+             :inverse_of  => :infra_manager
+
   #
   # This is the list of features that this provider supports:
   #
@@ -92,6 +99,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     with_provider_connection(opts, &:valid?)
   end
 
+  #
+  # Verifies that the provider responds to kubevirt resources in order to assure kubevirt is deployed
+  # on top of the kubernetes cluster
+  #
+  def verify_virt_supported
+    with_provider_connection do |connection|
+      connection.live_vms
+    end
+  end
 
   #
   # The ManageIQ core calls this method whenever a connection to the server is needed.
@@ -100,7 +116,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   def connect(opts = {})
     # Get the authentication token:
-    token = authentication_token()
+    token = authentication_token(:kubevirt)
 
     # Create and return the connection:
     endpoint = default_endpoint
