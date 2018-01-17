@@ -23,7 +23,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   require_nested :Template
   require_nested :Vm
 
-  include ManageIQ::Providers::Kubernetes::VirtualizationManagerMixin
+  include ManageIQ::Providers::Kubernetes::InfraManagerMixin
 
   belongs_to :parent_manager,
              :foreign_key => :parent_ems_id,
