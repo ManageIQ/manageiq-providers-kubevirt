@@ -1,13 +1,38 @@
 = ManageIQ provider for KubeVirt
 
-[![Gem Version](https://badge.fury.io/rb/manageiq-providers-kubevirt.svg)](http://badge.fury.io/rb/manageiq-providers-kubevirt)
-[![Build Status](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt.svg)](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt)
-[![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt.svg)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt)
-[![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/coverage)
-[![Dependency Status](https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt.svg)](https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master)
-[![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Translate](https://img.shields.io/badge/translate-zanata-blue.svg)](https://translate.zanata.org/zanata/project/view/manageiq-providers-kubevirt)
+// Settings:
+ifdef::env-github[]
+:status:
+endif::[]
+// URIs:
+:uri-gem:            http://badge.fury.io/rb/manageiq-providers-kubevirt
+:badge-gem:          https://badge.fury.io/rb/manageiq-providers-kubevirt.svg
+:uri-build:          https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt
+:badge-build:        https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt.svg
+:uri-codequality:    https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt
+:badge-codequality:  https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt.svg
+:uri-testcoverage:   https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/badges/coverage
+:badge-testcoverage: https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/badges/coverage.svg
+:uri-dependencies:   https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt
+:badge-dependencies: https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt.svg
+:uri-security:       https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master
+:badge-security:     https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master.svg
+:uri-chat:           https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+:badge-chat:         https://badges.gitter.im/Join%20Chat.svg
+:uri-translate:      https://translate.zanata.org/zanata/project/view/manageiq-providers-kubevirt
+:badge-translate:    https://img.shields.io/badge/translate-zanata-blue.svg
+
+ifdef::status[]
+image:{badge-gem}[Gem Version Badge,link={uri-gem}]
+image:{badge-build}[Build Status Badge,link={uri-build}]
+image:{badge-codequality}[Code Quality Badge,link={uri-codequality}]
+image:{badge-testcoverage}[Test Coverage Badge,link={uri-testcoverage}]
+image:{badge-dependencies}[Dependencies Badge,link={uri-dependencies}]
+image:{badge-security}[Security Badge,link={uri-security}]
+
+image:{badge-chat}[Chat Badge,link={uri-chat}]
+image:{badge-translate}[Translate Badge,link={uri-translate}]
+endif::[]
 
 This repository contains an experimental provider that integrates the
 http://manageiq.org[ManageIQ] and https://github.com/kubevirt[KubeVirt]
