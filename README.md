@@ -1,4 +1,4 @@
-= ManageIQ provider for KubeVirt
+# manageiq-providers-kubevirt
 
 [![Gem Version](https://badge.fury.io/rb/manageiq-providers-kubevirt.svg)](http://badge.fury.io/rb/manageiq-providers-kubevirt)
 [![Build Status](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt.svg)](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt)
@@ -9,33 +9,21 @@
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Translate](https://img.shields.io/badge/translate-zanata-blue.svg)](https://translate.zanata.org/zanata/project/view/manageiq-providers-kubevirt)
 
-This repository contains an experimental provider that integrates the
-http://manageiq.org[ManageIQ] and https://github.com/kubevirt[KubeVirt]
-projects.
+Experimental [ManageIq](https://github.com/ManageIQ) provider which integrates [Kubevirt](https://github.com/kubevirt) project.
 
-In order to make this work the `manageiq` and `manageiq-ui-classic`
-projects also need to be changed, merging the commits in the
-following branches:
-
-* For the `manageiq` project:
-+
-https://github.com/jhernand/manageiq/tree/kubevirt_provider
-
-* For the `manageiq-ui-classic` project:
-+
-https://github.com/jhernand/manageiq-ui-classic/tree/kubevirt_provider
-
-== Things that work
+## Things that work
 
 Currently the provider supports the following simple use cases:
 
-1. Add the provider using token athentication.
+1. Add the provider using token authentication.
 
-2. Provision virtual machines from templates.
+2. Clone virtual machines from templates.
 
 3. Connect to the SPICE console of the virtual machines.
 
-== Things that don't work
+4. Virtual machine power management: stop and start
+
+## Things that don't work
 
 * The Kubernetes API suports authentication using client side digital
 certificates, tokens and user name and passwords. The KubeVirt provider only
@@ -51,27 +39,20 @@ that uses the client certificate subject as the user name.
 provider, but it doesn't work for editing the provider: it doesn't show the
 selected authentication method, and it doesn't show the token.
 
-== Things that should be changed
+## Things that should be changed
 
 * Kubernetes has a `namespace` concept that is currently ignored by the
 provider, it only uses the `default` namespace, and that is hard-coded.
 We should consider making the namespace part of the initial dialog to
 add the provider, like the authentication details or the IP address.
 
-* In KubeVirt virtual machines are started when they are created. There is no
-such thing like a virtual machine that has been created but not started. When
-the provider refreshes the inventory it _archives_ all the virtual machines
-that aren't running. This should be changed, so the provider should check what
-virtual machines already exist in the ManageIQ database, and should avoid
-removing them. In more general terms, the provider considers the KubeVirt
-configuration the source of truth. That should be changed, the source of truth
-should be the ManageIQ database.
+* In KubeVirt virtual machines are started when they are created. We are
+discussing currnetly offline virtual machine which would represent stopped
+vm. Offline virtual machine api is not implemented yet so we fake it by
+defining [custom resource](manifests/crd-offline-virtual-machine.yml).
 
-* The provider doesn't have a mechanism to start/stop virtual machines, because
-stopping a means removing it from KubeVirt, and that would currently remove
-(actuall archive) it permanently during the next refresh. This is closely
-related to the previous item. If that is addressed, then the provider will be
-able to start/stop a virtual machine by creating/deleting it in KubeVirt.
+* The provider considers the KubeVirt configuration the source of truth. 
+That should be changed, the source of truth should be the ManageIQ database.
 
 * There is no event tracker. The refresh of the inventory is only performed
 manually, or when a new virtual machine is added.
@@ -86,18 +67,21 @@ details. In addition Kubernetes itself doesn't yet support sub-resources
 for custom resource definitions. As a result the provider has to extract
 the SPICE proxy URL from the configuration of the `spice-proxy` service.
 
-== Notes
+## Notes
 
-=== How to get the default token from Kubernetes
+### How to get the default token from Kubernetes
 
 List the set of secrets:
 
+  ```
   $ kubectl get secrets
   NAME                  TYPE                                  DATA      AGE
   default-token-7psxt   kubernetes.io/service-account-token   3         20d
+  ```
 
 Get the details of the `default` token:
 
+  ```
   # kubectl get secret default-token-7psxt -o yaml
   apiVersion: v1
   data:
@@ -105,14 +89,19 @@ Get the details of the `default` token:
   namespace: ZGV...
   token: ZXl...
   ...
+  ```
 
 The token is the value of the `token` attribute, but it is encoded using
 base64, so it needs to be decoded:
 
+  ```
   $ echo ZXl... | base64 -d
   eyJ...
+  ```
 
 The extracted value can now be used to authenticate with the Kubernetes
 API, setting the `Authorization` header:
 
+  ```
   Authorization: Bearer eyJ...
+  ```
