@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "manageiq-providers-kubevirt"
   s.version     = ManageIQ::Providers::Kubevirt::VERSION
   s.authors     = ["KubeVirt Developers"]
-  s.homepage    = "https://github.com/jhernand/manageiq-providers-kubevirt"
+  s.homepage    = "https://github.com/ManageIQ/manageiq-providers-kubevirt"
   s.summary     = "KubeVirt provider for ManageIQ"
   s.description = "KubeVirt provider for ManageIQ"
   s.licenses    = ["Apache-2.0"]
