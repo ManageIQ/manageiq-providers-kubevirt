@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: windows-vm-template
+  annotations:
+    description: "OCP kubevirt windows VM template"
+    tags: "kubevirt,ocp,template,windows"
+  labels:
+    miq.github.io/kubevirt-is-vm-template: true
+objects:
+- apiVersion: kubevirt.io/v1alpha1
+  kind: OfflineVirtualMachine
+  metadata:
+    name: ${NAME}
+  spec:
+    template:
+      spec:
+        domain:
+          features:
+            acpi: {}
+            apic: {}
+            hyperv:
+              relaxed: {}
+              vapic: {}
+              spinlocks:
+                spinlocks: 8191
+          clock:
+            utc: {}
+            timer:
+              hpet:
+                present: false
+              pit:
+                tickPolicy: delay
+              rtc:
+                tickPolicy: catchup
+              hyperv: {}
+          cpu:
+            cores: ${CPU_CORES}
+          machine:
+            type: q35
+          resources:
+            requests:
+              memory: ${MEMORY}
+          devices:
+            disks:
+              - name: disk0
+                volumeName: disk0-pvc
+                disk:
+                  dev: sda
+        volumes:
+          - name: disk0-pvc
+            persistentVolumeClaim:
+              claimName: windows-vm-pvc-${NAME}
+- apiVersion: kubevirt.io/v1alpha1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: windows-vm-pvc-${NAME}
+parameters:
+- description: Name for the new VM
+  name: NAME
+- name: MEMORY
+  description: Amount of memory in MB
+  value: 4096Mi
+- name: CPU_CORES
+  description: Amount of cores
+  value: 4
