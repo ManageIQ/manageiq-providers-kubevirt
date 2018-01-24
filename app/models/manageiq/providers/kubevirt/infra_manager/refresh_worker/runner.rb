@@ -59,10 +59,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # Create the watches:
     @watches = []
     manager.with_provider_connection do |connection|
-      @watches << connection.watch_nodes('resourceVersion' => memory.get_list_version(:nodes))
-      @watches << connection.watch_offline_vms('resourceVersion' => memory.get_list_version(:offline_vms))
-      @watches << connection.watch_live_vms('resourceVersion' => memory.get_list_version(:live_vms))
-      @watches << connection.watch_templates('resourceVersion' => memory.get_list_version(:templates))
+      @watches << connection.watch_nodes(:resource_version => memory.get_list_version(:nodes))
+      @watches << connection.watch_offline_vms(:resource_version => memory.get_list_version(:offline_vms))
+      @watches << connection.watch_live_vms(:resource_version => memory.get_list_version(:live_vms))
+      @watches << connection.watch_templates(:resource_version => memory.get_list_version(:templates))
     end
 
     # Create the threads that run the watches and put the notices in the queue:
