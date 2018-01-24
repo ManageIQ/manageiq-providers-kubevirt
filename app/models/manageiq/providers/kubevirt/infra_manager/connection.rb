@@ -20,8 +20,6 @@ require 'ostruct'
 require 'rest-client'
 require 'uri'
 
-RestClient.log = 'stdout'
-
 #
 # TODO: This is a hack to fix an issue with the `WatchNotice` class, see the following pull request
 # for details:
