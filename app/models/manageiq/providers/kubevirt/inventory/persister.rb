@@ -20,69 +20,69 @@
 class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManagerRefresh::Inventory::Persister
   def cluster_collection(targeted: false, ids: [])
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.ems_clusters(
-      targeted: targeted,
-      manager_uuids: ids,
-      strategy: :local_db_find_missing_references
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def host_collection(targeted: false, ids: [])
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.hosts(
-      targeted: targeted,
-      manager_uuids: ids,
-      strategy: :local_db_find_missing_references
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def host_storage_collection(targeted: false)
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.host_storages(
-      targeted: targeted,
-      strategy: :local_db_find_missing_references
+      :targeted => targeted,
+      :strategy => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def hw_collection(targeted: false)
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.hardwares(
-      targeted: targeted,
-      strategy: :local_db_find_missing_references
+      :targeted => targeted,
+      :strategy => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def os_collection(targeted: false)
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.host_operating_systems(
-      targeted: targeted,
-      strategy: :local_db_find_missing_references
+      :targeted => targeted,
+      :strategy => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def template_collection(targeted: false, ids: [])
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.miq_templates(
-      targeted: targeted,
-      manager_uuids: ids,
-      strategy: :local_db_find_missing_references
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def storage_collection(targeted: false, ids: [])
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.storages(
-      targeted: targeted,
-      manager_uuids: ids,
-      strategy: :local_db_find_missing_references
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end
 
   def vm_collection(targeted: false, ids: [])
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.vms(
-      targeted: targeted,
-      manager_uuids: ids,
-      strategy: :local_db_find_missing_references
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
   end

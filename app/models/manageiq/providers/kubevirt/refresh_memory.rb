@@ -125,7 +125,7 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   #
   def load
     # Load the JSON document:
-    return unless File.exists?(file)
+    return unless File.exist?(file)
     text = File.read(file)
     json = JSON.parse(text)
 
@@ -141,7 +141,7 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   def save
     # Populate the JSON object from the instance variables:
     json = {
-      LISTS => @lists,
+      LISTS   => @lists,
       NOTICES => @notices.to_a.sort!
     }
 

@@ -30,18 +30,18 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   def queue_generate_remote_viewer_file
     # Create the task options:
     task_options = {
-      action: "Generate 'remote-viewer' configuration file for VM '#{name}'"
+      :action => "Generate 'remote-viewer' configuration file for VM '#{name}'"
     }
 
     # Create the queue options:
     queue_options = {
-      class_name: self.class.name,
-      instance_id: id,
-      method_name: 'generate_remote_viewer_file',
-      priority: MiqQueue::HIGH_PRIORITY,
-      role: 'ems_operations',
-      zone: my_zone,
-      args: []
+      :class_name  => self.class.name,
+      :instance_id => id,
+      :method_name => 'generate_remote_viewer_file',
+      :priority    => MiqQueue::HIGH_PRIORITY,
+      :role        => 'ems_operations',
+      :zone        => my_zone,
+      :args        => []
     }
 
     # Add the task to the queue and return the identifier:
@@ -64,7 +64,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
     end
 
     # The virtual machine may have multiple graphics device, get the first one that uses the SPICE protocol:
-    spice = vm.status.graphics.detect { |graphics| graphics.type == 'spice'}
+    spice = vm.status.graphics.detect { |graphics| graphics.type == 'spice' }
 
     # Generate the content of the `remote-viewer` configuration file file:
     file = \

@@ -18,25 +18,25 @@
 # This class contains methods that build the attributes that will be used to create
 # `InventoryCollection` objects used frequently in the provider.
 #
-class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::InventoryCollectionDefault::InfraManager 
+class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::InventoryCollectionDefault::InfraManager
   class << self
     def ems_clusters(extra_attributes = {})
       attributes = {
-        model_class: ::EmsCluster,
-        inventory_object_attributes: [
-          :ems_ref,
-          :ems_ref_obj,
-          :name,
-          :uid_ems,
-        ]
+        :model_class                 => ::EmsCluster,
+        :inventory_object_attributes => %i(
+          ems_ref
+          ems_ref_obj
+          name
+          uid_ems
+        )
       }
       super(attributes.merge!(extra_attributes))
     end
 
     def hardwares(extra_attributes = {})
       attributes = {
-        model_class: ::Hardware,
-        inventory_object_attributes: [
+        :model_class                 => ::Hardware,
+        :inventory_object_attributes => [
           :memory_mb,
         ]
       }
@@ -45,50 +45,50 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
 
     def hosts(extra_attributes = {})
       attributes = {
-        model_class: ::Host,
-        inventory_object_attributes: [
-          :connection_state,
-          :ems_cluster,
-          :ems_ref,
-          :ems_ref_obj,
-          :hostname,
-          :ipaddress,
-          :ipmi_address,
-          :name,
-          :power_state,
-          :type,
-          :uid_ems,
-          :vmm_buildnumber,
-          :vmm_product,
-          :vmm_vendor,
-          :vmm_version,
-        ]
+        :model_class                 => ::Host,
+        :inventory_object_attributes => %i(
+          connection_state
+          ems_cluster
+          ems_ref
+          ems_ref_obj
+          hostname
+          ipaddress
+          ipmi_address
+          name
+          power_state
+          type
+          uid_ems
+          vmm_buildnumber
+          vmm_product
+          vmm_vendor
+          vmm_version
+        )
       }
       super(attributes.merge!(extra_attributes))
     end
 
     def host_operating_systems(extra_attributes = {})
       attributes = {
-        model_class: ::OperatingSystem,
-        inventory_object_attributes: [
-          :name,
-          :product_name,
-          :product_type,
-          :system_type,
-          :version,
-        ]
+        :model_class                 => ::OperatingSystem,
+        :inventory_object_attributes => %i(
+          name
+          product_name
+          product_type
+          system_type
+          version
+        )
       }
       super(attributes.merge!(extra_attributes))
     end
 
     def host_storages(extra_attributes = {})
       attributes = {
-        model_class: ::HostStorage,
-        parent_inventory_collections: [:hosts],
-        targeted_arel: lambda do |collection|
+        :model_class                  => ::HostStorage,
+        :parent_inventory_collections => [:hosts],
+        :targeted_arel                => lambda do |collection|
           host_ids = collection.parent_inventory_collections.flat_map { |c| c.manager_uuids.to_a }
           collection.parent.host_storages.references(:host).where(
-            hosts: { ems_ref: host_ids }
+            :hosts => { :ems_ref => host_ids }
           )
         end
       }
@@ -97,69 +97,69 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
 
     def storages(extra_attributes = {})
       attributes = {
-        model_class: ::Storage,
-        inventory_object_attributes: [
-          :ems_ref,
-          :ems_ref_obj,
-          :free_space,
-          :location,
-          :name,
-          :store_type,
-          :total_space,
-          :uncommitted,
-        ]
+        :model_class                 => ::Storage,
+        :inventory_object_attributes => %i(
+          ems_ref
+          ems_ref_obj
+          free_space
+          location
+          name
+          store_type
+          total_space
+          uncommitted
+        )
       }
       super(attributes.merge!(extra_attributes))
     end
 
     def vms(extra_attributes = {})
       attributes = {
-        model_class: ::ManageIQ::Providers::Kubevirt::InfraManager::Vm,
-        inventory_object_attributes: [
-          :boot_time,
-          :connection_state,
-          :ems_cluster,
-          :ems_ref,
-          :ems_ref_obj,
-          :host,
-          :location,
-          :memory_limit,
-          :memory_reserve,
-          :name,
-          :raw_power_state,
-          :storage,
-          :storages,
-          :template,
-          :type,
-          :uid_ems,
-          :vendor,
-        ]
+        :model_class                 => ::ManageIQ::Providers::Kubevirt::InfraManager::Vm,
+        :inventory_object_attributes => %i(
+          boot_time
+          connection_state
+          ems_cluster
+          ems_ref
+          ems_ref_obj
+          host
+          location
+          memory_limit
+          memory_reserve
+          name
+          raw_power_state
+          storage
+          storages
+          template
+          type
+          uid_ems
+          vendor
+        )
       }
       super(attributes.merge!(extra_attributes))
     end
 
     def miq_templates(extra_attributes = {})
       attributes = {
-        model_class: ::ManageIQ::Providers::Kubevirt::InfraManager::Template,
-        inventory_object_attributes: [
-          :boot_time,
-          :connection_state,
-          :ems_cluster,
-          :ems_ref,
-          :ems_ref_obj,
-          :host,
-          :location,
-          :memory_limit,
-          :memory_reserve,
-          :name,
-          :raw_power_state,
-          :storage,
-          :storages,
-          :template,
-          :type,
-          :uid_ems,
-          :vendor,
-        ]
+        :model_class                 => ::ManageIQ::Providers::Kubevirt::InfraManager::Template,
+        :inventory_object_attributes => %i(
+          boot_time
+          connection_state
+          ems_cluster
+          ems_ref
+          ems_ref_obj
+          host
+          location
+          memory_limit
+          memory_reserve
+          name
+          raw_power_state
+          storage
+          storages
+          template
+          type
+          uid_ems
+          vendor
+        )
       }
       super(attributes.merge!(extra_attributes))
     end

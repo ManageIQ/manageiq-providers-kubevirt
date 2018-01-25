@@ -16,8 +16,6 @@
 
 require 'concurrent/atomic/atomic_boolean'
 require 'kubeclient'
-require 'thread'
-
 class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < ManageIQ::Providers::BaseManager::RefreshWorker::Runner
   def do_before_work_loop
     # If it is empty then we need to perform a full refresh:
@@ -81,7 +79,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     end
   end
 
-  def before_exit(message, _exit_code)
+  def before_exit(_message, _exit_code)
     # Ask the watch threads to finish, and wait for them:
     @finish.value = true
     @watches.each(&:finish)
@@ -138,7 +136,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     memory.add_list_version(:offline_vms, collector.offline_vms.resourceVersion)
     memory.add_list_version(:live_vms, collector.live_vms.resourceVersion)
     memory.add_list_version(:templates, collector.templates.resourceVersion)
-  rescue => error
+  rescue StandardError => error
     _log.error('Full refresh failed.')
     _log.log_backtrace(error)
   end
@@ -183,15 +181,14 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     collector.offline_vms.each do |offline_notice|
       offline_name = offline_notice.object.metadata.name
       live_notice = collector.live_vms.detect { |notice| notice.object.metadata.name == offline_name }
-      unless live_notice
-        begin
-          live_vm = manager.with_provider_connection { |connection| connection.live_vm(offline_name) }
-          live_notice = Kubeclient::Common::WatchNotice.new
-          live_notice.object = live_vm
-          collector.live_vms.push(live_notice)
-        rescue KubeException
-          # Nothing, the live virtual machine doesn't exist.
-        end
+      next if live_notice
+      begin
+        live_vm = manager.with_provider_connection { |connection| connection.live_vm(offline_name) }
+        live_notice = Kubeclient::Common::WatchNotice.new
+        live_notice.object = live_vm
+        collector.live_vms.push(live_notice)
+      rescue KubeException
+        # Nothing, the live virtual machine doesn't exist.
       end
     end
 
@@ -207,7 +204,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     notices.each do |notice|
       memory.add_notice(notice)
     end
-  rescue => error
+  rescue StandardError => error
     _log.error('Partial refresh failed.')
     _log.log_backtrace(error)
   end

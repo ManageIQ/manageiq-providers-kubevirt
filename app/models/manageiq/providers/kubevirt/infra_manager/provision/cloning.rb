@@ -16,7 +16,7 @@
 
 module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   def find_destination_in_vmdb(ems_ref)
-    ::Vm.find_by(ems_id: source.ext_management_system.id, ems_ref: ems_ref)
+    ::Vm.find_by(:ems_id => source.ext_management_system.id, :ems_ref => ems_ref)
   end
 
   def prepare_for_clone_task
@@ -24,7 +24,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     raise MiqException::MiqProvisionError, "A virtual machine with name '#{dest_name}' already exists" if source.ext_management_system.vms.where(:name => dest_name).any?
 
     clone_options = {
-      name: dest_name,
+      :name => dest_name,
     }
     clone_options
   end
@@ -50,22 +50,22 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
 
     # Create the representation of the new offline virtual machine, copying the spec from the template:
     offline_vm = {
-      metadata: {
-        name: name,
-        namespace: template.metadata.namespace
+      :metadata => {
+        :name      => name,
+        :namespace => template.metadata.namespace
       },
-      spec: template.spec.to_h
+      :spec     => template.spec.to_h
     }
 
     # If the memory has been explicitly specified in the options, then replace the value defined by the template:
     memory = get_option(:vm_memory)
     if memory
       offline_vm.deep_merge!(
-        spec: {
-          template: {
-            spec: {
-              domain: {
-                memory: memory.to_s + 'Mi'
+        :spec => {
+          :template => {
+            :spec => {
+              :domain => {
+                :memory => memory.to_s + 'Mi'
               }
             }
           }
