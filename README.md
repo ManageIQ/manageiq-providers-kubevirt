@@ -82,25 +82,26 @@ List the set of secrets:
 Get the details of the `default` token:
 
   ```
-  # kubectl get secret default-token-7psxt -o yaml
-  apiVersion: v1
-  data:
-    ca.crt: LS0...
-  namespace: ZGV...
-  token: ZXl...
+  # kubectl describe secret default-token-7psxt
+  Name:         default-token-7psxt
+  Namespace:    default
+  Labels:       <none>
+  Annotations:  kubernetes.io/service-account.name=default
+                kubernetes.io/service-account.uid=d748bdb5-f9dc-11e7-9332-525400d6a390
+
+  Type:  kubernetes.io/service-account-token
+
+  Data
+  ====
+  ca.crt:     1025 bytes
+  namespace:  7 bytes
+  token:      eyJhbGciO...
   ...
   ```
 
-The token is the value of the `token` attribute, but it is encoded using
-base64, so it needs to be decoded:
+The token is the value of the `token` attribute.
 
-  ```
-  $ echo ZXl... | base64 -d
-  eyJ...
-  ```
-
-The extracted value can now be used to authenticate with the Kubernetes
-API, setting the `Authorization` header:
+The extracted value can now be used to authenticate with the Kubernetes API, setting the `Authorization` header:
 
   ```
   Authorization: Bearer eyJ...
