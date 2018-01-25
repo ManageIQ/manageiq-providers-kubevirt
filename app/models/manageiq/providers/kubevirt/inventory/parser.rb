@@ -107,7 +107,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     storage_object = storage_collection.lazy_find(STORAGE_ID)
 
     # Add the inventory object for the host storage:
-    host_storage_object = host_storage_collection.find_or_build_by(
+    host_storage_collection.find_or_build_by(
       :host    => host_object,
       :storage => storage_object,
     )
