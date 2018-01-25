@@ -97,7 +97,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
     # Load the data and convert it to recursive open struct:
     data = file_fixture("collectors/#{name}.json").read
     data = YAML.safe_load(data)
-    data = RecursiveOpenStruct.new(data, recurse_over_arrays: true)
+    data = RecursiveOpenStruct.new(data, :recurse_over_arrays => true)
 
     # Create the collector and populate it with the data from the JSON document:
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
@@ -126,20 +126,20 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   # @param persister [Object] The populated persister.
   #
   def check_builtin_clusters(persister)
-      # Check that the collection of clusters has been created:
-      collection = persister.collections[:ems_clusters]
-      expect(collection).to_not be_nil
-      data = collection.data
-      expect(data).to_not be_nil
-      expect(data.length).to eq(1)
+    # Check that the collection of clusters has been created:
+    collection = persister.collections[:ems_clusters]
+    expect(collection).to_not be_nil
+    data = collection.data
+    expect(data).to_not be_nil
+    expect(data.length).to eq(1)
 
-      # Check that the built-in cluster has been created:
-      cluster = data.first
-      expect(cluster).to_not be_nil
-      expect(cluster.ems_ref).to eq('0')
-      expect(cluster.ems_ref_obj).to eq('0')
-      expect(cluster.name).to eq('mykubevirt')
-      expect(cluster.uid_ems).to eq('0')
+    # Check that the built-in cluster has been created:
+    cluster = data.first
+    expect(cluster).to_not be_nil
+    expect(cluster.ems_ref).to eq('0')
+    expect(cluster.ems_ref_obj).to eq('0')
+    expect(cluster.name).to eq('mykubevirt')
+    expect(cluster.uid_ems).to eq('0')
   end
 
   #
@@ -148,19 +148,19 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   # @param persister [Object] The populated persister.
   #
   def check_builtin_storages(persister)
-      # Check that the collection of storages has been created:
-      collection = persister.collections[:storages]
-      expect(collection).to_not be_nil
-      data = collection.data
-      expect(data).to_not be_nil
-      expect(data.length).to eq(1)
+    # Check that the collection of storages has been created:
+    collection = persister.collections[:storages]
+    expect(collection).to_not be_nil
+    data = collection.data
+    expect(data).to_not be_nil
+    expect(data.length).to eq(1)
 
-      # Check that the builtin storage has been created:
-      storage = data.first
-      expect(storage).to_not be_nil
-      expect(storage.ems_ref).to eq('0')
-      expect(storage.ems_ref_obj).to eq('0')
-      expect(storage.name).to eq('mykubevirt')
-      expect(storage.store_type).to eq('KUBERNETES')
+    # Check that the builtin storage has been created:
+    storage = data.first
+    expect(storage).to_not be_nil
+    expect(storage.ems_ref).to eq('0')
+    expect(storage.ems_ref_obj).to eq('0')
+    expect(storage.name).to eq('mykubevirt')
+    expect(storage.store_type).to eq('KUBERNETES')
   end
 end

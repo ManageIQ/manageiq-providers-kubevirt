@@ -74,11 +74,11 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
     # Prepare the TLS and authentication options that will be used for the standard Kubernetes API
     # and also for the KubeVirt extension:
     @opts = {
-      ssl_options: {
-        verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+      :ssl_options  => {
+        :verify_ssl => OpenSSL::SSL::VERIFY_NONE,
       },
-      auth_options: {
-        bearer_token: @token
+      :auth_options => {
+        :bearer_token => @token
       }
     }
 
@@ -124,7 +124,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of templates.
   #
   def templates
-    kubevirt_client.get_virtual_machine_templates(namespace: @namespace)
+    kubevirt_client.get_virtual_machine_templates(:namespace => @namespace)
   end
 
   #
@@ -153,7 +153,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of offline virtual machines.
   #
   def offline_vms
-    kubevirt_client.get_offline_virtual_machines(namespace: @namespace)
+    kubevirt_client.get_offline_virtual_machines(:namespace => @namespace)
   end
 
   #
@@ -200,7 +200,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of live virtual machines.
   #
   def live_vms
-    kubevirt_client.get_virtual_machines(namespace: @namespace)
+    kubevirt_client.get_virtual_machines(:namespace => @namespace)
   end
 
   #
@@ -252,9 +252,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
     host = service.spec.externalIPs.first
     port = service.spec.ports.first.port
     url = URI::Generic.build(
-      scheme: 'http',
-      host: host,
-      port: port,
+      :scheme => 'http',
+      :host   => host,
+      :port   => port,
     )
     url.to_s
   end
@@ -275,18 +275,18 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
     return client if client
 
     # Determine the API path:
-    if group == CORE_GROUP
-      path = '/api'
-    else
-      path = '/apis/' + group
-    end
+    path = if group == CORE_GROUP
+             '/api'
+           else
+             '/apis/' + group
+           end
 
     # Create the client and save it:
     url = URI::Generic.build(
-      scheme: 'https',
-      host: @host,
-      port: @port,
-      path: path
+      :scheme => 'https',
+      :host   => @host,
+      :port   => @port,
+      :path   => path
     )
     client = Kubeclient::Client.new(
       url.to_s,

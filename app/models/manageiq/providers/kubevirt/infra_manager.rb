@@ -68,9 +68,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   def self.raw_connect(opts)
     # Create the connection:
     connection = Connection.new(
-      host: opts[:server],
-      port: opts[:port],
-      token: opts[:token],
+      :host  => opts[:server],
+      :port  => opts[:port],
+      :token => opts[:token],
     )
 
     # Verify that the connection works:
@@ -84,7 +84,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @param type [String] The authentication scope, for example `default` or `metrics`.
   # @return [Boolean] `true` If credentials have been provided, `false` otherwise.
   #
-  def has_credentials?(type = nil)
+  def has_credentials?(_type = nil)
     true
   end
 
@@ -95,7 +95,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @param type [String] The authentication scope, for example `default` or `metrics`.
   # @param opts [Hash] Additional options to control how to perform the verification.
   #
-  def verify_credentials(type = nil, opts = {})
+  def verify_credentials(_type = nil, opts = {})
     with_provider_connection(opts, &:valid?)
   end
 
@@ -104,9 +104,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # on top of the kubernetes cluster
   #
   def verify_virt_supported
-    with_provider_connection do |connection|
-      connection.live_vms
-    end
+    with_provider_connection(&:live_vms)
   end
 
   #
@@ -114,16 +112,16 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   # @param opts [Hash] The options provided by the ManageIQ core.
   #
-  def connect(opts = {})
+  def connect(_opts = {})
     # Get the authentication token:
     token = authentication_token(:kubevirt)
 
     # Create and return the connection:
     endpoint = default_endpoint
     self.class::Connection.new(
-      host: endpoint.hostname,
-      port: endpoint.port,
-      token: token,
+      :host  => endpoint.hostname,
+      :port  => endpoint.port,
+      :token => token,
     )
   end
 
@@ -145,7 +143,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   # @return [Class] The class that implements the provisioning.
   #
-  def self.provision_class(via)
+  def self.provision_class(_via)
     self::Provision
   end
 end

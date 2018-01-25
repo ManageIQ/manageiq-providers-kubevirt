@@ -59,43 +59,43 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
   # Scale factors associated to the diffeent unit suffixes.
   #
   SCALE_FACTORS = {
-    b: 1,
+    :b   => 1,
 
-    k: 10**3,
-    m: 10**6,
-    g: 10**9,
-    t: 10**12,
-    p: 10**15,
-    e: 10**18,
-    z: 10**21,
-    y: 10**24,
+    :k   => 10**3,
+    :m   => 10**6,
+    :g   => 10**9,
+    :t   => 10**12,
+    :p   => 10**15,
+    :e   => 10**18,
+    :z   => 10**21,
+    :y   => 10**24,
 
-    kb: 10**3,
-    mb: 10**6,
-    gb: 10**9,
-    tb: 10**12,
-    pb: 10**15,
-    eb: 10**18,
-    zb: 10**21,
-    yb: 10**24,
+    :kb  => 10**3,
+    :mb  => 10**6,
+    :gb  => 10**9,
+    :tb  => 10**12,
+    :pb  => 10**15,
+    :eb  => 10**18,
+    :zb  => 10**21,
+    :yb  => 10**24,
 
-    ki: 2**10,
-    mi: 2**20,
-    gi: 2**30,
-    ti: 2**40,
-    pi: 2**50,
-    ei: 2**60,
-    zi: 2**70,
-    yi: 2**80,
+    :ki  => 2**10,
+    :mi  => 2**20,
+    :gi  => 2**30,
+    :ti  => 2**40,
+    :pi  => 2**50,
+    :ei  => 2**60,
+    :zi  => 2**70,
+    :yi  => 2**80,
 
-    kib: 2**10,
-    mib: 2**20,
-    gib: 2**30,
-    tib: 2**40,
-    pib: 2**50,
-    eib: 2**60,
-    zib: 2**70,
-    yib: 2**80
+    :kib => 2**10,
+    :mib => 2**20,
+    :gib => 2**30,
+    :tib => 2**40,
+    :pib => 2**50,
+    :eib => 2**60,
+    :zib => 2**70,
+    :yib => 2**80
   }.freeze
 
   #
@@ -105,7 +105,7 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
   # @return [Integer] The scale factor corresponding to that unit.
   #
   def self.scale_factor(suffix)
-    suffix = suffix.downcase.to_sym if suffix.is_a?(String)
+    suffix = suffix.downcase.to_sym if suffix.kind_of?(String)
     factor = SCALE_FACTORS[suffix]
     raise ArgumentErr, "The value '#{suffix}' isn't a valid unit suffix" unless factor
     factor

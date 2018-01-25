@@ -1,4 +1,4 @@
-$:.push File.expand_path("../lib", __FILE__)
+$:.push(File.expand_path("../lib", __FILE__))
 
 require "manageiq/providers/kubevirt/version"
 
@@ -13,9 +13,9 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,lib}/**/*"]
 
-  s.add_runtime_dependency "kubeclient", "~> 2.4.0"
-  s.add_runtime_dependency "manageiq-providers-kubernetes", "~> 0.1.0"
+  s.add_runtime_dependency("kubeclient", "~> 2.4.0")
+  s.add_runtime_dependency("manageiq-providers-kubernetes", "~> 0.1.0")
 
-  s.add_development_dependency "codeclimate-test-reporter", "~> 1.0.0"
-  s.add_development_dependency "simplecov"
+  s.add_development_dependency("codeclimate-test-reporter", "~> 1.0.0")
+  s.add_development_dependency("simplecov")
 end

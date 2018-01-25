@@ -29,18 +29,18 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # that starts automatically the virtual machines when the `running` attribute is changed to `true`. This should be
       # removed when that controller is added.
       live_vm = {
-        metadata: {
-          namespace: offline_vm.metadata.namespace,
-          name: name,
-          ownerReferences: [{
-            apiVersion: offline_vm.apiVersion,
-            kind: offline_vm.kind,
-            name: offline_vm.metadata.name,
-            uid: offline_vm.metadata.uid,
-            controller: 'true'
+        :metadata => {
+          :namespace       => offline_vm.metadata.namespace,
+          :name            => name,
+          :ownerReferences => [{
+            :apiVersion => offline_vm.apiVersion,
+            :kind       => offline_vm.kind,
+            :name       => offline_vm.metadata.name,
+            :uid        => offline_vm.metadata.uid,
+            :controller => 'true'
           }]
         },
-        spec: offline_vm.spec.template.spec.to_h
+        :spec     => offline_vm.spec.template.spec.to_h
       }
       connection.create_live_vm(live_vm)
     end
