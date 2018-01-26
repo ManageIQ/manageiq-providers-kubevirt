@@ -47,16 +47,15 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
     value * from_factor / to_factor
   end
 
-  private
-
   #
   # Regular expression used to match values and to separate them into the numeric value and the
   # optional unit suffix.
   #
   VALUE_RE = /^\s*(?<value>[[:digit:]]+)\s*(?<suffix>[[:alpha:]]+)?\s*$/i
+  private_constant :VALUE_RE
 
   #
-  # Scale factors associated to the diffeent unit suffixes.
+  # Scale factors associated to the different unit suffixes.
   #
   SCALE_FACTORS = {
     :b   => 1,
@@ -97,6 +96,7 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
     :zib => 2**70,
     :yib => 2**80
   }.freeze
+  private_constant :SCALE_FACTORS
 
   #
   # Finds the scale factor that matches the given unit suffix.
@@ -110,4 +110,5 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
     raise ArgumentErr, "The value '#{suffix}' isn't a valid unit suffix" unless factor
     factor
   end
+  private_class_method :scale_factor
 end
