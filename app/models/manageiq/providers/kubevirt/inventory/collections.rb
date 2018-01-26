@@ -36,9 +36,12 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
     def hardwares(extra_attributes = {})
       attributes = {
         :model_class                 => ::Hardware,
-        :inventory_object_attributes => [
-          :memory_mb,
-        ]
+        :inventory_object_attributes => %i(
+          cpu_cores_per_socket
+          cpu_total_cores
+          guest_os
+          memory_mb
+        )
       }
       super(attributes.merge!(extra_attributes))
     end

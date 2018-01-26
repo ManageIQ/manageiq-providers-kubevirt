@@ -41,6 +41,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   attr_reader :storage_collection
   attr_reader :template_collection
   attr_reader :vm_collection
+  attr_reader :vm_os_collection
+  attr_reader :disk_collection
 
   def add_builtin_clusters
     cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
@@ -195,9 +197,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_template(object)
     # Get the basic information:
-    uid = object.metadata.uid
-    name = object.metadata.name
-    domain = object.spec.template.spec.domain
+    metadata = object.metadata
+    uid = metadata.uid
+    name = metadata.name
 
     # Add the inventory object for the template:
     template_object = template_collection.find_or_build(uid)
@@ -212,8 +214,49 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
 
     # Add the inventory object for the hardware:
+    process_hardware(template_object, object.spec.template.spec.domain, metadata)
+
+    # Add the inventory object for the OperatingSystem
+    process_os(template_object, metadata)
+  end
+
+  def process_hardware(template_object, domain, metadata)
     hw_object = hw_collection.find_or_build(template_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.memory, 'Mi')
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.resources.requests.memory, 'Mi')
+    hw_object.cpu_cores_per_socket = domain.cpu.cores
+    hw_object.cpu_total_cores = domain.cpu.cores
+    hw_object.guest_os = metadata.labels.os
+
+    # Add the inventory objects for the disk:
+    process_disks(hw_object, domain)
+  end
+
+  def process_disks(hw_object, domain)
+    domain.devices.disks.each do |disk|
+      disk_object = disk_collection.find_or_build_by(
+        :hardware    => hw_object,
+        :device_name => disk.name
+      )
+      disk_object.device_name = disk.name
+      disk_object.location = disk.volumeName
+      disk_object.device_type = 'disk'
+      disk_object.present = true
+      disk_object.mode = 'persistent'
+      disk_object.controller_type = disk.disk.dev
+      # TODO: what do we need more? We are missing reference to PV or PVC
+    end
+  end
+
+  def process_os(template_object, metadata)
+    os_object = vm_os_collection.find_or_build(template_object)
+    os_object.product_name = metadata.labels.os
+    os_object.product_type = if metadata.annotations.tags.include?("linux")
+                               "linux"
+                             elsif metadata.annotations.tags.include?("windows")
+                               "windows"
+                             else
+                               "other"
+                             end
   end
 
   def find_owner(object, kind)

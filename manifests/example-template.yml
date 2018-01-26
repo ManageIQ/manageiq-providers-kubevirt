@@ -28,6 +28,8 @@ objects:
             disks:
               - name: disk0
                 volumeName: disk0-pvc
+                disk:
+                  dev: vda
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:

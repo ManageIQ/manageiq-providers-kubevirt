@@ -119,32 +119,32 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   #
-  # Returns an array containing the virtual machine templates available in the KubeVirt environment.
+  # Returns an array containing the templates available in the KubeVirt environment.
   #
   # @return [Array] The array of templates.
   #
   def templates
-    kubevirt_client.get_virtual_machine_templates(:namespace => @namespace)
+    kubevirt_client.get_templates(:namespace => @namespace)
   end
 
   #
-  # Retrieves the virtual machine template with the given name.
+  # Retrieves the template with the given name.
   #
   # @param name [String] The name of the template.
   # @return [Object] The template object.
   #
   def template(name)
-    kubevirt_client.get_virtual_machine_template(name, @namespace)
+    kubevirt_client.get_template(name, @namespace)
   end
 
   #
-  # Returns a watcher for virtual machine templates.
+  # Returns a watcher for templates.
   #
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_templates(opts = {})
-    kubevirt_client.watch_virtual_machine_templates(opts)
+    kubevirt_client.watch_templates(opts)
   end
 
   #
