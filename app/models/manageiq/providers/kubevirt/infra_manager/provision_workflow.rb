@@ -35,10 +35,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
     get_value(@values[:provision_type]).to_s == 'native_clone'
   end
 
-  def supports_linked_clone?
-    supports_native_clone? && get_value(@values[:linked_clone])
-  end
-
   def allowed_provision_types(_options = {})
     {
       "native_clone" => "Native Clone"
@@ -51,14 +47,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
 
   def update_field_visibility
     super(:force_platform => 'linux')
-  end
-
-  def update_field_visibility_linked_clone(_options = {}, f)
-    show_flag = supports_native_clone? ? :edit : :hide
-    f[show_flag] << :linked_clone
-
-    show_flag = supports_linked_clone? ? :hide : :edit
-    f[show_flag] << :disk_format
   end
 
   def allowed_datacenters(_options = {})
@@ -82,23 +70,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
   end
 
   def allowed_storages(options = {})
-    return [] if (src = resources_for_ui).blank?
+    return [] if resources_for_ui.blank?
     result = super
-
-    if supports_linked_clone?
-      s_id = load_ar_obj(src[:vm]).storage_id
-      result = result.select { |s| s.id == s_id }
-    end
-
     result.select { |s| s.storage_domain_type == "data" }
   end
 
   def source_ems
     src = get_source_and_targets
     load_ar_obj(src[:ems])
-  end
-
-  def filter_allowed_hosts(all_hosts)
-    all_hosts
   end
 end
