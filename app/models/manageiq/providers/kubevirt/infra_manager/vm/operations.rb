@@ -20,6 +20,23 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   include_concern 'Power'
 
   def raw_destroy
-    with_provider_object(&:destroy)
+    ext_management_system.with_provider_connection do |connection|
+      # Retrieve the details of the offline virtual machine:
+      begin
+        live_vm = connection.live_vm(name)
+      rescue KubeException
+        # the live virtual machine doesn't exist
+        live_vm = nil
+      end
+
+      # delete live vm
+      connection.delete_live_vm(name, live_vm.metadata.namespace) unless live_vm.nil?
+
+      # Retrieve the details of the offline virtual machine:
+      offline_vm = connection.offline_vm(name)
+
+      # delete offline vm
+      connection.delete_offline_vm(name, offline_vm.metadata.namespace)
+    end
   end
 end
