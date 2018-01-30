@@ -1,0 +1,26 @@
+:apiVersion: kubevirt.io/v1alpha1
+:kind: OfflineVirtualMachine
+:metadata:
+  :name: test
+  :namespace: default
+:spec:
+  :template:
+    :spec:
+      :domain:
+        :cpu:
+          :cores: 4
+        :resources:
+          :requests:
+            :memory: 4096Mi
+        :machine:
+          :type: q35
+        :devices:
+          :disks:
+            - :name: disk0
+              :volumeName: disk0-pvc
+              :disk:
+                :dev: vda
+      :volumes:
+        - :name: disk0-pvc
+          :persistentVolumeClaim:
+            :claimName: linux-vm-pvc-test

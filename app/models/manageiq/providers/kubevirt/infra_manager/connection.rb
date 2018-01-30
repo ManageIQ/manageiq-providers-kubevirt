@@ -253,6 +253,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   #
+  # Creates a new persistent volume claim,
+  #
+  # @param pvc [Hash] A hash containing the description of the persistent volume claim.
+  #
+  def create_pvc(pvc)
+    core_client.create_persistent_volume_claim(pvc)
+  end
+
+  #
   # Calculates the URL of the SPICE proxy server.
   #
   # @return [String] The URL of the spice proxy server.

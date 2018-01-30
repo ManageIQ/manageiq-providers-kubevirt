@@ -22,6 +22,6 @@ module FileHelpers
 
   def unprocessed_hash(file)
     data = file_fixture(file).read
-    YAML.load(data)
+    YAML.safe_load(data, [Symbol])
   end
 end
