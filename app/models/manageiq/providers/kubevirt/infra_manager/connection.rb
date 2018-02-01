@@ -186,6 +186,16 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   #
+  # Deletes an offline virtual machine.
+  #
+  # @param name [String] The name of the virtual machine to delete.
+  # @param namespace [String] The namespace where virtual machine is defined.
+  #
+  def delete_offline_vm(name, namespace = nil)
+    kubevirt_client.delete_offline_virtual_machine(name, namespace)
+  end
+
+  #
   # Updates an offline virtual machine.
   #
   # @param update [Object] The update to send.
