@@ -62,8 +62,8 @@ objects:
       requests:
         storage: 10Gi
 parameters:
-- description: Name for the new VM
-  name: NAME
+- name: NAME
+  description: Name for the new VM
 - name: MEMORY
   description: Amount of memory
   value: 4096Mi

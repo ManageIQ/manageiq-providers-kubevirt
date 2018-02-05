@@ -49,7 +49,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
 
     # Load example file due to current limitations of kubevirt
     # TODO: remove when kubevirt provides the implementation
-    example = example_template
+    example = example_template(template.metadata.name)
     params = values(example, options)
 
     # use persistent volume claims if any from a template and send
@@ -61,6 +61,14 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     # TODO: check if we need to roll back if one object creation fails
   end
 
+  #
+  # Creates an offline virtual machine within provided namespace.
+  #
+  # @param offline_vm [Hash] Offline virtual machine hash as defined in the template.
+  # @param params [Hash] Containing mapping of name and value.
+  # @param phase_context [Hash] Task context used to store offline_vm uid.
+  # @param namespace [String] Namespace used to store the object.
+  #
   def create_offline_vm(offline_vm, params, phase_context, namespace)
     offline_vm = param_substitution!(offline_vm, params)
 
@@ -80,6 +88,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     phase_context[:new_vm_ems_ref] = offline_vm.metadata.uid
   end
 
+  #
+  # Creates an persistent volume claims within provided namespace.
+  #
+  # @param pvcs Array[Hash] An array of pvc hashes as defined in the template.
+  # @param params [Hash] Containing mapping of name and value.
+  # @param namespace [String] Namespace used to store the object.
+  #
   def create_persistent_volume_claims(pvcs, params, namespace)
     pvcs.each do |pvc|
       pvc = param_substitution!(pvc, params)
@@ -99,6 +114,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
 
   private
 
+  #
+  # Returns object of `OfflineVirtualMachine` kind from provided objects.
+  #
+  # @param objects Array[Object] Objects defined in the template.
+  # @return [Hash] Offline virtual machine hash
+  #
   def offline_vm_from_objects(objects)
     vm = nil
     objects.each do |object|
@@ -111,6 +132,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     vm
   end
 
+  #
+  # Returns object of `PersistentVolumeClaim` kind from provided objects.
+  #
+  # @param objects Array[Object] Objects defined in the template.
+  # @return Array[Hash] An array of pvc hashes.
+  #
   def persistent_volume_claims_from_objects(objects)
     pvcs = []
     objects.each do |object|
@@ -121,6 +148,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     pvcs
   end
 
+  #
+  # Combines default values of the parameters defined in a template with values
+  # provided by the user on the UI.
+  #
+  # @param template [Object] Template object containing definition of parameters.
+  # @param options [Hash] Hash containing values defined by the user on the UI.
+  #
   def values(template, options)
     default_params = {}
     template.parameters.each do |param|
@@ -135,6 +169,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     default_params
   end
 
+  #
+  # Performs parameter substitution for specific object where we
+  # substitute ${params.key} with params[key].
+  #
+  # @param object [Hash | Array | String] Specific object where substitution takes place.
+  # @param params [Hash] Hash containing parameters to be substituted.
+  #
   def param_substitution!(object, params)
     result = object
     case result
@@ -145,12 +186,19 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     when Array
       result.map { |v| param_substitution!(v, params) }
     when String
-      result = substitute_param(params, object)
+      result = sub_specific_object(params, object)
     end
     result
   end
 
-  def substitute_param(params, object)
+  #
+  # Performs substitution on specific object.
+  #
+  # @params params [Hash] Containing parameter names and values used for substitution.
+  # @params object [String] Object on which substitution takes place.
+  # @returns [String] The outcome of substitution.
+  #
+  def sub_specific_object(params, object)
     result = object
     params.each_key do |name|
       token = "${#{name.upcase}}"
@@ -164,6 +212,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     result
   end
 
+  #
+  # Converts object from `OpenStruct` to a hash.
+  #
+  # @param object [Object] Object which will be converted to a hash.
+  # @return [Hash] Converted hash.
+  #
   def to_hash(object)
     result = object
     case result
@@ -179,10 +233,15 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   end
 
   # This method is a workaround for now till we have a way to get a template
-  def example_template
+  # Loads template from file based on the template name.
+  #
+  # @param name [String] Name of a template to be loaded.
+  # @return [Object] Loaded yml file as `OpenStruct`.
+  #
+  def example_template(name)
     filepath = __dir__
     top = filepath.split(File::SEPARATOR)[1..-8]
-    path = top.push('manifests').push('example-template.yml')
+    path = top.push('manifests').push("#{name}-template.yml")
     example = YAML.load_file(File::SEPARATOR + path.join(File::SEPARATOR))
     JSON.parse(example.to_json, :object_class => OpenStruct)
   end

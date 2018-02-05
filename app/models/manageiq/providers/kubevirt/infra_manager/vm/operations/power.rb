@@ -36,12 +36,23 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
             :apiVersion => offline_vm.apiVersion,
             :kind       => offline_vm.kind,
             :name       => offline_vm.metadata.name,
-            :uid        => offline_vm.metadata.uid,
-            :controller => 'true'
+            :uid        => offline_vm.metadata.uid
           }]
         },
         :spec     => offline_vm.spec.template.spec.to_h
       }
+
+      # make sure to copy vm presets
+      unless offline_vm.metadata.selector.nil?
+        live_vm.deep_merge!(
+          :metadata => {
+            :namespace => {
+              :selector => offline_vm.metadata.selector
+            }
+          }
+        )
+      end
+
       connection.create_live_vm(live_vm)
     end
   end

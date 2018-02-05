@@ -12,7 +12,7 @@
       "miq.github.io/kubevirt-is-vm-template": true,
       "miq.github.io/kubevirt-os": "rhel-7"
     },
-    "name": "example",
+    "name": "working",
     "namespace": "default",
     "resourceVersion": "262502",
     "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/templates/test",
@@ -25,31 +25,44 @@
           "cpu": {
             "cores": 4
           },
-          "devices": {
-            "disks": [
-              {
-                "disk": {
-                  "dev": "vda"
-                },
-                "name": "disk0",
-                "volumeName": "disk0-pvc"
-              }
-            ]
-          },
-          "machine": {
-            "type": "q35"
-          },
           "resources": {
             "requests": {
               "memory": "4096Mi"
             }
+          },
+          "machine": {
+            "type": "q35"
+          },
+          "devices": {
+            "disks": [
+              {
+                "name": "registrydisk",
+                "volumeName": "registryvolume",
+                "disk": {
+                  "dev": "vda"
+                }
+              },
+              {
+                "name": "cloudinitdisk",
+                "volumeName": "cloudinitvolume",
+                "disk": {
+                  "dev": "vdb"
+                }
+              }
+            ]
           }
         },
         "volumes": [
           {
-            "name": "disk0-pvc",
-            "persistentVolumeClaim": {
-              "claimName": "linux-vm-pvc-test"
+            "name": "registryvolume",
+            "registryDisk": {
+              "image": "kubevirt/fedora-cloud-registry-disk-demo:latest"
+            }
+          },
+          {
+            "name": "cloudinitvolume",
+            "cloudInitNoCloud": {
+              "userDataBase64": "I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogYXRvbWljCnNzaF9wd2F1dGg6IFRydWUKY2hwYXNzd2Q6IHsgZXhwaXJlOiBGYWxzZSB9Cg=="
             }
           }
         ]

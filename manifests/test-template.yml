@@ -1,13 +1,13 @@
 apiVersion: kubevirt.io/v1alpha1
 kind: Template
 metadata:
-  name: test
+  name: working
   annotations:
     description: "OCP kubevirt linux, template"
     tags: "kubevirt,ocp,template,linux"
   labels:
     miq.github.io/kubevirt-is-vm-template: true
-    os: rhel-7
+    miq.github.io/kubevirt-os: rhel-7
 spec:
   template:
     spec:
@@ -16,7 +16,7 @@ spec:
           cores: 4
         resources:
           requests:
-            memory: 4096Mi
+            memory: 512Mi
         machine:
           type: q35
         devices:

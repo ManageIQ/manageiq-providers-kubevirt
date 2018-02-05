@@ -1,0 +1,33 @@
+:apiVersion: kubevirt.io/v1alpha1
+:kind: OfflineVirtualMachine
+:metadata:
+  :name: test
+  :namespace: default
+:spec:
+  :template:
+    :spec:
+      :domain:
+        :cpu:
+          :cores: 4
+        :resources:
+          :requests:
+            :memory: 4096Mi
+        :machine:
+          :type: q35
+        :devices:
+          :disks:
+          - :name: registrydisk
+            :volumeName: registryvolume
+            :disk:
+              :dev: vda
+          - :name: cloudinitdisk
+            :volumeName: cloudinitvolume
+            :disk:
+              :dev: vdb
+      :volumes:
+        - :name: registryvolume
+          :registryDisk:
+            :image: kubevirt/fedora-cloud-registry-disk-demo:latest
+        - :name: cloudinitvolume
+          :cloudInitNoCloud:
+            :userDataBase64: I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogYXRvbWljCnNzaF9wd2F1dGg6IFRydWUKY2hwYXNzd2Q6IHsgZXhwaXJlOiBGYWxzZSB9Cg==

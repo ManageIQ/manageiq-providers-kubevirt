@@ -21,7 +21,7 @@ end
 
 describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
   context "Cloning" do
-    it "creates specific objects" do
+    it "creates specific objects with pvc" do
       source = FactoryGirl.create(:template_kubevirt)
       subject.source = source
       connection = double("connection")
@@ -42,5 +42,22 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
 
       subject.start_clone(:name => "test")
     end
+  end
+
+  it "creates object" do
+    source = FactoryGirl.create(:template_kubevirt)
+    subject.source = source
+    connection = double("connection")
+
+    allow(connection).to receive(:template).and_return(unprocessed_object("template_registry.json"))
+    allow(source).to receive(:with_provider_connection).and_yield(connection)
+    allow(source).to receive(:name).and_return("test")
+    expect(connection).to receive(:create_offline_vm) do |offline_vm|
+      expect(offline_vm).not_to be_nil
+      expect(offline_vm).to eq(unprocessed_hash("offline_vm_registry.yml"))
+      unprocessed_object("offlinevm_registry.json")
+    end
+
+    subject.start_clone(:name => "test", :memory => 4096)
   end
 end

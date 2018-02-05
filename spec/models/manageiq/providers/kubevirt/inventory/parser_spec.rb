@@ -48,7 +48,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.send(:process_template, unprocessed_object("template.json"))
 
       expect(temp).to have_attributes(
-        :name             => "test",
+        :name             => "example",
         :template         => true,
         :ems_ref          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
         :ems_ref_obj      => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
@@ -77,6 +77,51 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :device_type     => "disk",
         :present         => true,
         :controller_type => "vda",
+        :mode            => "persistent"
+      )
+    end
+
+    it "parses a template with registry disk" do
+      disk_collection = double("disk_collection")
+      disk1 = FactoryGirl.create(:disk)
+      disk2 = FactoryGirl.create(:disk)
+      allow(disk_collection).to receive(:find_or_build_by).and_return(disk1, disk2)
+
+      hw_collection = double("hw_collection")
+      hardware = FactoryGirl.create(:hardware)
+      allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk1, disk2])
+
+      os_collection = double("os_collection")
+      os = FactoryGirl.create(:operating_system)
+      allow(os_collection).to receive(:find_or_build).and_return(os)
+
+      template_collection = double("template_collection")
+      temp = FactoryGirl.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
+      allow(template_collection).to receive(:find_or_build).and_return(temp)
+
+      parser = described_class.new
+      parser.instance_variable_set(:@template_collection, template_collection)
+      parser.instance_variable_set(:@hw_collection, hw_collection)
+      parser.instance_variable_set(:@vm_os_collection, os_collection)
+      parser.instance_variable_set(:@disk_collection, disk_collection)
+
+      parser.send(:process_template, unprocessed_object("template_registry.json"))
+
+      expect(disk1).to have_attributes(
+        :device_name     => "registrydisk",
+        :location        => "registryvolume",
+        :device_type     => "disk",
+        :present         => true,
+        :controller_type => "vda",
+        :mode            => "persistent"
+      )
+
+      expect(disk2).to have_attributes(
+        :device_name     => "cloudinitdisk",
+        :location        => "cloudinitvolume",
+        :device_type     => "disk",
+        :present         => true,
+        :controller_type => "vdb",
         :mode            => "persistent"
       )
     end

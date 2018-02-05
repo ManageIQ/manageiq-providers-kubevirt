@@ -225,7 +225,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.resources.requests.memory, 'Mi')
     hw_object.cpu_cores_per_socket = domain.cpu.cores
     hw_object.cpu_total_cores = domain.cpu.cores
-    hw_object.guest_os = metadata.labels.os
+    hw_object.guest_os = metadata.labels.send("miq.github.io/kubevirt-os")
 
     # Add the inventory objects for the disk:
     process_disks(hw_object, domain)
@@ -249,7 +249,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_os(template_object, metadata)
     os_object = vm_os_collection.find_or_build(template_object)
-    os_object.product_name = metadata.labels.os
+    os_object.product_name = metadata.labels.send("miq.github.io/kubevirt-os")
     os_object.product_type = if metadata.annotations.tags.include?("linux")
                                "linux"
                              elsif metadata.annotations.tags.include?("windows")
