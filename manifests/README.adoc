@@ -18,4 +18,6 @@ offline virtual machines.
 `crd-virtual-machine-template.yml`:: Custom resource definition for
 templates.
 
-`example-template.yml`:: Example template.
+`example-template.yml`:: Example template for Linux VM.
+
+`example-template-windows.yml`:: Example template for Windows VM.
