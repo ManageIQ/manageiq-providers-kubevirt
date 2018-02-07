@@ -10,7 +10,7 @@ You can define new virtual machine templates to make it easy to recreate all rel
 
 [source,yaml]
 ----
-apiVersion: kubevirt.io/v1alpha1
+apiVersion: v1
 kind: Template
 metadata:
   name: RHEL-7 ❶
@@ -166,7 +166,7 @@ $ oc edit template <template>
 
 [source,yaml]
 ----
-apiVersion: kubevirt.io/v1alpha1
+apiVersion: v1
 kind: Template 
 metadata:
   name: RHEL-7 
