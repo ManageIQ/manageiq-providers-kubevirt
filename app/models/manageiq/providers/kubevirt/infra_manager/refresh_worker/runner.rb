@@ -114,20 +114,11 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # Performs a full refresh.
   #
   def full_refresh
-    # Create and populate the collector:
-    collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, manager)
-    manager.with_provider_connection do |connection|
-      collector.nodes = connection.nodes
-      collector.offline_vms = connection.offline_vms
-      collector.live_vms = connection.live_vms
-      collector.templates = connection.templates
-    end
-
-    # Create the parser and persister, wire them, and execute the persist:
+    # Create and populate the collector, persister and parser:
     persister = ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, manager)
-    parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh.new
-    parser.collector = collector
-    parser.persister = persister
+    parser, collector = ManageIQ::Providers::Kubevirt::Builder.build_full(manager, persister)
+
+    # execute parse and persist:
     parser.parse
     persister.persist!
 

@@ -22,13 +22,44 @@
 class ManageIQ::Providers::Kubevirt::Builder
   class << self
     def build_inventory(manager, target)
+      persister = ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, target)
+
       # Create the collector, parser and persister:
-      collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, target)
-      parser = ManageIQ::Providers::Kubevirt::Inventory::Parser.new
-      persister = ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, target, collector)
+      if target.kind_of?(ManageIQ::Providers::Kubevirt::InfraManager::Vm)
+        name = target.name
+        collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, target)
+        collector.nodes = {}
+        manager.with_provider_connection do |connection|
+          collector.offline_vms = connection.offline_vm(name)
+          collector.live_vms = connection.live_vm(name)
+          collector.templates = connection.template(name)
+        end
+
+        parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh.new
+        parser.collector = collector
+        parser.persister = persister
+      else
+        parser, collector = build_full(manager, persister)
+      end
 
       # Create and return the inventory:
       ManageIQ::Providers::Kubevirt::Inventory.new(persister, collector, [parser])
+    end
+
+    def build_full(manager, persister)
+      collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, manager)
+      manager.with_provider_connection do |connection|
+        collector.nodes = connection.nodes
+        collector.offline_vms = connection.offline_vms
+        collector.live_vms = connection.live_vms
+        collector.templates = connection.templates
+      end
+      parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh.new
+
+      parser.collector = collector
+      parser.persister = persister
+
+      [parser, collector]
     end
   end
 end
