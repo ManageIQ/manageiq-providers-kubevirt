@@ -6,7 +6,7 @@ metadata:
     description: "OCP kubevirt linux, template"
     tags: "kubevirt,ocp,template,linux"
   labels:
-    miq.github.io/kubvirt-os: rhel-7
+    miq.github.io/kubevirt-os: rhel-7
     miq.github.io/kubevirt-is-vm-template: true
 objects:
 - apiVersion: kubevirt.io/v1alpha1
