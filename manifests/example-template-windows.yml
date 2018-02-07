@@ -6,7 +6,7 @@ metadata:
     description: "OCP kubevirt windows VM template"
     tags: "kubevirt,ocp,template,windows"
   labels:
-    miq.github.io/kubvirt-os: windows-2016
+    miq.github.io/kubevirt-os: windows-2016
     miq.github.io/kubevirt-is-vm-template: true
 objects:
 - apiVersion: kubevirt.io/v1alpha1
