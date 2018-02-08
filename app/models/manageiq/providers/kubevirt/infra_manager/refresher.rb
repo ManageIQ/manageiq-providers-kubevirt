@@ -19,4 +19,28 @@
 #
 class ManageIQ::Providers::Kubevirt::InfraManager::Refresher < ManageIQ::Providers::BaseManager::Refresher
   include ::EmsRefresh::Refreshers::EmsRefresherMixin
+
+  def collect_inventory_for_targets(ems, targets)
+    targets_with_data = targets.collect do |target|
+      _log.info("Filtering inventory for #{target.class} [#{target.name}] id: [#{target.id}]...")
+
+      data = ManageIQ::Providers::Kubevirt::Builder.build_inventory(ems, target)
+
+      _log.info("Filtering inventory...Complete")
+      [target, data]
+    end
+
+    targets_with_data
+  end
+
+  def parse_targeted_inventory(ems, _target, inventory)
+    log_header = format_ems_for_logging(ems)
+    _log.debug("#{log_header} Parsing inventory...")
+    hashes, = Benchmark.realtime_block(:parse_inventory) do
+      inventory.inventory_collections
+    end
+    _log.debug("#{log_header} Parsing inventory...Complete")
+
+    hashes
+  end
 end
