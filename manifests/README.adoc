@@ -15,9 +15,12 @@ to work with _KubeVirt_ in _OpenShift_.
 `crd-offline-virtual-machine.yml`:: Custom resource definition for
 offline virtual machines.
 
-`crd-virtual-machine-template.yml`:: Custom resource definition for
-templates.
+`crd-template.yml`:: Custom resource definition for templates.
 
-`example-template.yml`:: Example template for Linux VM.
+`example-template.yml`:: Example template for Linux VM using pvcs and vm presets.
 
 `example-template-windows.yml`:: Example template for Windows VM.
+
+`test-template.yml` :: Example template as accepted by _Kubernetes_.
+
+`working-template.yml` :: Working template which uses _registryDisk_.

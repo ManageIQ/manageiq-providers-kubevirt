@@ -28,6 +28,8 @@ objects:
             disks:
               - name: disk0
                 volumeName: disk0-pvc
+                disk:
+                  dev: vda
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:
@@ -44,8 +46,8 @@ objects:
       requests:
         storage: 10Gi
 parameters:
-- description: Name for the new VM
-  name: NAME
+- name: NAME
+  description: Name for the new VM
 - name: MEMORY
   description: Amount of memory
   value: 4096Mi

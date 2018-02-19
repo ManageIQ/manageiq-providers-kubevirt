@@ -34,6 +34,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     @storage_collection = persister.storage_collection
     @template_collection = persister.template_collection
     @vm_collection = persister.vm_collection
+    @vm_os_collection = persister.vm_os_collection
+    @disk_collection = persister.disk_collection
 
     # Add the built-in objects:
     add_builtin_clusters

@@ -1,0 +1,31 @@
+apiVersion: kubevirt.io/v1alpha1
+kind: Template
+metadata:
+  name: working
+  annotations:
+    description: "OCP kubevirt linux, template"
+    tags: "kubevirt,ocp,template,linux"
+  labels:
+    miq.github.io/kubevirt-is-vm-template: true
+    miq.github.io/kubevirt-os: rhel-7
+spec:
+  template:
+    spec:
+      domain:
+        cpu:
+          cores: 4
+        resources:
+          requests:
+            memory: 512Mi
+        machine:
+          type: q35
+        devices:
+          disks:
+            - name: disk0
+              volumeName: disk0-pvc
+              disk:
+                dev: vda
+      volumes:
+        - name: disk0-pvc
+          persistentVolumeClaim:
+            claimName: linux-vm-pvc-test

@@ -86,4 +86,22 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManagerRefresh::Inve
     )
     add_inventory_collection(attributes)
   end
+
+  def vm_os_collection(targeted: false, ids: [])
+    attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.operating_systems(
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
+    )
+    add_inventory_collection(attributes)
+  end
+
+  def disk_collection(targeted: false, ids: [])
+    attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.disks(
+      :targeted      => targeted,
+      :manager_uuids => ids,
+      :strategy      => :local_db_find_missing_references
+    )
+    add_inventory_collection(attributes)
+  end
 end
