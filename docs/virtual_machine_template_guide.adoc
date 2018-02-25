@@ -16,7 +16,7 @@ metadata:
   name: RHEL-7 ❶
   annotations:
   labels:
-    miq.github.io/kubevirt-os: rhel-7 ❷
+    kubevirt.io/os: rhel7.4 ❷
     miq.github.io/kubevirt-is-vm-template: True ❸
 objects:
 - apiVersion: kubevirt.io/v1alpha1
@@ -90,7 +90,8 @@ parameters: ...
 === Labels
 
 Labels will be presented on every OCP virtual machine template in order for ManageIQ to recognize the KubeVirt template characteristics. + 
-The label "miq.github.io/kubevirt-os" is type of OS the template refers to. +
+The label "kubevirt.io/os" is type of OS the template refers to. +
+Full list of supported OS labels can be found under link:https://kubevirt.gitbooks.io/user-guide/guest-os-info.html[Guest Operating System Information]
 The label "miq.github.io/kubevirt-is-vm-template" will indicate with a boolean value if it is a virtual machine template.
 
 [source,yaml]
@@ -99,7 +100,7 @@ kind: Template
 metadata:
   name: RHEL-7
   labels:
-    miq.github.io/kubevirt-os: rhel-7 
+    kubevirt.io/os: rhel7.4 
     miq.github.io/kubevirt-is-vm-template: true
 ----
 
@@ -172,7 +173,7 @@ metadata:
   name: RHEL-7 
   # name: Microsoft-Windows-2012r1
   labels:
-    miq.github.io/kubevirt-os: rhel-7
+    kubevirt.io/os: rhel7.4
     miq.github.io/kubevirt-is-vm-template: true  
 objects:
 - apiVersion: kubevirt.io/v1alpha1
