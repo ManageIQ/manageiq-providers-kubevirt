@@ -90,6 +90,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
     # credentials are wrong.
   end
 
+  def virt_supported?
+    api_versions = kubevirt_client.api["versions"]
+    virt_enabled = api_versions.each do |ver|
+      break true if ver["groupVersion"].start_with?(KUBEVIRT_GROUP)
+    end
+
+    virt_enabled
+  end
+
   #
   # Checks if the connection is valid.
   #
