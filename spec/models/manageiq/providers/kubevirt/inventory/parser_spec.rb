@@ -76,7 +76,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :location        => "disk0-pvc",
         :device_type     => "disk",
         :present         => true,
-        :controller_type => "vda",
         :mode            => "persistent"
       )
     end
@@ -112,7 +111,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :location        => "registryvolume",
         :device_type     => "disk",
         :present         => true,
-        :controller_type => "vda",
         :mode            => "persistent"
       )
 
@@ -121,7 +119,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :location        => "cloudinitvolume",
         :device_type     => "disk",
         :present         => true,
-        :controller_type => "vdb",
         :mode            => "persistent"
       )
     end

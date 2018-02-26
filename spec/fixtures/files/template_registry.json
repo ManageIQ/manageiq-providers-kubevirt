@@ -18,55 +18,80 @@
     "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/templates/test",
     "uid": "7e6fb1ac-00ef-11e8-8840-525400b2cba8"
   },
-  "spec": {
-    "template": {
+  "objects": [
+    {
+      "apiVersion": "kubevirt.io/v1alpha1",
+      "kind": "OfflineVirtualMachine",
+      "metadata": {
+        "name": "${NAME}",
+      },
       "spec": {
-        "domain": {
-          "cpu": {
-            "cores": "4"
-          },
-          "resources": {
-            "requests": {
-              "memory": "4096Mi"
-            }
-          },
-          "machine": {
-            "type": "q35"
-          },
-          "devices": {
-            "disks": [
+        "template": {
+          "spec": {
+            "domain": {
+              "cpu": {
+                "cores": "4"
+              },
+              "resources": {
+                "requests": {
+                  "memory": "4096Mi"
+                }
+              },
+              "machine": {
+                "type": "q35"
+              },
+              "devices": {
+                "disks": [
+                  {
+                    "name": "registrydisk",
+                    "volumeName": "registryvolume",
+                    "disk": {
+                      "dev": "vda"
+                    }
+                  },
+                  {
+                    "name": "cloudinitdisk",
+                    "volumeName": "cloudinitvolume",
+                    "disk": {
+                      "dev": "vdb"
+                    }
+                  }
+                ]
+              }
+            },
+            "volumes": [
               {
-                "name": "registrydisk",
-                "volumeName": "registryvolume",
-                "disk": {
-                  "dev": "vda"
+                "name": "registryvolume",
+                "registryDisk": {
+                  "image": "kubevirt/fedora-cloud-registry-disk-demo:latest"
                 }
               },
               {
-                "name": "cloudinitdisk",
-                "volumeName": "cloudinitvolume",
-                "disk": {
-                  "dev": "vdb"
+                "name": "cloudinitvolume",
+                "cloudInitNoCloud": {
+                  "userDataBase64": "I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogYXRvbWljCnNzaF9wd2F1dGg6IFRydWUKY2hwYXNzd2Q6IHsgZXhwaXJlOiBGYWxzZSB9Cg=="
                 }
               }
             ]
           }
-        },
-        "volumes": [
-          {
-            "name": "registryvolume",
-            "registryDisk": {
-              "image": "kubevirt/fedora-cloud-registry-disk-demo:latest"
-            }
-          },
-          {
-            "name": "cloudinitvolume",
-            "cloudInitNoCloud": {
-              "userDataBase64": "I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogYXRvbWljCnNzaF9wd2F1dGg6IFRydWUKY2hwYXNzd2Q6IHsgZXhwaXJlOiBGYWxzZSB9Cg=="
-            }
-          }
-        ]
+        }
       }
     }
-  }
+  ],
+  "parameters": [
+    {
+      "name": "NAME",
+      "description": "Name for the new VM",
+    },
+    {
+      "name": "MEMORY",
+      "description": "Amount of memory in MB",
+      "value": "4096Mi"
+    },
+    {
+      "name": "CPU_CORES",
+      "description": "Amount of cores",
+      "value": "4"
+    }
+  ]
 }

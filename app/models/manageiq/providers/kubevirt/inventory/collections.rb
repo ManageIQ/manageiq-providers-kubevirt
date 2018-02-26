@@ -72,8 +72,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
 
     def host_operating_systems(extra_attributes = {})
       attributes = {
-        :model_class                 => ::OperatingSystem,
-        :inventory_object_attributes => %i(
+        :model_class                  => ::OperatingSystem,
+        :parent_inventory_collections => [:hosts],
+        :inventory_object_attributes  => %i(
           name
           product_name
           product_type
