@@ -148,16 +148,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Get the identifier of the offline virtual machine from the owner reference:
     owner = find_owner(object, 'OfflineVirtualMachine')
-    unless owner
-      _log.info(
-        "Live virtual machine with name '#{name}' and identifier '#{uid}' isn't owned by an offline virtual " \
-        "machine; it will be ignored"
-      )
-      return
+    unless owner.nil?
+      # seems like valid use case for now
+      uid = owner.uid
+      name = owner.name
     end
 
     # Process the domain:
-    vm_object = process_domain(domain, owner.uid, owner.name)
+    vm_object = process_domain(domain, uid, name)
 
     # If the live virtual machine exists, then the it is powered on, regardless of the value of the `running` field of
     # the status:

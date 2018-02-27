@@ -1,0 +1,64 @@
+{
+    "apiVersion": "kubevirt.io/v1alpha1",
+    "kind": "VirtualMachine",
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"kubevirt.io/v1alpha1\",\"kind\":\"VirtualMachine\",\"metadata\":{\"annotations\":{},\"name\":\"demo-vm\",\"namespace\":\"default\"},\"spec\":{\"domain\":{\"devices\":{\"disks\":[{\"disk\":{\"dev\":\"vda\"},\"name\":\"mydisk\",\"volumeName\":\"pvcvolume\"}]},\"resources\":{\"requests\":{\"memory\":\"64M\"}}},\"terminationGracePeriodSeconds\":0,\"volumes\":[{\"name\":\"pvcvolume\",\"persistentVolumeClaim\":{\"claimName\":\"demo-vm-tinycore\"}}]}}\n"
+        },
+        "clusterName": "",
+        "creationTimestamp": "2018-02-27T14:15:11Z",
+        "generation": 0,
+        "labels": {
+            "kubevirt.io/nodeName": "vm-17-235.eng.lab.tlv.redhat.com"
+        },
+        "name": "demo-vm",
+        "namespace": "default",
+        "resourceVersion": "918478",
+        "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/virtualmachines/demo-vm",
+        "uid": "9f3a8f56-1bc8-11e8-a746-001a4a23138b"
+    },
+    "spec": {
+        "domain": {
+            "devices": {
+                "disks": [
+                    {
+                        "disk": {
+                            "bus": "sata"
+                        },
+                        "name": "mydisk",
+                        "volumeName": "pvcvolume"
+                    }
+                ]
+            },
+            "features": {
+                "acpi": {
+                    "enabled": true
+                }
+            },
+            "firmware": {
+                "uuid": "7ea133d0-ee05-4945-a2ed-16721ce0e428"
+            },
+            "machine": {
+                "type": "q35"
+            },
+            "resources": {
+                "requests": {
+                    "memory": "64M"
+                }
+            }
+        },
+        "terminationGracePeriodSeconds": 0,
+        "volumes": [
+            {
+                "name": "pvcvolume",
+                "persistentVolumeClaim": {
+                    "claimName": "demo-vm-tinycore"
+                }
+            }
+        ]
+    },
+    "status": {
+        "nodeName": "vm-17-235.eng.lab.tlv.redhat.com",
+        "phase": "Running"
+    }
+}
