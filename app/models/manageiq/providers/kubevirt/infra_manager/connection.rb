@@ -133,7 +133,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of templates.
   #
   def templates
-    kubevirt_client.get_templates(:namespace => @namespace)
+    openshift_client.get_templates(:namespace => @namespace)
   end
 
   #
@@ -143,7 +143,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Object] The template object.
   #
   def template(name)
-    kubevirt_client.get_template(name, @namespace)
+    openshift_client.get_template(name, @namespace)
   end
 
   #
@@ -153,7 +153,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_templates(opts = {})
-    kubevirt_client.watch_templates(opts)
+    openshift_client.watch_templates(opts)
   end
 
   #
@@ -290,24 +290,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   private
 
   #
-  # Lazily creates the a client for the given Kubernetes API group and version.
+  # Lazily creates the a client for the given Kubernetes API path and version.
   #
-  # @param group [String] The Kubernetes API group.
+  # @param path [String] The Kubernetes API path.
   # @param version [String] The Kubernetes API version.
-  # @return [Kubeclient::Client] The client for the given group and version.
+  # @return [Kubeclient::Client] The client for the given path and version.
   #
-  def client(group, version)
+  def client(path, version)
     # Return the client immediately if it has been created before:
-    key = group + '/' + version
+    key = path + '/' + version
     client = @clients[key]
     return client if client
-
-    # Determine the API path:
-    path = if group == CORE_GROUP
-             '/api'
-           else
-             '/apis/' + group
-           end
 
     # Create the client and save it:
     url = URI::Generic.build(
@@ -328,10 +321,14 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   def core_client
-    client(CORE_GROUP, CORE_VERSION)
+    client('/api', CORE_VERSION)
   end
 
   def kubevirt_client
-    client(KUBEVIRT_GROUP, KUBEVIRT_VERSION)
+    client('/apis/' + KUBEVIRT_GROUP, KUBEVIRT_VERSION)
+  end
+
+  def openshift_client
+    client('/oapi', CORE_VERSION)
   end
 end

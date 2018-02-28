@@ -47,16 +47,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       template = connection.template(source.name)
     end
 
-    # Load example file due to current limitations of kubevirt
-    # TODO: remove when kubevirt provides the implementation
-    example = example_template(template.metadata.name)
-    params = values(example, options)
+    params = values(template, options)
 
     # use persistent volume claims if any from a template and send
-    create_persistent_volume_claims(persistent_volume_claims_from_objects(example.objects), params, template.metadata.namespace)
+    create_persistent_volume_claims(persistent_volume_claims_from_objects(template.objects), params, template.metadata.namespace)
 
     # use offline vm definition from a template and send
-    create_offline_vm(offline_vm_from_objects(example.objects), params, phase_context, template.metadata.namespace)
+    create_offline_vm(offline_vm_from_objects(template.objects), params, phase_context, template.metadata.namespace)
 
     # TODO: check if we need to roll back if one object creation fails
   end
@@ -230,19 +227,5 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       result = result.map { |v| to_hash(v) }
     end
     result
-  end
-
-  # This method is a workaround for now till we have a way to get a template
-  # Loads template from file based on the template name.
-  #
-  # @param name [String] Name of a template to be loaded.
-  # @return [Object] Loaded yml file as `OpenStruct`.
-  #
-  def example_template(name)
-    filepath = __dir__
-    top = filepath.split(File::SEPARATOR)[1..-8]
-    path = top.push('manifests').push("#{name}-template.yml")
-    example = YAML.load_file(File::SEPARATOR + path.join(File::SEPARATOR))
-    JSON.parse(example.to_json, :object_class => OpenStruct)
   end
 end

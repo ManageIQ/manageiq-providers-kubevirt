@@ -1,5 +1,5 @@
 {
-  "apiVersion": "kubevirt.io/v1alpha1",
+  "apiVersion": "v1",
   "kind": "Template",
   "metadata": {
     "annotations": {
@@ -18,42 +18,84 @@
     "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/templates/test",
     "uid": "7e6fb1ac-00ef-11e8-8840-525400b2cba8"
   },
-  "spec": {
-    "template": {
+  "objects": [
+    {
+      "apiVersion": "kubevirt.io/v1alpha1",
+      "kind": "OfflineVirtualMachine",
+      "metadata": {
+        "name": "${NAME}",
+      },
       "spec": {
-        "domain": {
-          "cpu": {
-            "cores": "4"
-          },
-          "devices": {
-            "disks": [
+        "template": {
+          "spec": {
+            "domain": {
+              "cpu": {
+                "cores": "4"
+              },
+              "devices": {
+                "disks": [
+                  {
+                    "disk": {
+                      "dev": "vda"
+                    },
+                    "name": "disk0",
+                    "volumeName": "disk0-pvc"
+                  }
+                ]
+              },
+              "machine": {
+                "type": "q35"
+              },
+              "resources": {
+                "requests": {
+                  "memory": "4096Mi"
+                }
+              }
+            },
+            "volumes": [
               {
-                "disk": {
-                  "dev": "vda"
-                },
-                "name": "disk0",
-                "volumeName": "disk0-pvc"
+                "name": "disk0-pvc",
+                "persistentVolumeClaim": {
+                  "claimName": "linux-vm-pvc-test"
+                }
               }
             ]
-          },
-          "machine": {
-            "type": "q35"
-          },
-          "resources": {
-            "requests": {
-              "memory": "4096Mi"
-            }
           }
-        },
-        "volumes": [
-          {
-            "name": "disk0-pvc",
-            "persistentVolumeClaim": {
-              "claimName": "linux-vm-pvc-test"
-            }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "linux-vm-pvc-${NAME}",
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "10Gi",
           }
-        ]
+        }
       }
     }
-  }
+  ],
+  "parameters": [
+    {
+      "name": "NAME",
+      "description": "Name for the new VM",
+    },
+    {
+      "name": "MEMORY",
+      "description": "Amount of memory in MB",
+      "value": "4096Mi"
+    },
+    {
+      "name": "CPU_CORES",
+      "description": "Amount of cores",
+      "value": "4"
+    }
+  ]
 }

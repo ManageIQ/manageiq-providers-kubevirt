@@ -211,22 +211,45 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     template_object.uid_ems = uid
     template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
 
+    offlinevm = offline_vm_from_objects(object.objects)
+
     # Add the inventory object for the hardware:
-    process_hardware(template_object, object.spec.template.spec.domain, metadata)
+    process_hardware(template_object, object.parameters, metadata, offlinevm.spec.template.spec.domain)
 
     # Add the inventory object for the OperatingSystem
     process_os(template_object, metadata)
   end
 
-  def process_hardware(template_object, domain, metadata)
+  def offline_vm_from_objects(objects)
+    vm = nil
+    objects.each do |object|
+      if object.kind == "OfflineVirtualMachine"
+        vm = object
+      end
+    end
+    vm
+  end
+
+  def process_hardware(template_object, params, metadata, domain)
     hw_object = hw_collection.find_or_build(template_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.resources.requests.memory, 'Mi')
-    hw_object.cpu_cores_per_socket = domain.cpu.cores
-    hw_object.cpu_total_cores = domain.cpu.cores
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(default_value(params, 'MEMORY'), 'Mi')
+    cpu = default_value(params, 'CPU_CORES')
+    hw_object.cpu_cores_per_socket = cpu
+    hw_object.cpu_total_cores = cpu
     hw_object.guest_os = metadata.labels.send("miq.github.io/kubevirt-os")
 
     # Add the inventory objects for the disk:
     process_disks(hw_object, domain)
+  end
+
+  def default_value(params, name)
+    value = nil
+    params.each do |param|
+      if param.name == name
+        value = param.value
+      end
+    end
+    value
   end
 
   def process_disks(hw_object, domain)
@@ -240,7 +263,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
       disk_object.device_type = 'disk'
       disk_object.present = true
       disk_object.mode = 'persistent'
-      disk_object.controller_type = disk.disk.dev
       # TODO: what do we need more? We are missing reference to PV or PVC
     end
   end
