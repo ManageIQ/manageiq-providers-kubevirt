@@ -167,5 +167,23 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
       }
       super(attributes.merge!(extra_attributes))
     end
+
+    def operating_systems(extra_attributes = {})
+      attributes = {
+        :model_class                  => ::OperatingSystem,
+        :manager_ref                  => [:vm_or_template],
+        :parent_inventory_collections => [:vms],
+        :association                  => :operating_systems,
+        :inventory_object_attributes  => %i(
+          name
+          product_name
+          product_type
+          system_type
+          version
+        )
+      }
+
+      attributes.merge!(extra_attributes)
+    end
   end
 end
