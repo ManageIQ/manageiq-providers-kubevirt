@@ -3,10 +3,10 @@ kind: Template
 metadata:
   name: windows-vm-template
   annotations:
-    description: "OCP kubevirt windows VM template"
+    description: "OCP KubeVirt Microsoft Windows Server 2016 VM template"
     tags: "kubevirt,ocp,template,windows"
   labels:
-    miq.github.io/kubevirt-os: windows-2016
+    kubevirt.io/os: win2k16
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
 - apiVersion: kubevirt.io/v1alpha1

@@ -3,10 +3,10 @@ kind: Template
 metadata:
   name: linux-vm-template
   annotations:
-    description: "OCP kubevirt linux, template"
+    description: "OCP KubeVirt Red Hat Enterprise Linux 7.4 VM template"
     tags: "kubevirt,ocp,template,linux"
   labels:
-    miq.github.io/kubevirt-os: rhel-7
+    kubevirt.io/os: rhel7.4
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
 - apiVersion: kubevirt.io/v1alpha1
