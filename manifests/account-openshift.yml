@@ -17,16 +17,3 @@ subjects:
   name: my-account
   namespace: default
 ---
-apiVersion: authorization.openshift.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: my-kubevirt-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: kubevirt-infra
-subjects:
-- kind: ServiceAccount
-  name: my-account
-  namespace: default
----
