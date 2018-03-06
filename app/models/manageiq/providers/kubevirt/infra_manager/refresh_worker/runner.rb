@@ -18,14 +18,11 @@ require 'concurrent/atomic/atomic_boolean'
 require 'kubeclient'
 class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < ManageIQ::Providers::BaseManager::RefreshWorker::Runner
   def do_before_work_loop
-    # If it is empty then we need to perform a full refresh:
-    full_refresh if memory.empty?
+    # Always run full_refresh when worker is starting to make sure we use the latest versions
+    full_refresh
 
     # We will put in this queue the notices received from the watchers:
     @queue = Queue.new
-
-    # This flag will be used to tell the threads to get out of their loops:
-    @finish = Concurrent::AtomicBoolean.new(false)
 
     # Create the thread that processes the notices from the queue and persists the results. It will
     # exit when it detects a `nil` in the queue.
@@ -56,33 +53,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
       end
     end
 
-    # Create the watches:
-    @watches = []
-    manager.with_provider_connection do |connection|
-      @watches << connection.watch_nodes(:resource_version => memory.get_list_version(:nodes))
-      @watches << connection.watch_offline_vms(:resource_version => memory.get_list_version(:offline_vms))
-      @watches << connection.watch_live_vms(:resource_version => memory.get_list_version(:live_vms))
-      @watches << connection.watch_templates(:resource_version => memory.get_list_version(:templates))
-    end
-
-    # Create the threads that run the watches and put the notices in the queue:
-    @watchers = []
-    @watches.each do |watch|
-      thread = Thread.new do
-        until @finish.value
-          watch.each do |notice|
-            @queue.push(notice)
-          end
-        end
-      end
-      @watchers << thread
-    end
+    # start watches
+    start_watches
   end
 
   def before_exit(_message, _exit_code)
     # Ask the watch threads to finish, and wait for them:
-    @finish.value = true
-    @watches.each(&:finish)
+    stop_watches
     @watchers.each(&:join)
 
     # Ask the processor thread to finish, and wait for it:
@@ -138,6 +115,23 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @param notices [Array] The set of notices to process.
   #
   def partial_refresh(notices)
+    # check whether we get error about stale resource version
+    if notices.any? { |notice| notice.object.kind == "Status" && notice.object.code == 410 }
+      # base on the structure we do not know which watch uses stale version so we stop all
+      # we can't join with all the threads since we are in one
+      stop_watches
+
+      # clear queue
+      @queue.clear
+
+      # get the latest state and resource versions
+      full_refresh
+
+      # restart watches
+      start_watches
+      return
+    end
+
     # Filter out the notices that have already been processed:
     notices.reject! do |notice|
       object = notice.object
@@ -209,5 +203,43 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   #
   def notices_of_kind(notices, kind)
     notices.select { |notice| notice.object.kind == kind }
+  end
+
+  #
+  # Start watches
+  #
+  def start_watches
+    # This flag will be used to tell the threads to get out of their loops:
+    @finish = Concurrent::AtomicBoolean.new(false)
+
+    # Create the watches:
+    @watches = []
+    manager.with_provider_connection do |connection|
+      @watches << connection.watch_nodes(:resource_version => memory.get_list_version(:nodes))
+      @watches << connection.watch_offline_vms(:resource_version => memory.get_list_version(:offline_vms))
+      @watches << connection.watch_live_vms(:resource_version => memory.get_list_version(:live_vms))
+      @watches << connection.watch_templates(:resource_version => memory.get_list_version(:templates))
+    end
+
+    # Create the threads that run the watches and put the notices in the queue:
+    @watchers = []
+    @watches.each do |watch|
+      thread = Thread.new do
+        until @finish.value
+          watch.each do |notice|
+            @queue.push(notice)
+          end
+        end
+      end
+      @watchers << thread
+    end
+  end
+
+  #
+  # Stop all the watches
+  #
+  def stop_watches
+    @finish.value = true
+    @watches.each(&:finish)
   end
 end
