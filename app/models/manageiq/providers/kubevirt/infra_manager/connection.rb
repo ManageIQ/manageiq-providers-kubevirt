@@ -91,9 +91,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   def virt_supported?
-    api_versions = kubevirt_client.api["versions"]
-    virt_enabled = api_versions.each do |ver|
-      break true if ver["groupVersion"].start_with?(KUBEVIRT_GROUP)
+    virt_enabled = false
+    begin
+      api_versions = kubevirt_client.api["versions"]
+      api_versions.each do |ver|
+        if ver["groupVersion"]&.start_with?(KUBEVIRT_GROUP)
+          virt_enabled = true
+        end
+      end
+    rescue => err
+      # we failed to communicate or to evaluate the version format
+      $log.warn("Failed to detect kubevirt on provider with error: #{err.message}")
     end
 
     virt_enabled
