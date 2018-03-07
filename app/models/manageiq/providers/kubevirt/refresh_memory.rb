@@ -21,20 +21,14 @@ require 'set'
 # This class remembers the pieces of that that need to be remembered in order to avoid processing
 # twice notices received from Kubernetes watches.
 #
-# Note that the implementation currently stores the data in a local JSON file. That isn't correct
-# for a real production environment. This should be changed to write to the database, or to some
-# other kind of persistent storage that can be accessed concurrently by multiple workers.
+# Current implementation stores the data in memory and there is no need to make it presistent
+# since we run full refresh every time we start the worker and when watches expire.
 #
 class ManageIQ::Providers::Kubevirt::RefreshMemory
   #
   # Creates a new object to hold the refresh data for the manager with the given identifier.
   #
-  # @param id [String] The unique identifier of the manager.
-  #
-  def initialize(id)
-    # Save the identifier of the manager:
-    @id = id
-
+  def initialize
     # Initialize the hash that contains the last resource version for each kind of list. The keys of
     # this hash will be strings identifying the kind of object, for example `live_vms`. The values will
     # be the last `resourceVersion` that was obtained when listing that kind of object.
@@ -42,9 +36,6 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
 
     # Initialize the set that contains the keys of the notices that have already been processed.
     @notices = Set.new
-
-    # Load the JSON file:
-    load
   end
 
   #
@@ -65,7 +56,6 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   def add_list_version(kind, version)
     kind = kind.to_s
     @lists[kind] = version
-    save
   end
 
   #
@@ -88,7 +78,6 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
     key = notice_key(notice)
     unless @notices.include?(key)
       @notices.add(key)
-      save
     end
   end
 
@@ -118,44 +107,5 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
     object = notice.object
     metadata = object.metadata
     "#{object.kind}:#{metadata.uid}:#{notice.type}:#{metadata.resourceVersion}"
-  end
-
-  #
-  # Loads this data from persistent storage.
-  #
-  def load
-    # Load the JSON document:
-    return unless File.exist?(file)
-    text = File.read(file)
-    json = JSON.parse(text)
-
-    # Copy the relevant JSON data to the instance variables:
-    @lists = json[LISTS]
-    @notices.clear
-    @notices.merge(json[NOTICES])
-  end
-
-  #
-  # Saves this data to persistent storage.
-  #
-  def save
-    # Populate the JSON object from the instance variables:
-    json = {
-      LISTS   => @lists,
-      NOTICES => @notices.to_a.sort!
-    }
-
-    # Convert the JSON object to text and save it to the file:
-    text = JSON.pretty_generate(json)
-    File.write(file, text)
-  end
-
-  #
-  # Calculates the name of the file where the data is saved.
-  #
-  # @return [String] The name of the file.
-  #
-  def file
-    @file ||= "#{@id}-refresh-memory.json"
   end
 end
