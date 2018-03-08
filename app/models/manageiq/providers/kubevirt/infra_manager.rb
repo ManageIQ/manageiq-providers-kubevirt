@@ -104,7 +104,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # on top of the kubernetes cluster
   #
   def verify_virt_supported
-    with_provider_connection(&:virt_supported?)
+    virt_supported = with_provider_connection(&:virt_supported?)
+    raise "Kubevirt deployment was not found on provider" unless virt_supported
+    virt_supported
   end
 
   #
