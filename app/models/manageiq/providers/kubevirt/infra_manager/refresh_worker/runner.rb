@@ -84,7 +84,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @return [ManageIQ::Providers::Kubevirt::RefreshMemory] The refresh memory.
   #
   def memory
-    @memory ||= ManageIQ::Providers::Kubevirt::RefreshMemory.new(manager.id)
+    @memory ||= ManageIQ::Providers::Kubevirt::RefreshMemory.new
   end
 
   #
