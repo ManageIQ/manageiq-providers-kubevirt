@@ -10,7 +10,7 @@
     "creationTimestamp": "2018-01-24T10:15:25Z",
     "labels": {
       "miq.github.io/kubevirt-is-vm-template": "true",
-      "miq.github.io/kubevirt-os": "rhel-7"
+      "kubevirt.io/os": "rhel-7"
     },
     "name": "example",
     "namespace": "default",

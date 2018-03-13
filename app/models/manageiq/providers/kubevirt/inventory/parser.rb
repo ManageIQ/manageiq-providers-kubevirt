@@ -33,6 +33,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   #
   STORAGE_ID = '0'.freeze
 
+  #
+  # Label name which identifies operation system information
+  #
+  OS_LABEL = 'kubevirt.io/os'.freeze
+
   attr_reader :cluster_collection
   attr_reader :host_collection
   attr_reader :host_storage_collection
@@ -236,7 +241,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     cpu = default_value(params, 'CPU_CORES')
     hw_object.cpu_cores_per_socket = cpu
     hw_object.cpu_total_cores = cpu
-    hw_object.guest_os = metadata.labels.send("miq.github.io/kubevirt-os")
+    hw_object.guest_os = metadata.labels.send(OS_LABEL)
 
     # Add the inventory objects for the disk:
     process_disks(hw_object, domain)
@@ -269,7 +274,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_os(template_object, metadata)
     os_object = vm_os_collection.find_or_build(template_object)
-    os_object.product_name = metadata.labels.send("miq.github.io/kubevirt-os")
+    os_object.product_name = metadata.labels.send(OS_LABEL)
     os_object.product_type = if metadata.annotations.tags.include?("linux")
                                "linux"
                              elsif metadata.annotations.tags.include?("windows")
