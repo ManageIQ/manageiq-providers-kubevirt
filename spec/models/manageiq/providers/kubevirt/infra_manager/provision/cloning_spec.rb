@@ -52,12 +52,15 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
     allow(connection).to receive(:template).and_return(unprocessed_object("template_registry.json"))
     allow(source).to receive(:with_provider_connection).and_yield(connection)
     allow(source).to receive(:name).and_return("test")
+    allow(subject).to receive(:get_option).with(:vm_memory).and_return("4096")
+    allow(subject).to receive(:get_option).with(:cores_per_socket).and_return("4")
+
     expect(connection).to receive(:create_offline_vm) do |offline_vm|
       expect(offline_vm).not_to be_nil
       expect(offline_vm).to eq(unprocessed_hash("offline_vm_registry.yml"))
       unprocessed_object("offlinevm_registry.json")
     end
 
-    subject.start_clone(:name => "test", :memory => 4096)
+    subject.start_clone(:name => "test")
   end
 end
