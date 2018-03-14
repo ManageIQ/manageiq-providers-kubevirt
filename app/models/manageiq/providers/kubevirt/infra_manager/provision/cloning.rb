@@ -47,7 +47,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       template = connection.template(source.name)
     end
 
-    params = values(template, options)
+    params = values(template, user_options(options))
 
     # use persistent volume claims if any from a template and send
     create_persistent_volume_claims(persistent_volume_claims_from_objects(template.objects), params, template.metadata.namespace)
@@ -227,5 +227,19 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       result = result.map { |v| to_hash(v) }
     end
     result
+  end
+
+  #
+  # Merges user given options with user options that are specified on the request.
+  # The returned Hash will contain keys as expected by the kubevirt template.
+  #
+  # @param options [Hash] the given options by the user
+  # @return [Hash] Hash that contains additional user options as specified on the request
+  #
+  def user_options(options)
+    merged_options = options.dup
+    merged_options[:cpu_cores] = get_option(:cores_per_socket)
+    merged_options[:memory] = get_option(:vm_memory)
+    merged_options.compact
   end
 end

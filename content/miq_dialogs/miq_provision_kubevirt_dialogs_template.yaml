@@ -263,6 +263,25 @@
     :hardware:
       :description: Hardware
       :fields:
+        :number_of_sockets:
+          :values:
+            1: "1"
+          :description: Number of Sockets
+          :required: false
+          :display: :hide
+          :default: 1
+          :data_type: :integer
+        :cores_per_socket:
+          :values:
+            1: "1"
+            2: "2"
+            4: "4"
+            8: "8"
+          :description: Cores per Socket
+          :required: false
+          :display: :edit
+          :default: 1
+          :data_type: :integer
         :vm_memory:
           :values:
             "1024": "1024"

@@ -340,7 +340,7 @@
             8: "8"
           :description: Number of Sockets
           :required: false
-          :display: :edit
+          :display: :hide
           :default: 1
           :data_type: :integer
         :cores_per_socket:
