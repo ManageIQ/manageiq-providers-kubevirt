@@ -30,12 +30,20 @@ class ManageIQ::Providers::Kubevirt::Builder
         collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, target)
         collector.nodes = {}
         manager.with_provider_connection do |connection|
-          collector.offline_vms = connection.offline_vm(name)
-          collector.live_vms = connection.live_vm(name)
-          collector.templates = connection.template(name)
+          if target.template?
+            collector.templates = [connection.template(name)]
+          else
+            collector.offline_vms = [connection.offline_vm(name)]
+            begin
+              collector.live_vms = [connection.live_vm(name)]
+            rescue
+              # target refresh of an offline vm might fail if it has no live vm
+              _log.debug("The is no running vm resource for '#{name}'")
+            end
+          end
         end
 
-        parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh.new
+        parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh.new
         parser.collector = collector
         parser.persister = persister
       else

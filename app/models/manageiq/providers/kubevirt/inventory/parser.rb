@@ -170,7 +170,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   def process_domain(domain, uid, name)
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
-
     # Create the inventory object for the virtual machine:
     vm_object = vm_collection.find_or_build(uid)
     vm_object.connection_state = 'connected'
@@ -186,7 +185,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.memory, 'Mi')
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.resources.requests.memory, 'Mi')
+    hw_object.cpu_cores_per_socket = domain.cpu&.cores
+    hw_object.cpu_total_cores = domain.cpu&.cores
 
     # Return the created inventory object:
     vm_object
