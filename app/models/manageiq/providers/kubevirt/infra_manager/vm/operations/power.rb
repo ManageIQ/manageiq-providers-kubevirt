@@ -24,36 +24,6 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # the live virtual machine.
       offline_vm.spec.running = true
       connection.update_offline_vm(offline_vm)
-
-      # TODO: We need to create the live virtual machine explicitly because KubeVirt still doesn't have a controller
-      # that starts automatically the virtual machines when the `running` attribute is changed to `true`. This should be
-      # removed when that controller is added.
-      live_vm = {
-        :metadata => {
-          :namespace       => offline_vm.metadata.namespace,
-          :name            => name,
-          :ownerReferences => [{
-            :apiVersion => offline_vm.apiVersion,
-            :kind       => offline_vm.kind,
-            :name       => offline_vm.metadata.name,
-            :uid        => offline_vm.metadata.uid
-          }]
-        },
-        :spec     => offline_vm.spec.template.spec.to_h
-      }
-
-      # make sure to copy vm presets
-      unless offline_vm.metadata.selector.nil?
-        live_vm.deep_merge!(
-          :metadata => {
-            :namespace => {
-              :selector => offline_vm.metadata.selector
-            }
-          }
-        )
-      end
-
-      connection.create_live_vm(live_vm)
     end
   end
 
@@ -66,11 +36,6 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       # the live virtual machine.
       offline_vm.spec.running = false
       connection.update_offline_vm(offline_vm)
-
-      # TODO: We need to delete the virtual machine explicitly because KubeVirt still doesn't have a controller that
-      # stops automatically the virtual machines when the `running` attribute is changed to `false`. This should be
-      # removed when that controller is added.
-      connection.delete_live_vm(name, offline_vm.metadata.namespace)
     end
   end
 end
