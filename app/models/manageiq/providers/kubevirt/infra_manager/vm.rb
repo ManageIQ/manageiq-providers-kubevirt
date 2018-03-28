@@ -91,4 +91,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   def has_required_host?
     true
   end
+
+  def self.display_name(number = 1)
+    n_('Virtual Machine (Kubevirt)', 'Virtual Machines (Kubevirt)', number)
+  end
 end
