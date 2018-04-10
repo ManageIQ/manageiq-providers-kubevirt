@@ -31,6 +31,11 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       hardware = FactoryGirl.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware)
 
+      network_collection = double("network_collection")
+      network = FactoryGirl.create(:network, :hardware => hardware)
+      allow(network_collection).to receive(:find_or_build_by).and_return(network)
+      allow(hardware).to receive(:networks).and_return([network])
+
       vm_collection = double("vm_collection")
       vm = FactoryGirl.create(:vm_kubevirt, :hardware => hardware)
       allow(vm_collection).to receive(:find_or_build).and_return(vm)
@@ -39,9 +44,9 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@storage_collection, storage_collection)
       parser.instance_variable_set(:@vm_collection, vm_collection)
       parser.instance_variable_set(:@hw_collection, hw_collection)
+      parser.instance_variable_set(:@network_collection, network_collection)
 
       parser.send(:process_live_vm, unprocessed_object("vm.json"))
-
       expect(vm).to have_attributes(
         :name             => "demo-vm",
         :template         => false,
@@ -53,6 +58,11 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :location         => "unknown",
         :connection_state => "connected",
       )
+
+      net = vm.hardware.networks.first
+      expect(net).to_not be_nil
+      expect(net.ipaddress).to eq("10.128.0.18")
+      expect(net.hostname).to eq("vm-17-235.eng.lab.tlv.redhat.com")
     end
   end
 end

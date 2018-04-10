@@ -185,5 +185,17 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collections < ManagerRefresh::In
 
       attributes.merge!(extra_attributes)
     end
+
+    def networks(extra_attributes = {})
+      attributes = {
+        :model_class                  => ::Network,
+        :manager_ref                  => %i(hardware ipaddress),
+        :parent_inventory_collections => [:vms],
+        :association                  => :networks,
+        :inventory_object_attributes  => %i(ipaddress hostname)
+      }
+
+      attributes.merge!(extra_attributes)
+    end
   end
 end

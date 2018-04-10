@@ -58,6 +58,11 @@
         ]
     },
     "status": {
+        "interfaces": [
+            {
+                "ipAddress": "10.128.0.18"
+            }
+        ],
         "nodeName": "vm-17-235.eng.lab.tlv.redhat.com",
         "phase": "Running"
     }

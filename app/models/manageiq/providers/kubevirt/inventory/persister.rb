@@ -52,6 +52,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManagerRefresh::Inve
     add_inventory_collection(attributes)
   end
 
+  def network_collection(targeted: false)
+    attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.networks(
+      :targeted => targeted,
+      :strategy => :local_db_find_missing_references
+    )
+    add_inventory_collection(attributes)
+  end
+
   def os_collection(targeted: false)
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.host_operating_systems(
       :targeted => targeted,

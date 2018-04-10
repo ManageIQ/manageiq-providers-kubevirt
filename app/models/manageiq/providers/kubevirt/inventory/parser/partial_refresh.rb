@@ -54,6 +54,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     @host_collection = persister.host_collection(:targeted => true, :ids => host_ids)
     @host_storage_collection = persister.host_storage_collection(:targeted => true)
     @hw_collection = persister.hw_collection(:targeted => true)
+    @network_collection = persister.network_collection(:targeted => true)
     @os_collection = persister.os_collection(:targeted => true)
     @storage_collection = persister.storage_collection(:targeted => true, :ids => storage_ids)
     @template_collection = persister.template_collection(:targeted => true, :ids => template_ids)

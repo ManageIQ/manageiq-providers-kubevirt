@@ -42,6 +42,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   attr_reader :host_collection
   attr_reader :host_storage_collection
   attr_reader :hw_collection
+  attr_reader :network_collection
   attr_reader :os_collection
   attr_reader :storage_collection
   attr_reader :template_collection
@@ -150,6 +151,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     uid = object.metadata.uid
     name = object.metadata.name
     domain = object.spec.domain
+    status = object.status
 
     # Get the identifier of the offline virtual machine from the owner reference:
     owner = find_owner(object, 'OfflineVirtualMachine')
@@ -161,6 +163,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Process the domain:
     vm_object = process_domain(domain, uid, name)
+    process_status(vm_object, status)
 
     # If the live virtual machine exists, then the it is powered on, regardless of the value of the `running` field of
     # the status:
@@ -191,6 +194,26 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Return the created inventory object:
     vm_object
+  end
+
+  def process_status(vm_object, status)
+    hw_object = hw_collection.find_or_build(vm_object)
+
+    # Create the inventory object for vm network device
+    hardware_networks(hw_object, status)
+  end
+
+  def hardware_networks(hw_object, status)
+    ip_address = status&.interfaces&.first&.ipAddress
+    return nil unless ip_address
+
+    network_collection.find_or_build_by(
+      :hardware  => hw_object,
+      :ipaddress => ip_address,
+    ).assign_attributes(
+      :ipaddress => ip_address,
+      :hostname  => status.nodeName
+    )
   end
 
   def process_templates(objects)
