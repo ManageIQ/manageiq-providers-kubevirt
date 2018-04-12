@@ -53,7 +53,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     create_persistent_volume_claims(persistent_volume_claims_from_objects(template.objects), params, template.metadata.namespace)
 
     # use offline vm definition from a template and send
-    create_offline_vm(offline_vm_from_objects(template.objects), params, phase_context, template.metadata.namespace)
+    create_offline_vm(offline_vm_from_objects(template.objects), params, phase_context, template.metadata)
 
     # TODO: check if we need to roll back if one object creation fails
   end
@@ -64,14 +64,19 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   # @param offline_vm [Hash] Offline virtual machine hash as defined in the template.
   # @param params [Hash] Containing mapping of name and value.
   # @param phase_context [Hash] Task context used to store offline_vm uid.
-  # @param namespace [String] Namespace used to store the object.
+  # @param metadata [Hash] Metadata of the vm's template.
   #
-  def create_offline_vm(offline_vm, params, phase_context, namespace)
+  def create_offline_vm(offline_vm, params, phase_context, metadata)
     offline_vm = param_substitution!(offline_vm, params)
+    labels = metadata.labels || {}
+    os_label = ManageIQ::Providers::Kubevirt::Inventory::Parser::OS_LABEL
 
     offline_vm.deep_merge!(
       :metadata => {
-        :namespace => namespace
+        :namespace => metadata.namespace,
+        :labels    => {
+          os_label => labels[os_label]
+        }.compact
       }
     )
 

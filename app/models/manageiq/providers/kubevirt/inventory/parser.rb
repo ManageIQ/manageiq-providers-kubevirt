@@ -136,6 +136,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     # Process the domain:
     vm_object = process_domain(domain, uid, name)
 
+    # Add the inventory object for the OperatingSystem
+    process_os(vm_object, object.metadata)
+
     # The power status is initially off, it will be set to on later if the live virtual machine exists:
     vm_object.raw_power_state = 'off'
   end
@@ -298,10 +301,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_os(template_object, metadata)
     os_object = vm_os_collection.find_or_build(template_object)
-    os_object.product_name = metadata.labels.send(OS_LABEL)
-    os_object.product_type = if metadata.annotations.tags.include?("linux")
+    os_object.product_name = metadata.labels&.send(OS_LABEL)
+    tags = metadata.annotations&.tags || []
+    os_object.product_type = if tags.include?("linux")
                                "linux"
-                             elsif metadata.annotations.tags.include?("windows")
+                             elsif tags.include?("windows")
                                "windows"
                              else
                                "other"
