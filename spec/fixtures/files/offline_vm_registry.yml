@@ -3,6 +3,8 @@
 :metadata:
   :name: test
   :namespace: default
+  :labels:
+    "kubevirt.io/os": "rhel-7"
 :spec:
   :template:
     :spec:
