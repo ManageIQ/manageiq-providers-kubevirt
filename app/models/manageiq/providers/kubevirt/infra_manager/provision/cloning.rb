@@ -72,6 +72,9 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     os_label = ManageIQ::Providers::Kubevirt::Inventory::Parser::OS_LABEL
 
     offline_vm.deep_merge!(
+      :spec     => {
+        :running  => false
+      },
       :metadata => {
         :namespace => metadata.namespace,
         :labels    => {

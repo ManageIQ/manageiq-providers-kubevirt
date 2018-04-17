@@ -6,6 +6,7 @@
   :labels:
     "kubevirt.io/os": "rhel-7"
 :spec:
+  :running: false
   :template:
     :spec:
       :domain:
