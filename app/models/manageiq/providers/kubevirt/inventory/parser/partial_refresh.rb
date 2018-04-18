@@ -42,13 +42,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     discard_deleted_notices(live_vms)
     discard_deleted_notices(templates)
 
-    # We are no longer interested in the details of the notices, the objects are enough, so we replace the notices with
-    # the objects that they contain:
-    replace_notices_with_objects(nodes)
-    replace_notices_with_objects(offline_vms)
-    replace_notices_with_objects(live_vms)
-    replace_notices_with_objects(templates)
-
     # Create the collections:
     @cluster_collection = persister.cluster_collection(:targeted => true, :ids => cluster_ids)
     @host_collection = persister.host_collection(:targeted => true, :ids => host_ids)
@@ -76,16 +69,12 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
   private
 
   def get_object_ids(notices)
-    ids = notices.map { |notice| notice.object.metadata.uid }
+    ids = notices.map { |notice| notice.metadata.uid }
     ids.uniq!
     ids
   end
 
   def discard_deleted_notices(notices)
     notices.reject! { |notice| notice.type == 'DELETED' }
-  end
-
-  def replace_notices_with_objects(notices)
-    notices.map!(&:object)
   end
 end

@@ -100,10 +100,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     persister.persist!
 
     # Update the memory:
-    memory.add_list_version(:nodes, collector.nodes.resourceVersion)
-    memory.add_list_version(:offline_vms, collector.offline_vms.resourceVersion)
-    memory.add_list_version(:live_vms, collector.live_vms.resourceVersion)
-    memory.add_list_version(:templates, collector.templates.resourceVersion)
+    memory.add_list_version(:nodes, collector.nodes.first&.resource_version)
+    memory.add_list_version(:offline_vms, collector.offline_vms.first&.resource_version)
+    memory.add_list_version(:live_vms, collector.live_vms.first&.resource_version)
+    memory.add_list_version(:templates, collector.templates.first&.resource_version)
   rescue StandardError => error
     _log.error('Full refresh failed.')
     _log.log_backtrace(error)
@@ -116,7 +116,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   #
   def partial_refresh(notices)
     # check whether we get error about stale resource version
-    if notices.any? { |notice| notice.object.kind == "Status" && notice.object.code == 410 }
+    if notices.any? { |notice| notice.kind == "Status" && notice.code == 410 }
       # base on the structure we do not know which watch uses stale version so we stop all
       # we can't join with all the threads since we are in one
       stop_watches
@@ -134,11 +134,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
 
     # Filter out the notices that have already been processed:
     notices.reject! do |notice|
-      object = notice.object
-      metadata = object.metadata
+      metadata = notice.metadata
       if memory.contains_notice?(notice)
         _log.info(
-          "Notice of kind '#{object.kind}, id '#{metadata.uid}', type '#{notice.type}' and version '#{metadata.resourceVersion}' " \
+          "Notice of kind '#{notice.kind}, id '#{metadata.uid}', type '#{notice.type}' and version '#{metadata.resourceVersion}' " \
           "has already been processed, will ignore it."
         )
         true
@@ -150,7 +149,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # The notices returned by the Kubernetes API contain always the complete representation of the object, so it isn't
     # necessary to process all of them, only the last one for each object.
     relevant = notices.reverse!
-    relevant.uniq! { |notice| notice.object.uid }
+    relevant.uniq! { |notice| notice.uid }
     relevant.reverse!
 
     # Create and populate the collector:
@@ -164,10 +163,11 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # corresponding live virtual machine. Those may not be included in the set of notices, so we need to check and
     # create artificial notices for the missing ones:
     collector.offline_vms.each do |offline_notice|
-      offline_name = offline_notice.object.metadata.name
-      live_notice = collector.live_vms.detect { |notice| notice.object.metadata.name == offline_name }
+      offline_name = offline_notice.metadata.name
+      live_notice = collector.live_vms.detect { |notice| notice.metadata.name == offline_name }
       next if live_notice
       begin
+        # TODO: replace with WatchWrapper
         live_vm = manager.with_provider_connection { |connection| connection.live_vm(offline_name) }
         live_notice = Kubeclient::Common::WatchNotice.new
         live_notice.object = live_vm
@@ -202,7 +202,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @return [Array] An array containing the notices that have the given kind.
   #
   def notices_of_kind(notices, kind)
-    notices.select { |notice| notice.object.kind == kind }
+    notices.select { |notice| notice.kind == kind }
   end
 
   #
