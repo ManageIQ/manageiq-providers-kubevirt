@@ -14,11 +14,12 @@
 # limitations under the License.
 #
 
-require 'kubeclient'
 require 'openssl'
 require 'ostruct'
 require 'rest-client'
 require 'uri'
+
+require 'fog/kubevirt'
 
 #
 # This class hides the fact that when connecting to KubeVirt we need to use different API servers:
@@ -50,45 +51,22 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   #
   def initialize(opts = {})
     # Get options and assign default values:
-    @host = opts[:host]
-    @port = opts[:port]
-    @token = opts[:token]
     @namespace = opts[:namespace] || 'default'
 
-    # Prepare the TLS and authentication options that will be used for the standard Kubernetes API
-    # and also for the KubeVirt extension:
-    @opts = {
-      :ssl_options  => {
-        :verify_ssl => OpenSSL::SSL::VERIFY_NONE,
-      },
-      :auth_options => {
-        :bearer_token => @token
-      }
-    }
-
-    # Kubeclient needs different client objects for different API groups. We will keep in this hash the
-    # client objects, indexed by API group/version.
-    @clients = {}
+    # create fog based connection
+    @conn = Fog::Compute.new(:provider           => 'kubevirt',
+                             :kubevirt_hostname  => opts[:host],
+                             :kubevirt_port      => opts[:port],
+                             :kubevirt_token     => opts[:token],
+                             :kubevirt_namespace => @namespace,
+                             :kubevirt_log       => $log)
 
     # Nothing else is done here, as this method should never throw an exception, even if the
     # credentials are wrong.
   end
 
   def virt_supported?
-    virt_enabled = false
-    begin
-      api_versions = kubevirt_client.api["versions"]
-      api_versions.each do |ver|
-        if ver["groupVersion"]&.start_with?(KUBEVIRT_GROUP)
-          virt_enabled = true
-        end
-      end
-    rescue => err
-      # we failed to communicate or to evaluate the version format
-      $log.warn("Failed to detect kubevirt on provider with error: #{err.message}")
-    end
-
-    virt_enabled
+    @conn.virt_supported?
   end
 
   #
@@ -97,7 +75,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Boolean] `true` if the connection is valid, `false` otherwise.
   #
   def valid?
-    core_client.api_valid?
+    @conn.valid?
   end
 
   #
@@ -106,7 +84,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of nodes.
   #
   def nodes
-    core_client.get_nodes
+    @conn.nodes
   end
 
   #
@@ -116,7 +94,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_nodes(opts = {})
-    core_client.watch_nodes(opts)
+    @conn.watch_nodes(opts)
   end
 
   #
@@ -125,7 +103,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of templates.
   #
   def templates
-    openshift_client.get_templates(:namespace => @namespace)
+    @conn.templates
   end
 
   #
@@ -135,7 +113,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Object] The template object.
   #
   def template(name)
-    openshift_client.get_template(name, @namespace)
+    @conn.templates.get(name)
   end
 
   #
@@ -145,7 +123,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_templates(opts = {})
-    openshift_client.watch_templates(opts)
+    @conn.watch_templates(opts)
   end
 
   #
@@ -154,7 +132,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of offline virtual machines.
   #
   def offline_vms
-    kubevirt_client.get_offline_virtual_machines(:namespace => @namespace)
+    @conn.offlinevms
   end
 
   #
@@ -164,7 +142,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Object] The virtual machine object.
   #
   def offline_vm(name)
-    kubevirt_client.get_offline_virtual_machine(name, @namespace)
+    @conn.offlinevms.get(name)
   end
 
   #
@@ -174,35 +152,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_offline_vms(opts = {})
-    kubevirt_client.watch_offline_virtual_machines(opts)
-  end
-
-  #
-  # Creates a new offline virtual machine.
-  #
-  # @param vm [Hash] A hash containing the description of the virtual machine.
-  #
-  def create_offline_vm(vm)
-    kubevirt_client.create_offline_virtual_machine(vm)
-  end
-
-  #
-  # Deletes an offline virtual machine.
-  #
-  # @param name [String] The name of the virtual machine to delete.
-  # @param namespace [String] The namespace where virtual machine is defined.
-  #
-  def delete_offline_vm(name, namespace = nil)
-    kubevirt_client.delete_offline_virtual_machine(name, namespace)
-  end
-
-  #
-  # Updates an offline virtual machine.
-  #
-  # @param update [Object] The update to send.
-  #
-  def update_offline_vm(update)
-    kubevirt_client.update_offline_virtual_machine(update)
+    @conn.watch_offline_vms(opts)
   end
 
   #
@@ -211,7 +161,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Array] The array of live virtual machines.
   #
   def live_vms
-    kubevirt_client.get_virtual_machines(:namespace => @namespace)
+    @conn.livevms
   end
 
   #
@@ -221,7 +171,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Object] The virtual machine object.
   #
   def live_vm(name)
-    kubevirt_client.get_virtual_machine(name, @namespace)
+    @conn.livevms.get(name)
   end
 
   #
@@ -231,35 +181,16 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
   def watch_live_vms(opts = {})
-    kubevirt_client.watch_virtual_machines(opts)
-  end
-
-  #
-  # Creates a new live virtual machine.
-  #
-  # @param vm [Hash] A hash containing the description of the virtual machine.
-  #
-  def create_live_vm(vm)
-    kubevirt_client.create_virtual_machine(vm)
+    @conn.watch_live_vms(opts)
   end
 
   #
   # Deletes a live virtual machine.
   #
   # @param name [String] The name of the virtual machine to delete.
-  # @param namespace [String] The namespace where virtual machine is defined.
   #
-  def delete_live_vm(name, namespace = nil)
-    kubevirt_client.delete_virtual_machine(name, namespace)
-  end
-
-  #
-  # Creates a new persistent volume claim,
-  #
-  # @param pvc [Hash] A hash containing the description of the persistent volume claim.
-  #
-  def create_pvc(pvc)
-    core_client.create_persistent_volume_claim(pvc)
+  def delete_live_vm(name)
+    @conn.livevms.destroy(name, @namespace)
   end
 
   #
@@ -268,59 +199,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @return [String] The URL of the spice proxy server.
   #
   def spice_proxy_url
-    service = core_client.get_service('spice-proxy', @namespace)
-    host = service.spec.externalIPs.first
-    port = service.spec.ports.first.port
-    url = URI::Generic.build(
-      :scheme => 'http',
-      :host   => host,
-      :port   => port,
-    )
-    url.to_s
-  end
-
-  private
-
-  #
-  # Lazily creates the a client for the given Kubernetes API path and version.
-  #
-  # @param path [String] The Kubernetes API path.
-  # @param version [String] The Kubernetes API version.
-  # @return [Kubeclient::Client] The client for the given path and version.
-  #
-  def client(path, version)
-    # Return the client immediately if it has been created before:
-    key = path + '/' + version
-    client = @clients[key]
-    return client if client
-
-    # Create the client and save it:
-    url = URI::Generic.build(
-      :scheme => 'https',
-      :host   => @host,
-      :port   => @port,
-      :path   => path
-    )
-    client = Kubeclient::Client.new(
-      url.to_s,
-      version,
-      @opts
-    )
-    @clients[key] = client
-
-    # Return the client:
-    client
-  end
-
-  def core_client
-    client('/api', CORE_VERSION)
-  end
-
-  def kubevirt_client
-    client('/apis/' + KUBEVIRT_GROUP, KUBEVIRT_VERSION)
-  end
-
-  def openshift_client
-    client('/oapi', CORE_VERSION)
+    @conn.spice_proxy_url
   end
 end

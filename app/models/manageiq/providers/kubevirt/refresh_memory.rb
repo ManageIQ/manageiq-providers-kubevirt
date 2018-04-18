@@ -31,7 +31,7 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   def initialize
     # Initialize the hash that contains the last resource version for each kind of list. The keys of
     # this hash will be strings identifying the kind of object, for example `live_vms`. The values will
-    # be the last `resourceVersion` that was obtained when listing that kind of object.
+    # be the last `resource_version` that was obtained when listing that kind of object.
     @lists = {}
 
     # Initialize the set that contains the keys of the notices that have already been processed.
@@ -104,8 +104,6 @@ class ManageIQ::Providers::Kubevirt::RefreshMemory
   # Calculates the key that will be used to store a notice.
   #
   def notice_key(notice)
-    object = notice.object
-    metadata = object.metadata
-    "#{object.kind}:#{metadata.uid}:#{notice.type}:#{metadata.resourceVersion}"
+    "#{notice.kind}:#{notice.uid}:#{notice.type}:#{notice.resource_version}"
   end
 end

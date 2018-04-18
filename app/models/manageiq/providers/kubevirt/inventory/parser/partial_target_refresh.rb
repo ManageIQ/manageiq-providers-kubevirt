@@ -60,8 +60,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh < M
   private
 
   def get_object_ids(objects)
-    ids = objects.map { |o| o.metadata.uid }
-    ids.uniq!
-    ids
+    objects.map { |o| o.uid }.uniq
   end
 end
