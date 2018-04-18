@@ -21,46 +21,24 @@ end
 
 describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
   context "Cloning" do
-    it "creates specific objects with pvc" do
+    it "calls clone on template" do
       source = FactoryGirl.create(:template_kubevirt)
       subject.source = source
       connection = double("connection")
 
-      allow(connection).to receive(:template).and_return(unprocessed_object("template.json"))
+      template = double("template")
+      allow(template).to receive(:name).and_return("example")
+      expect(template).to receive(:clone)
+
+      offlinevm = double("offlinevm")
+      allow(offlinevm).to receive(:uid).and_return("7e6fb1ac-00ef-11e8-8840-525400b2cba8")
+
+      allow(connection).to receive(:template).and_return(template)
+      allow(connection).to receive(:offlinevm).and_return(offlinevm)
       allow(source).to receive(:with_provider_connection).and_yield(connection)
       allow(source).to receive(:name).and_return("test")
-      expect(connection).to receive(:create_offline_vm) do |offline_vm|
-        expect(offline_vm).not_to be_nil
-        expect(offline_vm).to eq(unprocessed_hash("offline_vm.yml"))
-        unprocessed_object("offlinevm.json")
-      end
-
-      expect(connection).to receive(:create_pvc) do |pvc|
-        expect(pvc).not_to be_nil
-        expect(pvc).to eq(unprocessed_hash("pvc.yml"))
-      end
 
       subject.start_clone(:name => "test")
     end
-  end
-
-  it "creates object" do
-    source = FactoryGirl.create(:template_kubevirt)
-    subject.source = source
-    connection = double("connection")
-
-    allow(connection).to receive(:template).and_return(unprocessed_object("template_registry.json"))
-    allow(source).to receive(:with_provider_connection).and_yield(connection)
-    allow(source).to receive(:name).and_return("test")
-    allow(subject).to receive(:get_option).with(:vm_memory).and_return("4096")
-    allow(subject).to receive(:get_option).with(:cores_per_socket).and_return("4")
-
-    expect(connection).to receive(:create_offline_vm) do |offline_vm|
-      expect(offline_vm).not_to be_nil
-      expect(offline_vm).to eq(unprocessed_hash("offline_vm_registry.yml"))
-      unprocessed_object("offlinevm_registry.json")
-    end
-
-    subject.start_clone(:name => "test")
   end
 end
