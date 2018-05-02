@@ -100,10 +100,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     persister.persist!
 
     # Update the memory:
-    memory.add_list_version(:nodes, collector.nodes.resourceVersion)
-    memory.add_list_version(:offline_vms, collector.offline_vms.resourceVersion)
-    memory.add_list_version(:live_vms, collector.live_vms.resourceVersion)
-    memory.add_list_version(:templates, collector.templates.resourceVersion)
+    memory.add_list_version(:nodes, collector.nodes.first&.resource_version)
+    memory.add_list_version(:offline_vms, collector.offline_vms.first&.resource_version)
+    memory.add_list_version(:live_vms, collector.live_vms.first&.resource_version)
+    memory.add_list_version(:templates, collector.templates.first&.resource_version)
   rescue StandardError => error
     _log.error('Full refresh failed.')
     _log.log_backtrace(error)

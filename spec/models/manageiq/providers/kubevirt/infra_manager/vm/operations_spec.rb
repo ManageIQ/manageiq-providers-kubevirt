@@ -58,7 +58,6 @@ describe 'VM::Operations' do
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
 
         expect(connection).to receive(:delete_live_vm)
-        expect(connection).to receive(:delete_offline_vm)
 
         vm.raw_destroy
       end
@@ -73,7 +72,6 @@ describe 'VM::Operations' do
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
 
         expect(connection).not_to receive(:delete_live_vm)
-        expect(connection).to receive(:delete_offline_vm)
 
         vm.raw_destroy
       end

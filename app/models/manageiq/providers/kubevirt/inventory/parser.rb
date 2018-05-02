@@ -20,6 +20,7 @@
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Inventory::Parser
   include Vmdb::Logging
+  require 'fog/kubevirt'
 
   protected
 
@@ -32,11 +33,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   # The identifier of the built-in storage:
   #
   STORAGE_ID = '0'.freeze
-
-  #
-  # Label name which identifies operation system information
-  #
-  OS_LABEL = 'kubevirt.io/os'.freeze
 
   attr_reader :cluster_collection
   attr_reader :host_collection
@@ -77,17 +73,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_node(object)
     # Get the basic information:
-    status = object.status
-    uid = object.metadata.uid
-    name = object.metadata.name
-
-    # Get the host name and the IP address:
-    addresses = status.addresses
-    hostname = addresses.detect { |address| address.type == 'Hostname' }.address
-    ip = addresses.detect { |address| address.type == 'InternalIP' }.address
-
-    # Get the node info:
-    info = status.nodeInfo
+    uid = object.uid
+    name = object.name
 
     # Add the inventory object for the host:
     host_object = host_collection.find_or_build(uid)
@@ -95,8 +82,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     host_object.ems_cluster = cluster_collection.lazy_find(CLUSTER_ID)
     host_object.ems_ref = uid
     host_object.ems_ref_obj = uid
-    host_object.hostname = hostname
-    host_object.ipaddress = ip
+    host_object.hostname = object.hostname
+    host_object.ipaddress = object.ip_address
     host_object.name = name
     host_object.type = ::Host.name
     host_object.uid_ems = uid
@@ -106,10 +93,10 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Add the inventory object for the operating system details:
     os_object = os_collection.find_or_build(host_object)
-    os_object.name = hostname
-    os_object.product_name = info.osImage
-    os_object.product_type = info.operatingSystem
-    os_object.version = info.kernelVersion
+    os_object.name = object.hostname
+    os_object.product_name = object.os_image
+    os_object.product_type = object.operating_system
+    os_object.version = object.kernel_version
 
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
@@ -128,16 +115,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   end
 
   def process_offline_vm(object)
-    # Get the basic information:
-    uid = object.metadata.uid
-    name = object.metadata.name
-    domain = object.spec.template.spec.domain
-
     # Process the domain:
-    vm_object = process_domain(domain, uid, name)
+    vm_object = process_domain(object.memory, object.cpu_cores, object.uid, object.name)
 
     # Add the inventory object for the OperatingSystem
-    process_os(vm_object, object.metadata)
+    process_os(vm_object, object.labels, object.annotations)
 
     # The power status is initially off, it will be set to on later if the live virtual machine exists:
     vm_object.raw_power_state = 'off'
@@ -151,29 +133,26 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_live_vm(object)
     # Get the basic information:
-    uid = object.metadata.uid
-    name = object.metadata.name
-    domain = object.spec.domain
-    status = object.status
+    uid = object.uid
+    name = object.name
 
     # Get the identifier of the offline virtual machine from the owner reference:
-    owner = find_owner(object, 'OfflineVirtualMachine')
-    unless owner.nil?
+    unless object.owner_name.nil?
       # seems like valid use case for now
-      uid = owner.uid
-      name = owner.name
+      uid = object.owner_uid
+      name = object.owner_name
     end
 
     # Process the domain:
-    vm_object = process_domain(domain, uid, name)
-    process_status(vm_object, status)
+    vm_object = process_domain(object.memory, object.cpu_cores, uid, name)
+    process_status(vm_object, object.ip_address, object.node_name)
 
     # If the live virtual machine exists, then the it is powered on, regardless of the value of the `running` field of
     # the status:
     vm_object.raw_power_state = 'on'
   end
 
-  def process_domain(domain, uid, name)
+  def process_domain(memory, cores, uid, name)
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
     # Create the inventory object for the virtual machine:
@@ -191,23 +170,22 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(domain.resources.requests.memory, 'Mi')
-    hw_object.cpu_cores_per_socket = domain.cpu&.cores
-    hw_object.cpu_total_cores = domain.cpu&.cores
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
+    hw_object.cpu_cores_per_socket = cores
+    hw_object.cpu_total_cores = cores
 
     # Return the created inventory object:
     vm_object
   end
 
-  def process_status(vm_object, status)
+  def process_status(vm_object, ip_address, nodeName)
     hw_object = hw_collection.find_or_build(vm_object)
 
     # Create the inventory object for vm network device
-    hardware_networks(hw_object, status)
+    hardware_networks(hw_object, ip_address, nodeName)
   end
 
-  def hardware_networks(hw_object, status)
-    ip_address = status&.interfaces&.first&.ipAddress
+  def hardware_networks(hw_object, ip_address, nodeName)
     return nil unless ip_address
 
     network_collection.find_or_build_by(
@@ -215,7 +193,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
       :ipaddress => ip_address,
     ).assign_attributes(
       :ipaddress => ip_address,
-      :hostname  => status.nodeName
+      :hostname  => nodeName
     )
   end
 
@@ -227,16 +205,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_template(object)
     # Get the basic information:
-    metadata = object.metadata
-    uid = metadata.uid
-    name = metadata.name
+    uid = object.uid
 
     # Add the inventory object for the template:
     template_object = template_collection.find_or_build(uid)
     template_object.connection_state = 'connected'
     template_object.ems_ref = uid
     template_object.ems_ref_obj = uid
-    template_object.name = name
+    template_object.name = object.name
     template_object.raw_power_state = 'never'
     template_object.template = true
     template_object.type = ::ManageIQ::Providers::Kubevirt::InfraManager::Template.name
@@ -246,29 +222,29 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     offlinevm = offline_vm_from_objects(object.objects)
 
     # Add the inventory object for the hardware:
-    process_hardware(template_object, object.parameters, metadata, offlinevm.spec.template.spec.domain)
+    process_hardware(template_object, object.parameters, object.labels, offlinevm.dig(:spec, :template, :spec, :domain))
 
     # Add the inventory object for the OperatingSystem
-    process_os(template_object, metadata)
+    process_os(template_object, object.labels, object.annotations)
   end
 
   def offline_vm_from_objects(objects)
     vm = nil
     objects.each do |object|
-      if object.kind == "OfflineVirtualMachine"
+      if object[:kind] == "OfflineVirtualMachine"
         vm = object
       end
     end
     vm
   end
 
-  def process_hardware(template_object, params, metadata, domain)
+  def process_hardware(template_object, params, labels, domain)
     hw_object = hw_collection.find_or_build(template_object)
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(default_value(params, 'MEMORY'), 'Mi')
     cpu = default_value(params, 'CPU_CORES')
     hw_object.cpu_cores_per_socket = cpu
     hw_object.cpu_total_cores = cpu
-    hw_object.guest_os = metadata.labels.send(OS_LABEL)
+    hw_object.guest_os = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
 
     # Add the inventory objects for the disk:
     process_disks(hw_object, domain)
@@ -277,21 +253,21 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
   def default_value(params, name)
     value = nil
     params.each do |param|
-      if param.name == name
-        value = param.value
+      if param[:name] == name
+        value = param[:value]
       end
     end
     value
   end
 
   def process_disks(hw_object, domain)
-    domain.devices.disks.each do |disk|
+    domain&.dig(:devices, :disks).each do |disk|
       disk_object = disk_collection.find_or_build_by(
         :hardware    => hw_object,
-        :device_name => disk.name
+        :device_name => disk[:name]
       )
-      disk_object.device_name = disk.name
-      disk_object.location = disk.volumeName
+      disk_object.device_name = disk[:name]
+      disk_object.location = disk[:volumeName]
       disk_object.device_type = 'disk'
       disk_object.present = true
       disk_object.mode = 'persistent'
@@ -299,10 +275,10 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     end
   end
 
-  def process_os(template_object, metadata)
+  def process_os(template_object, labels, annotations)
     os_object = vm_os_collection.find_or_build(template_object)
-    os_object.product_name = metadata.labels&.send(OS_LABEL)
-    tags = metadata.annotations&.tags || []
+    os_object.product_name = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
+    tags = annotations&.dig(:tags) || []
     os_object.product_type = if tags.include?("linux")
                                "linux"
                              elsif tags.include?("windows")
@@ -310,11 +286,5 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
                              else
                                "other"
                              end
-  end
-
-  def find_owner(object, kind)
-    owners = object.metadata.ownerReferences
-    return nil unless owners
-    owners.detect { |owner| owner.kind == kind }
   end
 end
