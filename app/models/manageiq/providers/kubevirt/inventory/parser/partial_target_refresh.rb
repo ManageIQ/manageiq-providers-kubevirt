@@ -43,8 +43,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh < M
     @storage_collection = persister.storage_collection(:targeted => true, :ids => storage_ids)
     @template_collection = persister.template_collection(:targeted => true, :ids => template_ids)
     @vm_collection = persister.vm_collection(:targeted => true, :ids => vm_ids)
-    @vm_os_collection = persister.vm_os_collection(:targeted => true, :ids => vm_ids)
-    @disk_collection = persister.disk_collection(:targeted => true, :ids => vm_ids)
+    @vm_os_collection = persister.vm_os_collection(:targeted => true)
+    @disk_collection = persister.disk_collection(:targeted => true)
 
     # We need to add the built-in objects, otherwise other objects that reference them are removed:
     add_builtin_clusters
