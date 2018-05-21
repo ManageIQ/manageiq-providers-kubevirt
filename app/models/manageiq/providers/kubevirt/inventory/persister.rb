@@ -104,10 +104,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManagerRefresh::Inve
     add_inventory_collection(attributes)
   end
 
-  def disk_collection(targeted: false, ids: [])
+  def disk_collection(targeted: false)
     attributes = ManageIQ::Providers::Kubevirt::Inventory::Collections.disks(
       :targeted      => targeted,
-      :manager_uuids => ids,
       :strategy      => :local_db_find_missing_references
     )
     add_inventory_collection(attributes)
