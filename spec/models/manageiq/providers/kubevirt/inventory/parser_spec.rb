@@ -45,7 +45,18 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@vm_os_collection, os_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)
 
-      parser.send(:process_template, unprocessed_object("template.json"))
+      # TODO: check whether this is the format that fog-kubevirt would return
+      json = unprocessed_object("template.json")
+
+      source = double("template")
+      allow(source).to receive(:name).and_return("example")
+      allow(source).to receive(:uid).and_return("7e6fb1ac-00ef-11e8-8840-525400b2cba8")
+      allow(source).to receive(:objects).and_return(json.objects)
+      allow(source).to receive(:parameters).and_return(json.parameters)
+      allow(source).to receive(:labels).and_return(json.metadata.labels)
+      allow(source).to receive(:annotations).and_return(json.metadata.annotations)
+
+      parser.send(:process_template, source)
 
       expect(temp).to have_attributes(
         :name             => "example",
@@ -104,7 +115,18 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@vm_os_collection, os_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)
 
-      parser.send(:process_template, unprocessed_object("template_registry.json"))
+      # TODO: check whether this is the format that fog-kubevirt would return
+      json = unprocessed_object("template_registry.json")
+
+      source = double("template")
+      allow(source).to receive(:name).and_return("working")
+      allow(source).to receive(:uid).and_return("7e6fb1ac-00ef-11e8-8840-525400b2cba8")
+      allow(source).to receive(:objects).and_return(json.objects)
+      allow(source).to receive(:parameters).and_return(json.parameters)
+      allow(source).to receive(:labels).and_return(json.metadata.labels)
+      allow(source).to receive(:annotations).and_return(json.metadata.annotations)
+
+      parser.send(:process_template, source)
 
       expect(disk1).to have_attributes(
         :device_name     => "registrydisk",

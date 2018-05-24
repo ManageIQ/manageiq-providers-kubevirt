@@ -46,7 +46,16 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@hw_collection, hw_collection)
       parser.instance_variable_set(:@network_collection, network_collection)
 
-      parser.send(:process_live_vm, unprocessed_object("vm.json"))
+      source = double("VirtualMachine")
+      allow(source).to receive(:uid).and_return("9f3a8f56-1bc8-11e8-a746-001a4a23138b")
+      allow(source).to receive(:name).and_return("demo-vm")
+      allow(source).to receive(:memory).and_return("64M")
+      allow(source).to receive(:cpu_cores).and_return("2")
+      allow(source).to receive(:ip_address).and_return("10.128.0.18")
+      allow(source).to receive(:node_name).and_return("vm-17-235.eng.lab.tlv.redhat.com")
+      allow(source).to receive(:owner_name).and_return(nil)
+
+      parser.send(:process_live_vm, source)
       expect(vm).to have_attributes(
         :name             => "demo-vm",
         :template         => false,
