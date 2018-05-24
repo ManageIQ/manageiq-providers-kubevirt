@@ -103,8 +103,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # Verifies that the provider responds to kubevirt resources in order to assure kubevirt is deployed
   # on top of the kubernetes cluster
   #
-  def verify_virt_supported
-    virt_supported = with_provider_connection(&:virt_supported?)
+  # @param opts [Hash] Additional options to control how to perform the verification.
+  #
+  def verify_virt_supported(opts)
+    virt_supported = with_provider_connection(opts, &:virt_supported?)
     raise "Kubevirt deployment was not found on provider" unless virt_supported
     virt_supported
   end
@@ -114,9 +116,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   # @param opts [Hash] The options provided by the ManageIQ core.
   #
-  def connect(_opts = {})
+  def connect(opts = {})
     # Get the authentication token:
-    token = authentication_token(:kubevirt)
+    token = opts[:token] || authentication_token(:kubevirt)
 
     # Create and return the connection:
     endpoint = default_endpoint
