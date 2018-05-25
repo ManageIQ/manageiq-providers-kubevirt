@@ -17,8 +17,18 @@
 class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::InfraManager::Vm
   include_concern 'Operations'
 
+  POWER_STATES = {
+    'Running'    => 'on',
+    'Pending'    => 'powering_up',
+    'Scheduling' => 'powering_up',
+    'Scheduled'  => 'off',
+    'Succeeded'  => 'off',
+    'Failed'     => 'off',
+    'Unknown'    => 'terminated'
+  }.freeze
+
   def self.calculate_power_state(raw)
-    raw
+    POWER_STATES[raw] || super
   end
 
   #

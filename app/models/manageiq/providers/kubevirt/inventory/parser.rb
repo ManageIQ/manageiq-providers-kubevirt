@@ -122,7 +122,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     process_os(vm_object, object.labels, object.annotations)
 
     # The power status is initially off, it will be set to on later if the live virtual machine exists:
-    vm_object.raw_power_state = 'off'
+    vm_object.raw_power_state = 'Succeeded'
   end
 
   def process_live_vms(objects)
@@ -147,9 +147,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     vm_object = process_domain(object.memory, object.cpu_cores, uid, name)
     process_status(vm_object, object.ip_address, object.node_name)
 
-    # If the live virtual machine exists, then the it is powered on, regardless of the value of the `running` field of
-    # the status:
-    vm_object.raw_power_state = 'on'
+    vm_object.raw_power_state = object.status
   end
 
   def process_domain(memory, cores, uid, name)

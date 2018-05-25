@@ -53,7 +53,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :cpu_cores  => "2",
         :ip_address => "10.128.0.18",
         :node_name  => "vm-17-235.eng.lab.tlv.redhat.com",
-        :owner_name => nil
+        :owner_name => nil,
+        :status     => "Running"
       )
 
       parser.send(:process_live_vm, source)
