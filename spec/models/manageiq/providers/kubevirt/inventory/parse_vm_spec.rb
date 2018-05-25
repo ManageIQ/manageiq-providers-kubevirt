@@ -46,7 +46,17 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@hw_collection, hw_collection)
       parser.instance_variable_set(:@network_collection, network_collection)
 
-      parser.send(:process_live_vm, unprocessed_object("vm.json"))
+      source = double(
+        :uid        => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
+        :name       => "demo-vm",
+        :memory     => "64M",
+        :cpu_cores  => "2",
+        :ip_address => "10.128.0.18",
+        :node_name  => "vm-17-235.eng.lab.tlv.redhat.com",
+        :owner_name => nil
+      )
+
+      parser.send(:process_live_vm, source)
       expect(vm).to have_attributes(
         :name             => "demo-vm",
         :template         => false,

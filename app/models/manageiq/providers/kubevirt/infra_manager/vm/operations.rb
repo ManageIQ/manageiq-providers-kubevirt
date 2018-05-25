@@ -30,13 +30,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
       end
 
       # delete live vm
-      connection.delete_live_vm(name, live_vm.metadata.namespace) unless live_vm.nil?
-
-      # Retrieve the details of the offline virtual machine:
-      offline_vm = connection.offline_vm(name)
-
-      # delete offline vm
-      connection.delete_offline_vm(name, offline_vm.metadata.namespace)
+      connection.delete_live_vm(name) unless live_vm.nil?
     end
   end
 end

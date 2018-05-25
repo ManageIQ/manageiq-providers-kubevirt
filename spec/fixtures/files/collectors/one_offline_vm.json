@@ -4,26 +4,16 @@
       {
         "apiVersion": "kubevirt.io/v1alpha1",
         "kind": "OfflineVirtualMachine",
-        "metadata": {
-          "clusterName": "",
-          "creationTimestamp": "2018-03-14T15:38:04Z",
-          "generation": 0,
-          "name": "2cores1024mem",
-          "namespace": "default",
-          "resourceVersion": "243244",
-          "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/offlinevirtualmachines/2cores1024mem",
-          "uid": "afd81ba1-279d-11e8-b7f0-52540043c7f7"
-        },
-        "spec": {
-          "running": true,
-          "template": {
-            "spec": {
-              "domain": {
-                "cpu": {
-                  "cores": 2
-                },
-                "devices": {
-                  "disks": [
+        "name": "2cores1024mem",
+        "namespace": "default",
+        "resource_version": "243244",
+        "uid": "afd81ba1-279d-11e8-b7f0-52540043c7f7",
+        "labels": null,
+        "owner_reference": null,
+        "annotations": null,
+        "cpu_cores": 2,
+        "memory": "1024Mi",
+        "disks": [
                     {
                       "disk": {
                         "dev": "vda"
@@ -38,18 +28,8 @@
                       "name": "cloudinitdisk",
                       "volumeName": "cloudinitvolume"
                     }
-                  ]
-                },
-                "machine": {
-                  "type": "q35"
-                },
-                "resources": {
-                  "requests": {
-                    "memory": "1024Mi"
-                  }
-                }
-              },
-              "volumes": [
+                  ],
+        "volumes": [
                 {
                   "name": "registryvolume",
                   "registryDisk": {
@@ -63,9 +43,6 @@
                   "name": "cloudinitvolume"
                 }
               ]
-            }
-          }
-        }
       }
     ],
     "live_vms": [],
