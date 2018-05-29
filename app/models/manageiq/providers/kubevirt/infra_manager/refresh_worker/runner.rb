@@ -104,9 +104,12 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     memory.add_list_version(:offline_vms, collector.offline_vms.resource_version)
     memory.add_list_version(:live_vms, collector.live_vms.resource_version)
     memory.add_list_version(:templates, collector.templates.resource_version)
+
+    manager.update_attributes(:last_refresh_error => nil, :last_refresh_date => Time.now.utc)
   rescue StandardError => error
     _log.error('Full refresh failed.')
     _log.log_backtrace(error)
+    manager.update_attributes(:last_refresh_error => error.to_s, :last_refresh_date => Time.now.utc)
   end
 
   #
@@ -170,9 +173,12 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     notices.each do |notice|
       memory.add_notice(notice)
     end
+
+    manager.update_attributes(:last_refresh_error => nil, :last_refresh_date => Time.now.utc)
   rescue StandardError => error
     _log.error('Partial refresh failed.')
     _log.log_backtrace(error)
+    manager.update_attributes(:last_refresh_error => error.to_s, :last_refresh_date => Time.now.utc)
   end
 
   #
