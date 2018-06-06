@@ -14,11 +14,6 @@
 # limitations under the License.
 #
 
-require 'openssl'
-require 'ostruct'
-require 'rest-client'
-require 'uri'
-
 require 'fog/kubevirt'
 
 #
@@ -26,18 +21,6 @@ require 'fog/kubevirt'
 # one for the standard Kubernetes API and another one for the KubeVirt API.
 #
 class ManageIQ::Providers::Kubevirt::InfraManager::Connection
-  #
-  # The API version and group of the Kubernetes core:
-  #
-  CORE_GROUP = ''.freeze
-  CORE_VERSION = 'v1'.freeze
-
-  #
-  # The API version and group of KubeVirt:
-  #
-  KUBEVIRT_GROUP = 'kubevirt.io'.freeze
-  KUBEVIRT_VERSION = 'v1alpha1'.freeze
-
   #
   # Creates a new connection with the given options. Note that the actual connection to the
   # Kubernetes API is created lazily, when needed, so the fact that this method succeeds does *not*
