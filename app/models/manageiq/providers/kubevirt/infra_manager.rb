@@ -150,4 +150,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   def self.provision_class(_via)
     self::Provision
   end
+
+  def self.display_name(number = 1)
+    n_('Infrastructure Provider (Kubevirt)', 'Infrastructure Providers (Kubevirt)', number)
+  end
 end
