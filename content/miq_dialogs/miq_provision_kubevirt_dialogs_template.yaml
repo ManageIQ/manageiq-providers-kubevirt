@@ -184,8 +184,8 @@
           :required_method:
           - :validate_vm_name
           - :validate_regex
-          :required_regex: !ruby/regexp /\A[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\Z/
-          :required_regex_fail_details: The name must be composed of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character.
+          :required_regex: !ruby/regexp /\A(?!-)[a-z0-9-]{1,63}(?<!-)\Z/
+          :required_regex_fail_details: The name must be composed of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character.
           :required: true
           :notes:
           :display: :edit
