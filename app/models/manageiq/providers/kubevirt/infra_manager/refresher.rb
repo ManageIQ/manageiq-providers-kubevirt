@@ -18,8 +18,6 @@
 # This class is responsible for the inventory refresh process.
 #
 class ManageIQ::Providers::Kubevirt::InfraManager::Refresher < ManageIQ::Providers::BaseManager::Refresher
-  include ::EmsRefresh::Refreshers::EmsRefresherMixin
-
   def collect_inventory_for_targets(ems, targets)
     targets_with_data = targets.collect do |target|
       _log.info("Filtering inventory for #{target.class} [#{target.name}] id: [#{target.id}]...")
