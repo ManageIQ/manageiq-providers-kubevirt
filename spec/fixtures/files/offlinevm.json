@@ -1,13 +1,13 @@
 {
-  "apiVersion": "kubevirt.io/v1alpha1",
-  "kind": "OfflineVirtualMachine",
+  "apiVersion": "kubevirt.io/v1alpha2",
+  "kind": "VirtualMachine",
   "metadata": {
     "generation": 124,
     "creationTimestamp": "2018-01-24T10:15:25Z",
     "name": "test",
     "namespace": "default",
     "resourceVersion": "262502",
-    "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/offlinevms/test",
+    "selfLink": "/apis/kubevirt.io/v1alpha2/namespaces/default/vms/test",
     "uid": "7e6fb1ac-00ef-11e8-8840-525400b2cba8"
   },
   "spec": {

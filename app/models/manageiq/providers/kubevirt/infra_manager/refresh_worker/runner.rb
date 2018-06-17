@@ -101,8 +101,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
 
     # Update the memory:
     memory.add_list_version(:nodes, collector.nodes.resource_version)
-    memory.add_list_version(:offline_vms, collector.offline_vms.resource_version)
-    memory.add_list_version(:live_vms, collector.live_vms.resource_version)
+    memory.add_list_version(:vms, collector.vms.resource_version)
+    memory.add_list_version(:vm_instances, collector.vm_instances.resource_version)
     memory.add_list_version(:templates, collector.templates.resource_version)
 
     manager.update_attributes(:last_refresh_error => nil, :last_refresh_date => Time.now.utc)
@@ -157,8 +157,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # Create and populate the collector:
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
     collector.nodes = notices_of_kind(relevant, 'Node')
-    collector.offline_vms = notices_of_kind(relevant, 'OfflineVirtualMachine')
-    collector.live_vms = notices_of_kind(relevant, 'VirtualMachine')
+    collector.vms = notices_of_kind(relevant, 'VirtualMachine')
+    collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
     collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
 
     # Create the parser and persister, wire them, and execute the persist:
@@ -203,8 +203,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     @watches = []
     manager.with_provider_connection do |connection|
       @watches << connection.watch_nodes(:resource_version => memory.get_list_version(:nodes))
-      @watches << connection.watch_offline_vms(:resource_version => memory.get_list_version(:offline_vms))
-      @watches << connection.watch_live_vms(:resource_version => memory.get_list_version(:live_vms))
+      @watches << connection.watch_vms(:resource_version => memory.get_list_version(:vms))
+      @watches << connection.watch_vm_instances(:resource_version => memory.get_list_version(:vm_instances))
       @watches << connection.watch_templates(:resource_version => memory.get_list_version(:templates))
     end
 

@@ -21,16 +21,16 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
 
   def raw_destroy
     ext_management_system.with_provider_connection do |connection|
-      # Retrieve the details of the offline virtual machine:
+      # Retrieve the details of the virtual machine:
       begin
-        live_vm = connection.live_vm(name)
+        vm_instance = connection.vm_instance(name)
       rescue KubeException
-        # the live virtual machine doesn't exist
-        live_vm = nil
+        # the virtual machine instance doesn't exist
+        vm_instance = nil
       end
 
-      # delete live vm
-      connection.delete_live_vm(name) unless live_vm.nil?
+      # delete vm instance
+      connection.delete_vm_instance(name) unless vm_instance.nil?
     end
   end
 end

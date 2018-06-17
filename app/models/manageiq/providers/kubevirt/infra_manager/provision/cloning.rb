@@ -47,9 +47,9 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       template = connection.template(source.name)
       template.clone(user_options(options))
 
-      offlinevm = connection.offline_vm(options[:name])
+      vm = connection.vm(options[:name])
 
-      phase_context[:new_vm_ems_ref] = offlinevm.uid
+      phase_context[:new_vm_ems_ref] = vm.uid
     end
 
     # TODO: check if we need to roll back if one object creation fails

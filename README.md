@@ -46,10 +46,8 @@ provider, it only uses the `default` namespace, and that is hard-coded.
 We should consider making the namespace part of the initial dialog to
 add the provider, like the authentication details or the IP address.
 
-* In KubeVirt virtual machines are started when they are created. We are
-discussing currnetly offline virtual machine which would represent stopped
-vm. Offline virtual machine api is not implemented yet so we fake it by
-defining [custom resource](manifests/crd-offline-virtual-machine.yml).
+* In KubeVirt virtual machine instances are started when they are created.
+Virtual machine represent stopped vm.
 
 * The provider considers the KubeVirt configuration the source of truth. 
 That should be changed, the source of truth should be the ManageIQ database.

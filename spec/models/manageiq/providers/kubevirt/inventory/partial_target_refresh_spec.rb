@@ -22,7 +22,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
     it 'works correctly with one node' do
       # Run the parser:
       manager = create_manager
-      collector = create_collector(manager, 'one_offline_vm')
+      collector = create_collector(manager, 'one_vm')
       persister = create_persister(manager)
       parser = described_class.new
       parser.collector = collector
@@ -33,14 +33,14 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
       check_builtin_clusters(persister)
       check_builtin_storages(persister)
 
-      # Check that the collection of offline vms has been created:
+      # Check that the collection of vms has been created:
       vm_collection = persister.collections[:vms]
       expect(vm_collection).to_not be_nil
       vms_data = vm_collection.data
       expect(vms_data).to_not be_nil
       expect(vms_data.length).to eq(1)
 
-      # Check that the first offline vm has been created:
+      # Check that the first vm has been created:
       vm = vms_data.first
       expect(vm).to_not be_nil
       expect(vm.connection_state).to eq('connected')
@@ -85,8 +85,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
   #
   #     {
   #        "nodes": [...],
-  #        "offline_vms": [...],
-  #        "live_vms": [...],
+  #        "vms": [...],
+  #        "vm_instances": [...],
   #        "templates": [...]
   #     }
   #
@@ -108,8 +108,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
     # Create the collector and populate it with the data from the JSON document:
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
     collector.nodes = data.nodes
-    collector.offline_vms = data.offline_vms
-    collector.live_vms = data.live_vms
+    collector.vms = data.vms
+    collector.vm_instances = data.vm_instances
     collector.templates = data.templates
 
     # Return the collector double:

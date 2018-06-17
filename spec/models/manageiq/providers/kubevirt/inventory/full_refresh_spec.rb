@@ -79,8 +79,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   #
   #     {
   #        "nodes": [...],
-  #        "offline_vms": [...],
-  #        "live_vms": [...],
+  #        "vms": [...],
+  #        "vm_instances": [...],
   #        "templates": [...]
   #     }
   #
@@ -102,8 +102,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
     # Create the collector and populate it with the data from the JSON document:
     collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
     collector.nodes = data.nodes
-    collector.offline_vms = data.offline_vms
-    collector.live_vms = data.live_vms
+    collector.vms = data.vms
+    collector.vm_instances = data.vm_instances
     collector.templates = data.templates
 
     # Return the collector double:

@@ -57,7 +57,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :status     => "Running"
       )
 
-      parser.send(:process_live_vm, source)
+      parser.send(:process_vm_instance, source)
       expect(vm).to have_attributes(
         :name             => "demo-vm",
         :template         => false,

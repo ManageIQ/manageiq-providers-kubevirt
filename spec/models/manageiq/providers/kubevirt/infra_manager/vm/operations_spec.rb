@@ -46,18 +46,18 @@ describe 'VM::Operations' do
     let(:infra_manager) { container_manager.infra_manager }
     let(:vm) { FactoryGirl.create(:vm_kubevirt, :ext_management_system => infra_manager) }
     let(:connection) { double("connection") }
-    let(:live_vm_metadata) { double("live_vm_metadata", :namespace => "default") }
-    let(:offline_vm_metadata) { double("offline_vm_metadata", :namespace => "default") }
-    let(:live_vm) { double("live_vm", :metadata => live_vm_metadata) }
-    let(:offline_vm) { double("offline_vm", :metadata => offline_vm_metadata) }
+    let(:vm_instance_metadata) { double("vm_instance_metadata", :namespace => "default") }
+    let(:vm_instance) { double("vm_instance", :metadata => vm_instance_metadata) }
+    let(:vm_metadata) { double("vm_metadata", :namespace => "default") }
+    let(:provider_vm) { double("provider_vm", :metadata => vm_metadata) }
 
     context 'running vm' do
       it 'removes an running vm from kubevirt provider' do
-        allow(connection).to receive(:live_vm).and_return(live_vm)
-        allow(connection).to receive(:offline_vm).and_return(offline_vm)
+        allow(connection).to receive(:vm_instance).and_return(vm_instance)
+        allow(connection).to receive(:vm).and_return(provider_vm)
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
 
-        expect(connection).to receive(:delete_live_vm)
+        expect(connection).to receive(:delete_vm_instance)
 
         vm.raw_destroy
       end
@@ -67,11 +67,11 @@ describe 'VM::Operations' do
       it 'removes a stopped vm from kubevirt provider' do
         require 'kubeclient'
         error = KubeException.new(404, "entity not found", "")
-        allow(connection).to receive(:live_vm).and_raise(error)
-        allow(connection).to receive(:offline_vm).and_return(offline_vm)
+        allow(connection).to receive(:vm_instance).and_raise(error)
+        allow(connection).to receive(:vm).and_return(provider_vm)
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
 
-        expect(connection).not_to receive(:delete_live_vm)
+        expect(connection).not_to receive(:delete_vm_instance)
 
         vm.raw_destroy
       end
