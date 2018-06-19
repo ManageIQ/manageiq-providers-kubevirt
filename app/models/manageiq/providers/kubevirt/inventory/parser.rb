@@ -59,7 +59,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     storage_object.ems_ref = STORAGE_ID
     storage_object.ems_ref_obj = STORAGE_ID
     storage_object.name = collector.manager.name
-    storage_object.store_type = 'KUBERNETES'
+    storage_object.store_type = 'UNKNOWN'
     storage_object.total_space = 0
     storage_object.free_space = 0
     storage_object.uncommitted = 0

@@ -161,6 +161,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
     expect(storage.ems_ref).to eq('0')
     expect(storage.ems_ref_obj).to eq('0')
     expect(storage.name).to eq('mykubevirt')
-    expect(storage.store_type).to eq('KUBERNETES')
+    expect(storage.store_type).to eq('UNKNOWN')
   end
 end
