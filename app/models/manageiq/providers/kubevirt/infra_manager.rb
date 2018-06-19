@@ -115,6 +115,14 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     authentication_best_fit(type).try(:status) == "Valid"
   end
 
+  def authentication_for_providers
+    authentications.where(:authtype => :kubevirt)
+  end
+
+  def default_auth_status_ok?
+    true
+  end
+
   #
   # The ManageIQ core calls this method whenever a connection to the server is needed.
   #
