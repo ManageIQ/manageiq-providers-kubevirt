@@ -2,11 +2,11 @@
 
 Virtual machine templates are openshift templates (link:https://docs.openshift.org/latest/dev_guide/templates.html[Openshift Templates]) +
 that describe virtual machine specifications which produce the following template objects: +
-**One** OfflineVirtualMachine and **0-N** PersistentVolumeClaims. +
+**One** VirtualMachine and **0-N** PersistentVolumeClaims. +
 The following document describes the process of creating a Virtual machine template which will be managed by ManageIQ.
 
 == Writing templates
-You can define new virtual machine templates to make it easy to recreate all relevant objects (OfflineVirtualMachine and PersistentVolumeClaim). The template will define the objects it creates along with some metadata to guide the creation of those objects.
+You can define new virtual machine templates to make it easy to recreate all relevant objects (VirtualMachine and PersistentVolumeClaim). The template will define the objects it creates along with some metadata to guide the creation of those objects.
 
 [source,yaml]
 ----
@@ -19,8 +19,8 @@ metadata:
     kubevirt.io/os: rhel7.4 ❷
     miq.github.io/kubevirt-is-vm-template: True ❸
 objects:
-- apiVersion: kubevirt.io/v1alpha1
-  kind: OfflineVirtualMachine ❹
+- apiVersion: kubevirt.io/v1alpha2
+  kind: VirtualMachine ❹
   metadata:
     name: ${NAME} ➎
   spec:
@@ -65,11 +65,11 @@ parameters: ...
 
 ❸ Indicator if this is a kubevirt template. +
 
-❹ The OfflineVirtualMachine Object. This object must appear only once in the template. +
+❹ The VirtualMachine Object. This object must appear only once in the template. +
 
-➎ OfflineVirtualMachine’s name. +
+➎ VirtualMachine’s name. +
 
-➏ OfflineVirtualMachine’s resources, currently includes under requirements only memory. +
+➏ VirtualMachine’s resources, currently includes under requirements only memory. +
    Memory is the minimal amount the Virtual Machine requires. +
    These attributes are represented as parameters that will either be filled out by the user Or receive default values. +
    
@@ -81,7 +81,7 @@ parameters: ...
 ➒ Specification of a disk's volume from the disks section. It contains persistent volume claims.  
 (more about link:https://kubernetes.io/docs/concepts/storage/persistent-volumes/[Persistent Volume Claims] ) +
         
-➓ The PersistenVolumeClaim Object that accompanies the OfflineVirtualMachine Object. +
+➓ The PersistenVolumeClaim Object that accompanies the VirtualMachine Object. +
 
 ⓫ PersistenVolumeClaims should include: name, permissions and requested amount of storage. +
 
@@ -108,7 +108,7 @@ metadata:
 
 Parameters allow a value to be supplied by the user or generated when the template is instantiated. +
 Then, that value is substituted wherever the parameter is referenced. +
-The following parameters will be used for the OfflineVirtualMachine name (and as a part of the persistent volume claim names) +
+The following parameters will be used for the VirtualMachine name (and as a part of the persistent volume claim names) +
 Default values will be provided for memory and cpu, which will be used if the user does not supply a different value.
 
 [source,yaml]
@@ -176,8 +176,8 @@ metadata:
     kubevirt.io/os: rhel7.4
     miq.github.io/kubevirt-is-vm-template: true  
 objects:
-- apiVersion: kubevirt.io/v1alpha1
-  kind: OfflineVirtualMachine
+- apiVersion: kubevirt.io/v1alpha2
+  kind: VirtualMachine
   metadata:
     name: ${NAME} 
   spec:

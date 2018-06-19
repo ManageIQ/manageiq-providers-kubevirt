@@ -1,9 +1,9 @@
 {
     "nodes": [],
-    "offline_vms": [
+    "vms": [
       {
-        "apiVersion": "kubevirt.io/v1alpha1",
-        "kind": "OfflineVirtualMachine",
+        "apiVersion": "kubevirt.io/v1alpha2",
+        "kind": "VirtualMachine",
         "name": "2cores1024mem",
         "namespace": "default",
         "resource_version": "243244",
@@ -45,6 +45,6 @@
               ]
       }
     ],
-    "live_vms": [],
+    "vm_instances": [],
     "templates": []
 }

@@ -1,5 +1,5 @@
 {
-  "apiVersion": "kubevirt.io/v1alpha1",
+  "apiVersion": "kubevirt.io/v1alpha2",
   "kind": "Template",
   "metadata": {
     "annotations": {
@@ -15,13 +15,13 @@
     "name": "working",
     "namespace": "default",
     "resourceVersion": "262502",
-    "selfLink": "/apis/kubevirt.io/v1alpha1/namespaces/default/templates/test",
+    "selfLink": "/apis/kubevirt.io/v1alpha2/namespaces/default/templates/test",
     "uid": "7e6fb1ac-00ef-11e8-8840-525400b2cba8"
   },
   "objects": [
     {
-      "apiVersion": "kubevirt.io/v1alpha1",
-      "kind": "OfflineVirtualMachine",
+      "apiVersion": "kubevirt.io/v1alpha2",
+      "kind": "VirtualMachine",
       "metadata": {
         "name": "${NAME}",
       },

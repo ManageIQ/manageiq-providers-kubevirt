@@ -108,35 +108,35 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     )
   end
 
-  def process_offline_vms(objects)
+  def process_vms(objects)
     objects.each do |object|
-      process_offline_vm(object)
+      process_vm(object)
     end
   end
 
-  def process_offline_vm(object)
+  def process_vm(object)
     # Process the domain:
     vm_object = process_domain(object.memory, object.cpu_cores, object.uid, object.name)
 
     # Add the inventory object for the OperatingSystem
     process_os(vm_object, object.labels, object.annotations)
 
-    # The power status is initially off, it will be set to on later if the live virtual machine exists:
+    # The power status is initially off, it will be set to on later if the virtual machine instance exists:
     vm_object.raw_power_state = 'Succeeded'
   end
 
-  def process_live_vms(objects)
+  def process_vm_instances(objects)
     objects.each do |object|
-      process_live_vm(object)
+      process_vm_instance(object)
     end
   end
 
-  def process_live_vm(object)
+  def process_vm_instance(object)
     # Get the basic information:
     uid = object.uid
     name = object.name
 
-    # Get the identifier of the offline virtual machine from the owner reference:
+    # Get the identifier of the virtual machine from the owner reference:
     unless object.owner_name.nil?
       # seems like valid use case for now
       uid = object.owner_uid
@@ -217,19 +217,19 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     template_object.uid_ems = uid
     template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
 
-    offlinevm = offline_vm_from_objects(object.objects)
+    vm = vm_from_objects(object.objects)
 
     # Add the inventory object for the hardware:
-    process_hardware(template_object, object.parameters, object.labels, offlinevm.dig(:spec, :template, :spec, :domain))
+    process_hardware(template_object, object.parameters, object.labels, vm.dig(:spec, :template, :spec, :domain))
 
     # Add the inventory object for the OperatingSystem
     process_os(template_object, object.labels, object.annotations)
   end
 
-  def offline_vm_from_objects(objects)
+  def vm_from_objects(objects)
     vm = nil
     objects.each do |object|
-      if object[:kind] == "OfflineVirtualMachine"
+      if object[:kind] == "VirtualMachine"
         vm = object
       end
     end

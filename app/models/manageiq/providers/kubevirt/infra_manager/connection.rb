@@ -110,70 +110,70 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   end
 
   #
-  # Returns an array containing the offline virtual machines available in the KubeVirt environment.
+  # Returns an array containing the virtual machines available in the KubeVirt environment.
   #
-  # @return [Array] The array of offline virtual machines.
+  # @return [Array] The array of virtual machines.
   #
-  def offline_vms
-    @conn.offlinevms
+  def vms
+    @conn.vms
   end
 
   #
-  # Retrieves the offline virtual machine with the given name.
+  # Retrieves the virtual machine with the given name.
   #
   # @param name [String] The name of the virtual machine.
   # @return [Object] The virtual machine object.
   #
-  def offline_vm(name)
-    @conn.offlinevms.get(name)
+  def vm(name)
+    @conn.vms.get(name)
   end
 
   #
-  # Returns a watcher for offline virtual machines.
+  # Returns a watcher for virtual machines.
   #
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
-  def watch_offline_vms(opts = {})
-    @conn.watch_offline_vms(opts)
+  def watch_vms(opts = {})
+    @conn.watch_vms(opts)
   end
 
   #
-  # Returns an array containing the live virtual machines available in the KubeVirt environment.
+  # Returns an array containing the virtual machine instances available in the KubeVirt environment.
   #
-  # @return [Array] The array of live virtual machines.
+  # @return [Array] The array of virtual machine instances.
   #
-  def live_vms
-    @conn.livevms
+  def vm_instances
+    @conn.vminstances
   end
 
   #
-  # Retrieves the live virtual machine with the given name.
+  # Retrieves the virtual machine instance with the given name.
   #
   # @param name [String] The name of the virtual machine.
   # @return [Object] The virtual machine object.
   #
-  def live_vm(name)
-    @conn.livevms.get(name)
+  def vm_instance(name)
+    @conn.vminstances.get(name)
   end
 
   #
-  # Returns a watcher for live virtual machines.
+  # Returns a watcher for virtual machine instances.
   #
   # @param opts [Hash] A hash with options for the watcher.
   # @return [Kubeclient::Common::WatchStream] The watcher.
   #
-  def watch_live_vms(opts = {})
-    @conn.watch_live_vms(opts)
+  def watch_vm_instances(opts = {})
+    @conn.watch_vminstances(opts)
   end
 
   #
-  # Deletes a live virtual machine.
+  # Deletes a virtual machine instance.
   #
   # @param name [String] The name of the virtual machine to delete.
   #
-  def delete_live_vm(name)
-    @conn.livevms.destroy(name, @namespace)
+  def delete_vm_instance(name)
+    @conn.vminstances.destroy(name, @namespace)
   end
 
   #

@@ -12,7 +12,7 @@
             "hostname": "mynode.local",
         }
     ],
-    "offline_vms": [],
-    "live_vms": [],
+    "vms": [],
+    "vm_instances": [],
     "templates": []
 }

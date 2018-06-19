@@ -12,9 +12,6 @@ to work with _KubeVirt_ in _Kubernetes_.
 `account-openshift.yml`:: Example account with the permissions required
 to work with _KubeVirt_ in _OpenShift_.
 
-`crd-offline-virtual-machine.yml`:: Custom resource definition for
-offline virtual machines.
-
 `crd-template.yml`:: Custom resource definition for templates.
 
 `example-template.yml`:: Example template for Linux VM using pvcs and vm presets.
