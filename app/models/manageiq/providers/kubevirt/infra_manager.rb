@@ -119,10 +119,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     authentications.where(:authtype => :kubevirt)
   end
 
-  def default_auth_status_ok?
-    true
-  end
-
   #
   # The ManageIQ core calls this method whenever a connection to the server is needed.
   #
