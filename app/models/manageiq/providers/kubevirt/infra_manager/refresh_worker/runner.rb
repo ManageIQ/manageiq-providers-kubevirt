@@ -60,11 +60,11 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   def before_exit(_message, _exit_code)
     # Ask the watch threads to finish, and wait for them:
     stop_watches
-    @watchers.each(&:join)
+    @watchers&.each(&:join)
 
     # Ask the processor thread to finish, and wait for it:
-    @queue.push(nil)
-    @processor.join
+    @queue&.push(nil)
+    @processor&.join
   end
 
   private
@@ -226,7 +226,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # Stop all the watches
   #
   def stop_watches
-    @finish.value = true
-    @watches.each(&:finish)
+    @finish&.value = true
+    @watches&.each(&:finish)
   end
 end
