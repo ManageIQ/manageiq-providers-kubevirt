@@ -75,6 +75,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
     manager = double
     allow(manager).to receive(:name).and_return('mykubevirt')
     allow(manager).to receive(:id).and_return(0)
+    allow(manager.class).to receive(:ems_type).and_return(::ManageIQ::Providers::Kubevirt::Constants::VENDOR)
     manager
   end
 
