@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: template-without-parameters
+  annotations:
+    description: "OpenShift KubeVirt Cirros VM template"
+    tags: "kubevirt,openshift,template,linux"
+  labels:
+    kubevirt.io/os: fedora28
+    miq.github.io/kubevirt-is-vm-template: "true"
+objects:
+- apiVersion: kubevirt.io/v1alpha2
+  kind: VirtualMachine
+  metadata:
+    name: ${NAME}
+    labels:
+      kubevirt-ovm: ovm-${NAME}
+  spec:
+    running: false
+    template:
+      metadata:
+        labels:
+          kubevirt-ovm: ovm-${NAME}
+          special: demo-key
+      spec:
+        domain:
+          cpu:
+            cores: 2
+          resources:
+            requests:
+              memory: 1Gi
+          devices:
+            disks:
+            - disk:
+                bus: virtio
+              name: disk0
+              volumeName: root
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+              volumeName: cloudinitvolume
+        volumes:
+          - name: root
+            persistentVolumeClaim:
+              claimName: rhel75-pvc-15
+          - name: cloudinitvolume
+            cloudInitNoCloud:
+              userData: |-
+                #cloud-config
+                password: 'redhat'
+                chpasswd: { expire: False }
+                ssh_authorized_keys:
+                - ${KEY}
+parameters:
+- name: NAME
+  description: Name for the new VM
+

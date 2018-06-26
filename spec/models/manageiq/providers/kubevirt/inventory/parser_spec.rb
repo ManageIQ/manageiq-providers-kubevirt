@@ -144,5 +144,74 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :mode            => "persistent"
       )
     end
+
+    it 'parses a template without parameters' do
+      disk_collection = double("disk_collection")
+      disk = FactoryGirl.create(:disk)
+      allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
+
+      hw_collection = double("hw_collection")
+      hardware = FactoryGirl.create(:hardware)
+      allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk])
+
+      os_collection = double("os_collection")
+      os = FactoryGirl.create(:operating_system)
+      allow(os_collection).to receive(:find_or_build).and_return(os)
+
+      template_collection = double("template_collection")
+      temp = FactoryGirl.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
+      allow(template_collection).to receive(:find_or_build).and_return(temp)
+
+      parser = described_class.new
+      parser.instance_variable_set(:@template_collection, template_collection)
+      parser.instance_variable_set(:@hw_collection, hw_collection)
+      parser.instance_variable_set(:@vm_os_collection, os_collection)
+      parser.instance_variable_set(:@disk_collection, disk_collection)
+
+      json = unprocessed_object("template-without-parameters.yml")
+
+      source = double(
+        :name        => "template-without-parameters",
+        :uid         => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
+        :objects     => json.objects,
+        :parameters  => json.parameters,
+        :labels      => json.metadata.labels,
+        :annotations => json.metadata.annotations
+      )
+
+      parser.send(:process_template, source)
+
+      expect(temp).to have_attributes(
+        :name             => "template-without-parameters",
+        :template         => true,
+        :ems_ref          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
+        :ems_ref_obj      => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
+        :uid_ems          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
+        :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
+        :power_state      => "never",
+        :location         => "unknown",
+        :connection_state => "connected",
+      )
+
+      expect(temp.hardware).to have_attributes(
+        :guest_os             => "fedora28",
+        :cpu_cores_per_socket => 2,
+        :cpu_total_cores      => 2,
+        :memory_mb            => 1024
+      )
+
+      expect(temp.operating_system).to have_attributes(
+        :product_name => "fedora28",
+        :product_type => "linux"
+      )
+
+      expect(disk).to have_attributes(
+        :device_name     => "cloudinitdisk",
+        :location        => "cloudinitvolume",
+        :device_type     => "disk",
+        :present         => true,
+        :mode            => "persistent"
+      )
+    end
   end
 end
