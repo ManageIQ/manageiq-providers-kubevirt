@@ -238,8 +238,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def process_hardware(template_object, params, labels, domain)
     hw_object = hw_collection.find_or_build(template_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(default_value(params, 'MEMORY'), 'Mi')
-    cpu = default_value(params, 'CPU_CORES')
+    memory = default_value(params, 'MEMORY') || domain.dig(:resources, :requests, :memory)
+    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
+    cpu = default_value(params, 'CPU_CORES') || domain.dig(:cpu, :cores)
     hw_object.cpu_cores_per_socket = cpu
     hw_object.cpu_total_cores = cpu
     hw_object.guest_os = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
@@ -250,7 +251,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
 
   def default_value(params, name)
     name_param = params.detect { |param| param[:name] == name }
-    name_param[:value]
+    name_param[:value] if name_param
   end
 
   def process_disks(hw_object, domain)
