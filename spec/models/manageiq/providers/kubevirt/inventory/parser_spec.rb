@@ -206,11 +206,11 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       )
 
       expect(disk).to have_attributes(
-        :device_name     => "cloudinitdisk",
-        :location        => "cloudinitvolume",
-        :device_type     => "disk",
-        :present         => true,
-        :mode            => "persistent"
+        :device_name => "cloudinitdisk",
+        :location    => "cloudinitvolume",
+        :device_type => "disk",
+        :present     => true,
+        :mode        => "persistent"
       )
     end
   end
