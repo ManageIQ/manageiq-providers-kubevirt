@@ -65,8 +65,8 @@ describe 'VM::Operations' do
 
     context 'stopped vm' do
       it 'removes a stopped vm from kubevirt provider' do
-        require 'kubeclient'
-        error = KubeException.new(404, "entity not found", "")
+        require 'fog/kubevirt'
+        error = Fog::Kubevirt::Errors::ClientError.new
         allow(connection).to receive(:vm_instance).and_raise(error)
         allow(connection).to receive(:vm).and_return(provider_vm)
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
