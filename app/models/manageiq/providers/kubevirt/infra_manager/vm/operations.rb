@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'fog/kubevirt'
 
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   extend ActiveSupport::Concern
@@ -24,7 +25,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
       # Retrieve the details of the virtual machine:
       begin
         vm_instance = connection.vm_instance(name)
-      rescue KubeException
+      rescue Fog::Kubevirt::Errors::ClientError
         # the virtual machine instance doesn't exist
         vm_instance = nil
       end
