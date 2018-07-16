@@ -46,7 +46,7 @@ parameters:
   description: Name for the new VM
 - name: MEMORY
   description: Amount of memory in MB
-  value: 512Mi
+  value: 1Gi
 - name: CPU_CORES
   description: Amount of cores
   value: "4"
