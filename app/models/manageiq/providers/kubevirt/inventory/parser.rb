@@ -165,6 +165,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     vm_object.type = ::ManageIQ::Providers::Kubevirt::InfraManager::Vm.name
     vm_object.uid_ems = uid
     vm_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
+    vm_object.location = 'unknown'
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
@@ -216,6 +217,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Invento
     template_object.type = ::ManageIQ::Providers::Kubevirt::InfraManager::Template.name
     template_object.uid_ems = uid
     template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
+    template_object.location = 'unknown'
 
     vm = vm_from_objects(object.objects)
 
