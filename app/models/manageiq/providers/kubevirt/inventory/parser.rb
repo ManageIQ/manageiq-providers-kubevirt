@@ -18,7 +18,7 @@
 # This is the base class for all the rest of the parsers. It contains the methods that will be
 # shared by the full and targeted refresh parsers.
 #
-class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManagerRefresh::Inventory::Parser
+class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::Inventory::Parser
   include Vmdb::Logging
   require 'fog/kubevirt'
 

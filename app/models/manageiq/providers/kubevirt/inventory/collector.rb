@@ -21,7 +21,7 @@
 # Note that unlike other typical collectors it doesn't really retrieve that data itself: the refresh worker will create
 # with the data that it already obtained from the KubeVirt API.
 #
-class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManagerRefresh::Inventory::Collector
+class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers::Inventory::Collector
   attr_accessor :nodes
   attr_accessor :vms
   attr_accessor :vm_instances
