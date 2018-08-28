@@ -17,7 +17,7 @@
 #
 # This class is responsible for collecting, parsing and persisting the inventory.
 #
-class ManageIQ::Providers::Kubevirt::InfraManager::Inventory < ManagerRefresh::Inventory
+class ManageIQ::Providers::Kubevirt::InfraManager::Inventory < ManageIQ::Providers::Inventory
   require_nested :Collector
   require_nested :Parser
   require_nested :Persister
