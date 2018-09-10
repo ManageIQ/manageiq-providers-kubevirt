@@ -21,13 +21,13 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
   describe '#parse' do
     it 'works correctly with one node' do
       # Run the parser:
-      manager = create_manager
-      collector = create_collector(manager, 'one_vm')
-      persister = create_persister(manager)
-      parser = described_class.new
-      parser.collector = collector
-      parser.persister = persister
-      parser.parse
+      manager = create_manager('one_vm')
+      collector = ManageIQ::Providers::Kubevirt::Inventory.collector_class_for(manager, nil).new(manager, nil)
+      persister = ManageIQ::Providers::Kubevirt::Inventory.persister_class_for(manager, nil).new(manager, nil)
+      inventory = ManageIQ::Providers::Kubevirt::Inventory.new(persister,
+                                                               collector,
+                                                               [described_class.new])
+      inventory.parse
 
       # Check that the built-in objects have been added:
       check_builtin_clusters(persister)
@@ -71,16 +71,17 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
   #
   # @return [Object] The manager object.
   #
-  def create_manager
+  def create_manager(file_name)
     manager = double
     allow(manager).to receive(:name).and_return('mykubevirt')
     allow(manager).to receive(:id).and_return(0)
     allow(manager.class).to receive(:ems_type).and_return(::ManageIQ::Providers::Kubevirt::Constants::VENDOR)
+    allow(manager).to receive(:with_provider_connection).and_yield(json_data(file_name))
     manager
   end
 
   #
-  # Creates a collector from a JSON file. The file should be in the `spec/fixtures/files/collectors`
+  # Creates a collector data from a JSON file. The file should be in the `spec/fixtures/files/collectors`
   # directory of the project. The name should be the given name followed by `.json`. The content of
   # the JSON file should be an object like this:
   #
@@ -94,37 +95,12 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
   # The elements of these arrays should be the JSON representation of objects extracted from the
   # Kubernetes API. A simple way to obtain it this, for example for a node:
   #
-  #     kubectl get ovms newvm -o json
-  #
-  # @param manager [Object] The instance of the manager.
-  # @param name [String] The prefix for the name of the JSON file.
-  # @return [Object] A collector that takes the data from the JSON file.
-  #
-  def create_collector(manager, name)
+  #     kubectl get node mynode -o json
+  def json_data(name)
     # Load the data and convert it to recursive open struct:
     data = file_fixture("collectors/#{name}.json").read
     data = YAML.safe_load(data)
-    data = RecursiveOpenStruct.new(data, :recurse_over_arrays => true)
-
-    # Create the collector and populate it with the data from the JSON document:
-    collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
-    collector.nodes = data.nodes
-    collector.vms = data.vms
-    collector.vm_instances = data.vm_instances
-    collector.templates = data.templates
-
-    # Return the collector double:
-    collector
-  end
-
-  #
-  # Creates a persister.
-  #
-  # @params manager [Object] The instance of the manager.
-  # @return [Object] The persister.
-  #
-  def create_persister(manager)
-    ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, nil)
+    RecursiveOpenStruct.new(data, :recurse_over_arrays => true)
   end
 
   #
