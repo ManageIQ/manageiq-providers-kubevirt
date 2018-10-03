@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the ManageIQ_Providers_Kubevirt package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ManageIQ_Providers_Kubevirt 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-10-03 15:09+0200\n"
+"PO-Revision-Date: 2018-10-03 15:09+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ../app/models/manageiq/providers/kubevirt/infra_manager.rb:163
+msgid "Infrastructure Provider (Kubevirt)"
+msgid_plural "Infrastructure Providers (Kubevirt)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../lib/manageiq/providers/kubevirt/engine.rb:8
+msgid "KubeVirt Provider"
+msgstr ""
+
+#: ../app/models/manageiq/providers/kubevirt/infra_manager/template.rb:19
+msgid "Template (Kubevirt)"
+msgid_plural "Templates (Kubevirt)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../app/models/manageiq/providers/kubevirt/infra_manager/vm.rb:106
+msgid "Virtual Machine (Kubevirt)"
+msgid_plural "Virtual Machines (Kubevirt)"
+msgstr[0] ""
+msgstr[1] ""
