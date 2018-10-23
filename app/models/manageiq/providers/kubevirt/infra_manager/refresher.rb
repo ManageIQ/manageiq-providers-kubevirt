@@ -22,7 +22,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Refresher < ManageIQ::Provide
     targets_with_data = targets.collect do |target|
       _log.info("Filtering inventory for #{target.class} [#{target.name}] id: [#{target.id}]...")
 
-      data = ManageIQ::Providers::Kubevirt::Builder.build_inventory(ems, target)
+      data = ManageIQ::Providers::Kubevirt::Inventory.build(ems, target)
 
       _log.info("Filtering inventory...Complete")
       [target, data]
