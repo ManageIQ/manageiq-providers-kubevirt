@@ -3,50 +3,67 @@ kind: Template
 metadata:
   name: working
   annotations:
-    description: "OCP kubevirt linux, template"
-    tags: "kubevirt,ocp,template,linux"
+    description: OCP KubeVirt Fedora 27 VM template
+    iconClass: icon-fedora
+    tags: kubevirt,ocp,template,linux,virtualmachine
+  creationTimestamp: null
   labels:
+    kubevirt.io/os: fedora27
     miq.github.io/kubevirt-is-vm-template: "true"
-    kubevirt.io/os: rhel-7
 objects:
 - apiVersion: kubevirt.io/v1alpha2
   kind: VirtualMachine
   metadata:
+    creationTimestamp: null
+    labels:
+      kubevirt-vm: vm-${NAME}
+      kubevirt.io/os: fedora27
     name: ${NAME}
   spec:
+    running: false
     template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          kubevirt-vm: vm-${NAME}
+          kubevirt.io/os: fedora27
       spec:
         domain:
           cpu:
-            cores: ${CPU_CORES}
+            cores: ${{CPU_CORES}}
           resources:
             requests:
               memory: ${MEMORY}
-          machine:
-            type: q35
           devices:
             disks:
-            - name: registrydisk
+            - disk:
+                bus: virtio
+              name: registrydisk
               volumeName: registryvolume
-              disk:
-                dev: vda
-            - name: cloudinitdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
               volumeName: cloudinitvolume
-              disk:
-                dev: vdb
+          machine:
+            type: ""
+        terminationGracePeriodSeconds: 0
         volumes:
-          - name: registryvolume
-            registryDisk:
-              image: kubevirt/fedora-cloud-registry-disk-demo:latest
-          - name: cloudinitvolume
-            cloudInitNoCloud:
-              userDataBase64: I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogYXRvbWljCnNzaF9wd2F1dGg6IFRydWUKY2hwYXNzd2Q6IHsgZXhwaXJlOiBGYWxzZSB9Cg==
+        - name: registryvolume
+          registryDisk:
+            image: registry:5000/kubevirt/fedora-cloud-registry-disk-demo:devel
+        - cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              password: fedora
+              chpasswd: { expire: False }
+          name: cloudinitvolume
+  status: {}
 parameters:
-- name: NAME
-  description: Name for the new VM
-- name: MEMORY
-  description: Amount of memory in MB
+- description: Name for the new VM
+  name: NAME
+- description: Amount of memory
+  name: MEMORY
   value: 1Gi
-- name: CPU_CORES
-  description: Amount of cores
+- description: Amount of cores
+  name: CPU_CORES
   value: "4"
