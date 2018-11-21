@@ -50,7 +50,7 @@ objects:
         volumes:
         - name: registryvolume
           registryDisk:
-            image: registry:5000/kubevirt/fedora-cloud-registry-disk-demo:devel
+            image: kubevirt/fedora-cloud-registry-disk-demo:latest
         - cloudInitNoCloud:
             userData: |-
               #cloud-config
