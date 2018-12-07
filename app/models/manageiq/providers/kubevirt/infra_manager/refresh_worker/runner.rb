@@ -95,7 +95,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     # and parse inventories
     inventory = ManageIQ::Providers::Kubevirt::Inventory.build(manager, nil)
     collector = inventory.collector
-    persister = inventory.persister
+    persister = inventory.parse
 
     # execute persist:
     persister&.persist!
