@@ -1,7 +1,7 @@
 # manageiq-providers-kubevirt
 
 [![Gem Version](https://badge.fury.io/rb/manageiq-providers-kubevirt.svg)](http://badge.fury.io/rb/manageiq-providers-kubevirt)
-[![Build Status](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt.svg)](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt)
+[![Build Status](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt.svg?branch=master)](https://travis-ci.org/ManageIQ/manageiq-providers-kubevirt)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt.svg)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/coverage)
 [![Dependency Status](https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt.svg)](https://gemnasium.com/ManageIQ/manageiq-providers-kubevirt)
