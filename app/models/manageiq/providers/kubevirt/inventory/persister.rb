@@ -131,11 +131,4 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
   def strategy
     :local_db_find_missing_references
   end
-
-  def shared_options
-    {
-      :strategy => strategy,
-      :parent   => manager.presence,
-    }
-  end
 end
