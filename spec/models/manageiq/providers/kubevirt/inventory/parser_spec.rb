@@ -24,19 +24,19 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
   describe '#process_templates' do
     it 'parses a template' do
       disk_collection = double("disk_collection")
-      disk = FactoryGirl.create(:disk)
+      disk = FactoryBot.create(:disk)
       allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
 
       hw_collection = double("hw_collection")
-      hardware = FactoryGirl.create(:hardware)
+      hardware = FactoryBot.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk])
 
       os_collection = double("os_collection")
-      os = FactoryGirl.create(:operating_system)
+      os = FactoryBot.create(:operating_system)
       allow(os_collection).to receive(:find_or_build).and_return(os)
 
       template_collection = double("template_collection")
-      temp = FactoryGirl.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
+      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
       allow(template_collection).to receive(:find_or_build).and_return(temp)
 
       parser = described_class.new
@@ -93,20 +93,20 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
 
     it "parses a template with registry disk" do
       disk_collection = double("disk_collection")
-      disk1 = FactoryGirl.create(:disk)
-      disk2 = FactoryGirl.create(:disk)
+      disk1 = FactoryBot.create(:disk)
+      disk2 = FactoryBot.create(:disk)
       allow(disk_collection).to receive(:find_or_build_by).and_return(disk1, disk2)
 
       hw_collection = double("hw_collection")
-      hardware = FactoryGirl.create(:hardware)
+      hardware = FactoryBot.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk1, disk2])
 
       os_collection = double("os_collection")
-      os = FactoryGirl.create(:operating_system)
+      os = FactoryBot.create(:operating_system)
       allow(os_collection).to receive(:find_or_build).and_return(os)
 
       template_collection = double("template_collection")
-      temp = FactoryGirl.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
+      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
       allow(template_collection).to receive(:find_or_build).and_return(temp)
 
       parser = described_class.new
@@ -147,19 +147,19 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
 
     it 'parses a template without parameters' do
       disk_collection = double("disk_collection")
-      disk = FactoryGirl.create(:disk)
+      disk = FactoryBot.create(:disk)
       allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
 
       hw_collection = double("hw_collection")
-      hardware = FactoryGirl.create(:hardware)
+      hardware = FactoryBot.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk])
 
       os_collection = double("os_collection")
-      os = FactoryGirl.create(:operating_system)
+      os = FactoryBot.create(:operating_system)
       allow(os_collection).to receive(:find_or_build).and_return(os)
 
       template_collection = double("template_collection")
-      temp = FactoryGirl.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
+      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
       allow(template_collection).to receive(:find_or_build).and_return(temp)
 
       parser = described_class.new
