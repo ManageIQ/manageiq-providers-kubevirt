@@ -22,7 +22,7 @@ end
 describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
   context "Cloning" do
     it "calls clone on template" do
-      source = FactoryGirl.create(:template_kubevirt)
+      source = FactoryBot.create(:template_kubevirt)
       subject.source = source
       connection = double("connection")
 

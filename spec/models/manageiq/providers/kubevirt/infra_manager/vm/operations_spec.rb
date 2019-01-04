@@ -1,16 +1,16 @@
 describe 'VM::Operations' do
   let(:default_endpoint) do
-    FactoryGirl.create(:endpoint,
+    FactoryBot.create(:endpoint,
                        :role       => 'default',
                        :hostname   => 'host.example.com',
                        :port       => 6443,
                        :verify_ssl => 0)
   end
 
-  let(:default_authentication) { FactoryGirl.create(:authentication, :authtype => 'bearer') }
+  let(:default_authentication) { FactoryBot.create(:authentication, :authtype => 'bearer') }
 
   let(:kubevirt_authentication) do
-    FactoryGirl.create(
+    FactoryBot.create(
       :authentication,
       :authtype => 'kubevirt',
       :auth_key => '_'
@@ -19,7 +19,7 @@ describe 'VM::Operations' do
 
   let(:kubevirt_endpoint) do
     EvmSpecHelper.local_miq_server(:zone => Zone.seed)
-    FactoryGirl.build(
+    FactoryBot.build(
       :endpoint,
       :role       => 'kubevirt',
       :hostname   => 'host.example.com',
@@ -29,7 +29,7 @@ describe 'VM::Operations' do
   end
 
   let(:container_manager) do
-    FactoryGirl.create(
+    FactoryBot.create(
       :ems_kubernetes,
       :endpoints       => [
         default_endpoint,
@@ -44,7 +44,7 @@ describe 'VM::Operations' do
 
   context '#raw_destroy' do
     let(:infra_manager) { container_manager.infra_manager }
-    let(:vm) { FactoryGirl.create(:vm_kubevirt, :ext_management_system => infra_manager) }
+    let(:vm) { FactoryBot.create(:vm_kubevirt, :ext_management_system => infra_manager) }
     let(:connection) { double("connection") }
     let(:vm_instance_metadata) { double("vm_instance_metadata", :namespace => "default") }
     let(:vm_instance) { double("vm_instance", :metadata => vm_instance_metadata) }

@@ -24,20 +24,20 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
   describe '#process_vms' do
     it 'parses a vm' do
       storage_collection = double("storage_collection")
-      storage = FactoryGirl.create(:storage)
+      storage = FactoryBot.create(:storage)
       allow(storage_collection).to receive(:lazy_find).and_return(storage)
 
       hw_collection = double("hw_collection")
-      hardware = FactoryGirl.create(:hardware)
+      hardware = FactoryBot.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware)
 
       network_collection = double("network_collection")
-      network = FactoryGirl.create(:network, :hardware => hardware)
+      network = FactoryBot.create(:network, :hardware => hardware)
       allow(network_collection).to receive(:find_or_build_by).and_return(network)
       allow(hardware).to receive(:networks).and_return([network])
 
       vm_collection = double("vm_collection")
-      vm = FactoryGirl.create(:vm_kubevirt, :hardware => hardware)
+      vm = FactoryBot.create(:vm_kubevirt, :hardware => hardware)
       allow(vm_collection).to receive(:find_or_build).and_return(vm)
 
       parser = described_class.new
