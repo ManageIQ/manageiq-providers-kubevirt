@@ -9,7 +9,7 @@ metadata:
     kubevirt.io/os: rhel7.4
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine
   metadata:
     name: ${NAME}
@@ -26,10 +26,9 @@ objects:
             type: q35
           devices:
             disks:
-              - name: disk0
-                volumeName: disk0-pvc
-                disk:
-                  dev: vda
+            - name: disk0-pvc
+              disk:
+                dev: vda
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:

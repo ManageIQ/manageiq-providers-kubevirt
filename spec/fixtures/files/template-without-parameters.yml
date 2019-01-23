@@ -9,7 +9,7 @@ metadata:
     kubevirt.io/os: fedora28
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine
   metadata:
     name: ${NAME}
@@ -33,12 +33,10 @@ objects:
             disks:
             - disk:
                 bus: virtio
-              name: disk0
-              volumeName: root
+              name: root
             - disk:
                 bus: virtio
-              name: cloudinitdisk
-              volumeName: cloudinitvolume
+              name: cloudinitvolume
         volumes:
           - name: root
             persistentVolumeClaim:

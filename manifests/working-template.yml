@@ -11,7 +11,7 @@ metadata:
     kubevirt.io/os: fedora27
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine
   metadata:
     creationTimestamp: null
@@ -38,18 +38,16 @@ objects:
             disks:
             - disk:
                 bus: virtio
-              name: registrydisk
-              volumeName: registryvolume
+              name: registryvolume
             - disk:
                 bus: virtio
-              name: cloudinitdisk
-              volumeName: cloudinitvolume
+              name: cloudinitvolume
           machine:
             type: ""
         terminationGracePeriodSeconds: 0
         volumes:
         - name: registryvolume
-          registryDisk:
+          containerDisk:
             image: kubevirt/fedora-cloud-registry-disk-demo:latest
         - cloudInitNoCloud:
             userData: |-

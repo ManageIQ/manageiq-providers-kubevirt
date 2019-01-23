@@ -1,4 +1,4 @@
-:apiVersion: kubevirt.io/v1alpha2
+:apiVersion: kubevirt.io/v1alpha3
 :kind: VirtualMachine
 :metadata:
   :name: test
@@ -19,12 +19,10 @@
           :type: q35
         :devices:
           :disks:
-          - :name: registrydisk
-            :volumeName: registryvolume
+          - :name: registryvolume
             :disk:
               :dev: vda
-          - :name: cloudinitdisk
-            :volumeName: cloudinitvolume
+          - :name: cloudinitvolume
             :disk:
               :dev: vdb
       :volumes:

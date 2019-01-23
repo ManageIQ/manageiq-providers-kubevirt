@@ -83,11 +83,10 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       )
 
       expect(disk).to have_attributes(
-        :device_name     => "disk0",
-        :location        => "disk0-pvc",
-        :device_type     => "disk",
-        :present         => true,
-        :mode            => "persistent"
+        :device_name => "disk0-pvc",
+        :device_type => "disk",
+        :present     => true,
+        :mode        => "persistent"
       )
     end
 
@@ -129,19 +128,17 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.send(:process_template, source)
 
       expect(disk1).to have_attributes(
-        :device_name     => "registrydisk",
-        :location        => "registryvolume",
-        :device_type     => "disk",
-        :present         => true,
-        :mode            => "persistent"
+        :device_name => "registryvolume",
+        :device_type => "disk",
+        :present     => true,
+        :mode        => "persistent"
       )
 
       expect(disk2).to have_attributes(
-        :device_name     => "cloudinitdisk",
-        :location        => "cloudinitvolume",
-        :device_type     => "disk",
-        :present         => true,
-        :mode            => "persistent"
+        :device_name => "cloudinitvolume",
+        :device_type => "disk",
+        :present     => true,
+        :mode        => "persistent"
       )
     end
 
@@ -206,8 +203,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       )
 
       expect(disk).to have_attributes(
-        :device_name => "cloudinitdisk",
-        :location    => "cloudinitvolume",
+        :device_name => "cloudinitvolume",
         :device_type => "disk",
         :present     => true,
         :mode        => "persistent"

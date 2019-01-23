@@ -19,7 +19,7 @@ metadata:
     kubevirt.io/os: rhel7.4 ❷
     miq.github.io/kubevirt-is-vm-template: True ❸
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine ❹
   metadata:
     name: ${NAME} ➎
@@ -176,7 +176,7 @@ metadata:
     kubevirt.io/os: rhel7.4
     miq.github.io/kubevirt-is-vm-template: true  
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine
   metadata:
     name: ${NAME} 
