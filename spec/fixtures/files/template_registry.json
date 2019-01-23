@@ -1,5 +1,5 @@
 {
-  "apiVersion": "kubevirt.io/v1alpha2",
+  "apiVersion": "kubevirt.io/v1alpha3",
   "kind": "Template",
   "metadata": {
     "annotations": {
@@ -15,12 +15,12 @@
     "name": "working",
     "namespace": "default",
     "resourceVersion": "262502",
-    "selfLink": "/apis/kubevirt.io/v1alpha2/namespaces/default/templates/test",
+    "selfLink": "/apis/kubevirt.io/v1alpha3/namespaces/default/templates/test",
     "uid": "7e6fb1ac-00ef-11e8-8840-525400b2cba8"
   },
   "objects": [
     {
-      "apiVersion": "kubevirt.io/v1alpha2",
+      "apiVersion": "kubevirt.io/v1alpha3",
       "kind": "VirtualMachine",
       "metadata": {
         "name": "${NAME}",
@@ -43,15 +43,13 @@
               "devices": {
                 "disks": [
                   {
-                    "name": "registrydisk",
-                    "volumeName": "registryvolume",
+                    "name": "registryvolume",
                     "disk": {
                       "dev": "vda"
                     }
                   },
                   {
-                    "name": "cloudinitdisk",
-                    "volumeName": "cloudinitvolume",
+                    "name": "cloudinitvolume",
                     "disk": {
                       "dev": "vdb"
                     }
@@ -62,7 +60,7 @@
             "volumes": [
               {
                 "name": "registryvolume",
-                "registryDisk": {
+                "containerDisk": {
                   "image": "kubevirt/fedora-cloud-registry-disk-demo:latest"
                 }
               },

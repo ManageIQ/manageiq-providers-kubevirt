@@ -9,7 +9,7 @@ metadata:
     kubevirt.io/os: win2k16
     miq.github.io/kubevirt-is-vm-template: "true"
 objects:
-- apiVersion: kubevirt.io/v1alpha2
+- apiVersion: kubevirt.io/v1alpha3
   kind: VirtualMachine
   metadata:
     name: ${NAME}
@@ -44,8 +44,7 @@ objects:
               memory: ${MEMORY}
           devices:
             disks:
-              - name: disk0
-                volumeName: disk0-pvc
+            - name: disk0-pvc
         volumes:
           - name: disk0-pvc
             persistentVolumeClaim:

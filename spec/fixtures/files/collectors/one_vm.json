@@ -2,7 +2,7 @@
     "nodes": [],
     "vms": [
       {
-        "apiVersion": "kubevirt.io/v1alpha2",
+        "apiVersion": "kubevirt.io/v1alpha3",
         "kind": "VirtualMachine",
         "name": "2cores1024mem",
         "namespace": "default",
@@ -18,15 +18,13 @@
                       "disk": {
                         "dev": "vda"
                       },
-                      "name": "registrydisk",
-                      "volumeName": "registryvolume"
+                      "name": "registryvolume",
                     },
                     {
                       "disk": {
                         "dev": "vdb"
                       },
-                      "name": "cloudinitdisk",
-                      "volumeName": "cloudinitvolume"
+                      "name": "cloudinitvolume",
                     }
                   ],
         "volumes": [
