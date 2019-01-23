@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,lib}/**/*"]
 
-  s.add_runtime_dependency("fog-kubevirt", "~> 0.1.8")
+  s.add_runtime_dependency("fog-kubevirt", "~> 0.2.0")
   s.add_runtime_dependency("manageiq-providers-kubernetes", "~> 0.1.0")
 
   s.add_development_dependency("codeclimate-test-reporter", "~> 1.0.0")
