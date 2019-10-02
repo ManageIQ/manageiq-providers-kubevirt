@@ -53,6 +53,54 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     @description ||= ManageIQ::Providers::Kubevirt::Constants::PRODUCT
   end
 
+  def self.params_for_create
+    @params_for_create ||= {
+      :title  => "Configure #{description}",
+      :fields => [
+        {
+          :component  => "text-field",
+          :name       => "endpoints.default.server",
+          :label      => "Hostname",
+          :isRequired => true,
+          :validate   => [{:type => "required-validator"}]
+        },
+        {
+          :component  => "text-field",
+          :name       => "endpoints.default.port",
+          :type       => "number",
+          :isRequired => true,
+          :validate   => [
+            {
+              :type => "required-validator"
+            },
+            {
+              :type             => "validatorTypes.MIN_NUMBER_VALUE",
+              :includeThreshold => true,
+              :value            => 1
+            },
+            {
+              :type             => "validatorTypes.MAX_NUMBER_VALUE",
+              :includeThreshold => true,
+              :value            => 65535
+            }
+          ]
+        },
+        {
+          :component  => "text-field",
+          :name       => "endpoints.default.token",
+          :label      => "Token",
+          :type       => "password",
+          :isRequired => true,
+          :validate   => [{:type => "required-validator"}]
+        }
+      ]
+    }.freeze
+  end
+
+  def self.verify_credentials(args)
+    !!raw_connect(args.dig("endpoints", "default")&.values_at("server", "port", "token")&.symbolize_keys)
+  end
+
   #
   # This method from the dialog that adds a provider, to verify the connection details and the
   # credentials.
@@ -70,7 +118,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     connection = Connection.new(
       :host  => opts[:server],
       :port  => opts[:port],
-      :token => opts[:token],
+      :token => MiqPassword.try_decrypt(opts[:token]),
     )
 
     # Verify that the connection works:
