@@ -81,7 +81,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
             {
               :type             => "validatorTypes.MAX_NUMBER_VALUE",
               :includeThreshold => true,
-              :value            => 65535
+              :value            => 65_535
             }
           ]
         },
@@ -98,7 +98,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   def self.verify_credentials(args)
-    !!raw_connect(args.dig("endpoints", "default")&.values_at("server", "port", "token")&.symbolize_keys)
+    !!raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token")&.symbolize_keys)
   end
 
   #
@@ -109,16 +109,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @option opts [String] :server The Kubernetes API server host name or IP address.
   # @option opts [Integer] :port The Kubernetes API port number.
   # @option opts [String] :token The Kubernetes authentication token.
-  # @option opts [Integer] :verify_ssl Integer indicating if the Kubernetes API server certificate
-  #   should be verified.
-  # @option opts [Integer] :ca_certs Trusted CA certificates, in PEM format.
   #
   def self.raw_connect(opts)
     # Create the connection:
     connection = Connection.new(
       :host  => opts[:server],
       :port  => opts[:port],
-      :token => MiqPassword.try_decrypt(opts[:token]),
+      :token => MiqPassword.try_decrypt(opts[:token])
     )
 
     # Verify that the connection works:
