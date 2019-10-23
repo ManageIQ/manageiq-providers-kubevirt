@@ -19,7 +19,7 @@
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers::Inventory::Persister
   def cluster_collection(targeted: false, ids: [])
-    add_collection(infra, :ems_clusters) do |builder|
+    add_collection(infra, :clusters) do |builder|
       builder.add_properties(
         :manager_uuids => ids,
         :targeted      => targeted

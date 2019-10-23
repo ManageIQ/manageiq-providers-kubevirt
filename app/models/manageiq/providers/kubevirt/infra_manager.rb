@@ -15,6 +15,7 @@
 #
 
 class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraManager
+  require_nested :Cluster
   require_nested :Connection
   require_nested :Provision
   require_nested :ProvisionWorkflow

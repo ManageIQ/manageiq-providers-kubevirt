@@ -105,7 +105,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   #
   def check_builtin_clusters(persister)
     # Check that the collection of clusters has been created:
-    collection = persister.collections[:ems_clusters]
+    collection = persister.collections[:clusters]
     expect(collection).to_not be_nil
     data = collection.data
     expect(data).to_not be_nil
