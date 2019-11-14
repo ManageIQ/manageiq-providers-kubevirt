@@ -49,7 +49,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   def add_builtin_clusters
     cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
     cluster_object.ems_ref = CLUSTER_ID
-    cluster_object.ems_ref_obj = CLUSTER_ID
     cluster_object.name = collector.manager.name
     cluster_object.uid_ems = CLUSTER_ID
   end
@@ -57,7 +56,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   def add_builtin_storages
     storage_object = storage_collection.find_or_build(STORAGE_ID)
     storage_object.ems_ref = STORAGE_ID
-    storage_object.ems_ref_obj = STORAGE_ID
     storage_object.name = collector.manager.name
     storage_object.store_type = 'UNKNOWN'
     storage_object.total_space = 0
@@ -81,7 +79,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     host_object.connection_state = 'connected'
     host_object.ems_cluster = cluster_collection.lazy_find(CLUSTER_ID)
     host_object.ems_ref = uid
-    host_object.ems_ref_obj = uid
     host_object.hostname = object.hostname
     host_object.ipaddress = object.ip_address
     host_object.name = name
@@ -157,7 +154,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object = vm_collection.find_or_build(uid)
     vm_object.connection_state = 'connected'
     vm_object.ems_ref = uid
-    vm_object.ems_ref_obj = uid
     vm_object.name = name
     vm_object.storage = storage_object
     vm_object.storages = [storage_object]
@@ -210,7 +206,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     template_object = template_collection.find_or_build(uid)
     template_object.connection_state = 'connected'
     template_object.ems_ref = uid
-    template_object.ems_ref_obj = uid
     template_object.name = object.name
     template_object.raw_power_state = 'never'
     template_object.template = true

@@ -62,7 +62,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :name             => "demo-vm",
         :template         => false,
         :ems_ref          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
-        :ems_ref_obj      => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :uid_ems          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
         :power_state      => "on",
