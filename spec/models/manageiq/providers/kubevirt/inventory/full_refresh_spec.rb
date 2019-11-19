@@ -45,7 +45,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
       expect(host).to_not be_nil
       expect(host.connection_state).to eq('connected')
       expect(host.ems_ref).to eq('d88c7af6-de6a-11e7-8725-52540080f1d2')
-      expect(host.ems_ref_obj).to eq('d88c7af6-de6a-11e7-8725-52540080f1d2')
       expect(host.hostname).to eq('mynode.local')
       expect(host.ipaddress).to eq('192.168.122.40')
       expect(host.name).to eq('mynode')
@@ -115,7 +114,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
     cluster = data.first
     expect(cluster).to_not be_nil
     expect(cluster.ems_ref).to eq('0')
-    expect(cluster.ems_ref_obj).to eq('0')
     expect(cluster.name).to eq('mykubevirt')
     expect(cluster.uid_ems).to eq('0')
   end
@@ -137,7 +135,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
     storage = data.first
     expect(storage).to_not be_nil
     expect(storage.ems_ref).to eq('0')
-    expect(storage.ems_ref_obj).to eq('0')
     expect(storage.name).to eq('mykubevirt')
     expect(storage.store_type).to eq('UNKNOWN')
   end

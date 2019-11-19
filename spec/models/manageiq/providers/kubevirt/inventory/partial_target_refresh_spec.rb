@@ -45,7 +45,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
       expect(vm).to_not be_nil
       expect(vm.connection_state).to eq('connected')
       expect(vm.ems_ref).to eq('afd81ba1-279d-11e8-b7f0-52540043c7f7')
-      expect(vm.ems_ref_obj).to eq('afd81ba1-279d-11e8-b7f0-52540043c7f7')
       expect(vm.name).to eq('2cores1024mem')
       expect(vm.type).to eq('ManageIQ::Providers::Kubevirt::InfraManager::Vm')
       expect(vm.uid_ems).to eq('afd81ba1-279d-11e8-b7f0-52540043c7f7')
@@ -120,7 +119,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
     cluster = data.first
     expect(cluster).to_not be_nil
     expect(cluster.ems_ref).to eq('0')
-    expect(cluster.ems_ref_obj).to eq('0')
     expect(cluster.name).to eq('mykubevirt')
     expect(cluster.uid_ems).to eq('0')
   end
@@ -142,7 +140,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
     storage = data.first
     expect(storage).to_not be_nil
     expect(storage.ems_ref).to eq('0')
-    expect(storage.ems_ref_obj).to eq('0')
     expect(storage.name).to eq('mykubevirt')
     expect(storage.store_type).to eq('UNKNOWN')
   end
