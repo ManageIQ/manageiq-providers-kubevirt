@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'fog/kubevirt'
-
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   extend ActiveSupport::Concern
 
   include_concern 'Power'
 
   def raw_destroy
+    require 'fog/kubevirt'
     ext_management_system.with_provider_connection do |connection|
       # Retrieve the details of the virtual machine:
       begin
