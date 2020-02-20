@@ -13,9 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-require 'fog/kubevirt'
-
 #
 # This class hides the fact that when connecting to KubeVirt we need to use different API servers:
 # one for the standard Kubernetes API and another one for the KubeVirt API.
@@ -33,6 +30,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   # @option opts [String] :token The authentication token.
   #
   def initialize(opts = {})
+    require 'fog/kubevirt'
     # Get options and assign default values:
     @namespace = opts[:namespace] || 'default'
 

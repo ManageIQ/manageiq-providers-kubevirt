@@ -20,7 +20,6 @@
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::Inventory::Parser
   include Vmdb::Logging
-  require 'fog/kubevirt'
 
   protected
 
@@ -234,6 +233,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_hardware(template_object, params, labels, domain)
+    require 'fog/kubevirt'
     hw_object = hw_collection.find_or_build(template_object)
     memory = default_value(params, 'MEMORY') || domain.dig(:resources, :requests, :memory)
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
@@ -267,6 +267,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_os(template_object, labels, annotations)
+    require 'fog/kubevirt'
     os_object = vm_os_collection.find_or_build(template_object)
     os_object.product_name = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
     tags = annotations&.dig(:tags) || []
