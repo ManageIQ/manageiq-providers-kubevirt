@@ -15,7 +15,6 @@
 #
 
 require 'concurrent/atomic/atomic_boolean'
-require 'kubeclient'
 class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < ManageIQ::Providers::BaseManager::RefreshWorker::Runner
   def do_before_work_loop
     # Always run full_refresh when worker is starting to make sure we use the latest versions
