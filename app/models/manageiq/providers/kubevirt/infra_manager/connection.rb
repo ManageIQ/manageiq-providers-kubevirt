@@ -35,12 +35,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
     @namespace = opts[:namespace] || 'default'
 
     # create fog based connection
-    @conn = Fog::Compute.new(:provider           => 'kubevirt',
-                             :kubevirt_hostname  => opts[:host],
-                             :kubevirt_port      => opts[:port],
-                             :kubevirt_token     => opts[:token],
-                             :kubevirt_namespace => @namespace,
-                             :kubevirt_log       => $log)
+    @conn = Fog::Kubevirt::Compute.new(
+      :kubevirt_hostname  => opts[:host],
+      :kubevirt_port      => opts[:port],
+      :kubevirt_token     => opts[:token],
+      :kubevirt_namespace => @namespace,
+      :kubevirt_log       => $log
+    )
 
     # Nothing else is done here, as this method should never throw an exception, even if the
     # credentials are wrong.

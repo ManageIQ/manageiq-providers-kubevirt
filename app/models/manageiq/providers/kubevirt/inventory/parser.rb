@@ -234,13 +234,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   def process_hardware(template_object, params, labels, domain)
     require 'fog/kubevirt'
+    require 'fog/kubevirt/compute/models/template'
     hw_object = hw_collection.find_or_build(template_object)
     memory = default_value(params, 'MEMORY') || domain.dig(:resources, :requests, :memory)
     hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
     cpu = default_value(params, 'CPU_CORES') || domain.dig(:cpu, :cores)
     hw_object.cpu_cores_per_socket = cpu
     hw_object.cpu_total_cores = cpu
-    hw_object.guest_os = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
+    hw_object.guest_os = labels&.dig(Fog::Kubevirt::Compute::Template::OS_LABEL_SYMBOL)
 
     # Add the inventory objects for the disk:
     process_disks(hw_object, domain)
@@ -268,8 +269,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   def process_os(template_object, labels, annotations)
     require 'fog/kubevirt'
+    require 'fog/kubevirt/compute/models/template'
     os_object = vm_os_collection.find_or_build(template_object)
-    os_object.product_name = labels&.dig(Fog::Compute::Kubevirt::Shared::OS_LABEL_SYMBOL)
+    os_object.product_name = labels&.dig(Fog::Kubevirt::Compute::Template::OS_LABEL_SYMBOL)
     tags = annotations&.dig(:tags) || []
     os_object.product_type = if tags.include?("linux")
                                "linux"
