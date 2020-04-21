@@ -39,7 +39,7 @@ class ManageIQ::Providers::Kubevirt::MemoryCalculator
     from = match[:suffix]
 
     # Convert the value from string to big decimal to make sure that we don't loose precission:
-    value = BigDecimal.new(value)
+    value = BigDecimal(value)
 
     # Do the conversion:
     from_factor = scale_factor(from)
