@@ -18,6 +18,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
 
   include_concern 'Power'
 
+  included do
+    supports :terminate do
+      unsupported_reason_add(:terminate, unsupported_reason(:control)) unless supports_control?
+    end
+  end
+
   def raw_destroy
     require 'fog/kubevirt'
     ext_management_system.with_provider_connection do |connection|
