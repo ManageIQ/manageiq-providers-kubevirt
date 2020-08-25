@@ -119,7 +119,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   #
   def partial_refresh(notices)
     # check whether we get error about stale resource version
-    if notices.any? { |notice| notice.kind == "Status" && notice.code == 410 }
+    if notices.any? { |notice| notice.object&.kind == "Status" && notice.object&.code == 410 }
       # base on the structure we do not know which watch uses stale version so we stop all
       # we can't join with all the threads since we are in one
       stop_watches
