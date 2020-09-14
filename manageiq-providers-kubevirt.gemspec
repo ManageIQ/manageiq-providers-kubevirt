@@ -1,21 +1,25 @@
-$:.push(File.expand_path("../lib", __FILE__))
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'manageiq/providers/kubevirt/version'
 
-require "manageiq/providers/kubevirt/version"
+Gem::Specification.new do |spec|
+  spec.name          = "manageiq-providers-kubevirt"
+  spec.version       = ManageIQ::Providers::Kubevirt::VERSION
+  spec.authors       = ["ManageIQ Authors"]
 
-Gem::Specification.new do |s|
-  s.name        = "manageiq-providers-kubevirt"
-  s.version     = ManageIQ::Providers::Kubevirt::VERSION
-  s.authors     = ["KubeVirt Developers"]
-  s.homepage    = "https://github.com/ManageIQ/manageiq-providers-kubevirt"
-  s.summary     = "KubeVirt provider for ManageIQ"
-  s.description = "KubeVirt provider for ManageIQ"
-  s.licenses    = ["Apache-2.0"]
+  spec.summary       = "ManageIQ plugin for the KubeVirt provider."
+  spec.description   = "ManageIQ plugin for the KubeVirt provider."
+  spec.homepage      = "https://github.com/ManageIQ/manageiq-providers-kubevirt"
+  spec.license       = "Apache-2.0"
 
-  s.files = Dir["{app,config,lib}/**/*"]
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
 
-  s.add_runtime_dependency("fog-kubevirt", "~> 1.0")
-  s.add_runtime_dependency("manageiq-providers-kubernetes", "~> 0.1.0")
+  spec.add_dependency "fog-kubevirt",                  "~> 1.0"
+  spec.add_dependency "manageiq-providers-kubernetes", "~> 0.1.0"
 
-  s.add_development_dependency("codeclimate-test-reporter", "~> 1.0.0")
-  s.add_development_dependency("simplecov")
+  spec.add_development_dependency "simplecov"
 end
