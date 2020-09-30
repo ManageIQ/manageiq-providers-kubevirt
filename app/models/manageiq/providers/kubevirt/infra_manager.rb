@@ -116,7 +116,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     connection = Connection.new(
       :host  => opts[:server],
       :port  => opts[:port],
-      :token => MiqPassword.try_decrypt(opts[:token])
+      :token => ManageIQ::Password.try_decrypt(opts[:token])
     )
 
     # Verify that the connection works:
