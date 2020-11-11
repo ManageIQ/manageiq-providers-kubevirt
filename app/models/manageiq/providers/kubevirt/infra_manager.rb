@@ -24,12 +24,25 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   require_nested :Template
   require_nested :Vm
 
-  include ManageIQ::Providers::Kubernetes::VirtualizationManagerMixin
+  ENDPOINT_ROLE = :kubevirt
 
   belongs_to :parent_manager,
              :foreign_key => :parent_ems_id,
              :class_name  => "ManageIQ::Providers::ContainerManager",
              :inverse_of  => :infra_manager
+
+  delegate :authentication_check,
+          :authentication_for_summary,
+          :authentication_token,
+          :authentications,
+          :endpoints,
+          :zone,
+          :to        => :parent_manager,
+          :allow_nil => true
+
+  def self.hostname_required?
+   false
+  end
 
   #
   # This is the list of features that this provider supports:
@@ -181,6 +194,14 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
       :port  => endpoint.port,
       :token => token,
     )
+  end
+
+  def virtualization_endpoint
+    connection_configurations.kubevirt.try(:endpoint)
+  end
+
+  def default_authentication_type
+    ENDPOINT_ROLE
   end
 
   #
