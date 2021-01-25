@@ -5,7 +5,5 @@
     :event_handling:
       :event_groups:
 :workers:
-  :worker_base:
-    :queue_worker_base:
-      :ems_refresh_worker:
-        :ems_refresh_worker_kubevirt: {}
+  :ems_refresh_worker_kubevirt:
+    :inherits_from: ems_refresh_worker
