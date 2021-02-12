@@ -51,8 +51,8 @@ describe 'VM::Operations' do
     let(:vm_metadata) { double("vm_metadata", :namespace => "default") }
     let(:provider_vm) { double("provider_vm", :metadata => vm_metadata) }
 
-    it "supports_terminate?" do
-      expect(vm.supports_terminate?).to be_truthy
+    it "supports?(:terminate)" do
+      expect(vm.supports?(:terminate)).to be_truthy
     end
 
     context 'running vm' do

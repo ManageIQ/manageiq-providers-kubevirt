@@ -23,16 +23,16 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
     ManageIQ::Providers::Kubevirt::InfraManager
   end
 
-  def supports_pxe?
-    get_value(@values[:provision_type]).to_s == 'pxe'
+  supports :pxe do
+    unsupported_reason_add(:pxe, _("PXE is not available for provisioning")) unless get_value(@values[:provision_type]).to_s == 'pxe'
   end
 
-  def supports_iso?
-    get_value(@values[:provision_type]).to_s == 'iso'
+  supports :iso do
+    unsupported_reason_add(:iso, _("ISO is not available for provisioning")) unless get_value(@values[:provision_type]).to_s == 'iso'
   end
 
-  def supports_native_clone?
-    get_value(@values[:provision_type]).to_s == 'native_clone'
+  supports :native_clone do
+    unsupported_reason_add(:native_clone, _("Native Clone is not available for provisioning")) unless get_value(@values[:provision_type]).to_s == 'native_clone'
   end
 
   def allowed_provision_types(_options = {})
