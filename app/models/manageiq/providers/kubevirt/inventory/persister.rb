@@ -81,7 +81,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
   def template_collection(targeted: false, ids: [])
     add_collection(infra, :miq_templates) do |builder|
       builder.add_properties(
-        :model_class                  => ::ManageIQ::Providers::Kubevirt::InfraManager::Template,
         :targeted                     => targeted,
         :manager_uuids                => ids,
         :parent_inventory_collections => %i(vms)
