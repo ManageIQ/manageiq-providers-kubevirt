@@ -1,9 +1,9 @@
 # ManageIQ::Providers::Kubevirt
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt.svg?branch=lasker)](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt)
+[![Build Status](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt.svg?branch=morphy)](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/lasker.svg)](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/lasker)
+[![Security](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/morphy.svg)](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/morphy)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
