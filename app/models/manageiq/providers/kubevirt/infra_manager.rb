@@ -48,6 +48,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # This is the list of features that this provider supports:
   #
   supports :provisioning
+  supports_not :create
 
   #
   # Returns the string that corresponds to this kind of provider.
