@@ -17,10 +17,12 @@
 class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraManager
   require_nested :Cluster
   require_nested :Connection
+  require_nested :Host
   require_nested :Provision
   require_nested :ProvisionWorkflow
   require_nested :RefreshWorker
   require_nested :Refresher
+  require_nested :Storage
   require_nested :Template
   require_nested :Vm
 
