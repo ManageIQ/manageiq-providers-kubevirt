@@ -48,7 +48,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
       expect(host.hostname).to eq('mynode.local')
       expect(host.ipaddress).to eq('192.168.122.40')
       expect(host.name).to eq('mynode')
-      expect(host.type).to eq('Host')
+      expect(host.type).to eq('ManageIQ::Providers::Kubevirt::InfraManager::Host')
       expect(host.uid_ems).to eq('d88c7af6-de6a-11e7-8725-52540080f1d2')
       expect(host.vmm_product).to eq('KubeVirt')
       expect(host.vmm_vendor).to eq('kubevirt')
