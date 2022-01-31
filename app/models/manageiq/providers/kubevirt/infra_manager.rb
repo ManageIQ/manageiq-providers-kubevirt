@@ -114,7 +114,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   def self.verify_credentials(args)
-    !!raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token")&.symbolize_keys)
+    kubevirt = raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token")&.symbolize_keys)
+    kubevirt&.valid? && kubevirt&.virt_supported?
   end
 
   #
@@ -128,14 +129,11 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   def self.raw_connect(opts)
     # Create the connection:
-    connection = Connection.new(
+    Connection.new(
       :host  => opts[:server],
       :port  => opts[:port],
       :token => ManageIQ::Password.try_decrypt(opts[:token])
     )
-
-    # Verify that the connection works:
-    connection.valid?
   end
 
   #
