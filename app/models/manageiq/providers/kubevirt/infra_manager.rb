@@ -36,6 +36,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
           :authentication_token,
           :authentications,
           :endpoints,
+          :default_endpoint,
           :zone,
           :to        => :parent_manager,
           :allow_nil => true
