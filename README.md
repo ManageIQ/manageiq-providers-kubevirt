@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt.svg?branch=master)](https://travis-ci.com/github/ManageIQ/manageiq-providers-kubevirt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-providers-kubevirt/master)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
