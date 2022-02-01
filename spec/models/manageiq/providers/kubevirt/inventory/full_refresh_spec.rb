@@ -19,59 +19,57 @@ require 'recursive_open_struct'
 
 describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   describe '#parse' do
+    let(:ems) do
+      FactoryBot.create(:ems_kubevirt, :name => "mykubevirt").tap do |manager|
+        allow(manager).to receive(:with_provider_connection).and_yield(json_data('one_node'))
+      end
+    end
+
     it 'works correctly with one node' do
-      # Run the parser:
-      manager = create_manager('one_node')
-      inventory = ManageIQ::Providers::Kubevirt::Inventory.build(manager, nil)
+      2.times do
+        EmsRefresh.refresh(ems)
 
-      expect(inventory.parsers.first.class).to eq(described_class)
-      inventory.parse
+        expect(ems.hosts.count).to eq(1)
+        expect(ems.clusters.count).to eq(1)
+        expect(ems.storages.count).to eq(1)
 
-      persister = inventory.persister
+        # Check that the first host has been created:
+        host = ems.hosts.find_by(:ems_ref => "d88c7af6-de6a-11e7-8725-52540080f1d2")
+        expect(host).to have_attributes(
+          :connection_state => "connected",
+          :ems_ref          => "d88c7af6-de6a-11e7-8725-52540080f1d2",
+          :hostname         => "mynode.local",
+          :ipaddress        => "192.168.122.40",
+          :name             => "mynode",
+          :type             => "ManageIQ::Providers::Kubevirt::InfraManager::Host",
+          :uid_ems          => "d88c7af6-de6a-11e7-8725-52540080f1d2",
+          :vmm_product      => "KubeVirt",
+          :vmm_vendor       => "kubevirt",
+          :vmm_version      => "0.1.0",
+          :ems_cluster      => ems.ems_clusters.find_by(:ems_ref => "0")
+        )
 
-      # Check that the built-in objects have been added:
-      check_builtin_clusters(persister)
-      check_builtin_storages(persister)
+        cluster = ems.ems_clusters.find_by(:ems_ref => "0")
+        expect(cluster).to have_attributes(
+          :ems_ref => "0",
+          :name    => "mykubevirt",
+          :uid_ems => "0",
+          :type    => "ManageIQ::Providers::Kubevirt::InfraManager::Cluster"
+        )
 
-      # Check that the collection of hosts has been created:
-      hosts_collection = persister.collections[:hosts]
-      expect(hosts_collection).to_not be_nil
-      hosts_data = hosts_collection.data
-      expect(hosts_data).to_not be_nil
-      expect(hosts_data.length).to eq(1)
-
-      # Check that the first host has been created:
-      host = hosts_data.first
-      expect(host).to_not be_nil
-      expect(host.connection_state).to eq('connected')
-      expect(host.ems_ref).to eq('d88c7af6-de6a-11e7-8725-52540080f1d2')
-      expect(host.hostname).to eq('mynode.local')
-      expect(host.ipaddress).to eq('192.168.122.40')
-      expect(host.name).to eq('mynode')
-      expect(host.type).to eq('Host')
-      expect(host.uid_ems).to eq('d88c7af6-de6a-11e7-8725-52540080f1d2')
-      expect(host.vmm_product).to eq('KubeVirt')
-      expect(host.vmm_vendor).to eq('kubevirt')
-      expect(host.vmm_version).to eq('0.1.0')
-      expect(host.ems_cluster).to_not be_nil
+        storage = ems.storages.find_by(:ems_ref => "0")
+        expect(storage).to have_attributes(
+          :name        => "mykubevirt",
+          :total_space => 0,
+          :free_space  => 0,
+          :ems_ref     => "0",
+          :type        => "ManageIQ::Providers::Kubevirt::InfraManager::Storage"
+        )
+      end
     end
   end
 
   private
-
-  #
-  # Creates a manager double.
-  #
-  # @return [Object] The manager object.
-  #
-  def create_manager(file_name)
-    manager = double
-    allow(manager).to receive(:name).and_return('mykubevirt')
-    allow(manager).to receive(:id).and_return(0)
-    allow(manager).to receive(:with_provider_connection).and_yield(json_data(file_name))
-    allow(manager.class).to receive(:ems_type).and_return(::ManageIQ::Providers::Kubevirt::Constants::VENDOR)
-    manager
-  end
 
   #
   # Creates a collector data from a JSON file. The file should be in the `spec/fixtures/files/collectors`
