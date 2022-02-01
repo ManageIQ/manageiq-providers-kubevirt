@@ -28,6 +28,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
       inventory.parse
 
       persister = inventory.persister
+      persister.persist!
 
       # Check that the built-in objects have been added:
       check_builtin_clusters(persister)
@@ -65,12 +66,9 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh do
   # @return [Object] The manager object.
   #
   def create_manager(file_name)
-    manager = double
-    allow(manager).to receive(:name).and_return('mykubevirt')
-    allow(manager).to receive(:id).and_return(0)
-    allow(manager).to receive(:with_provider_connection).and_yield(json_data(file_name))
-    allow(manager.class).to receive(:ems_type).and_return(::ManageIQ::Providers::Kubevirt::Constants::VENDOR)
-    manager
+    FactoryBot.create(:ems_kubevirt, :name => "mykubevirt").tap do |manager|
+      allow(manager).to receive(:with_provider_connection).and_yield(json_data(file_name))
+    end
   end
 
   #

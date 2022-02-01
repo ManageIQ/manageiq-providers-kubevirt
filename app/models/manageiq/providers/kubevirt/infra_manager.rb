@@ -34,13 +34,14 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
              :inverse_of  => :infra_manager
 
   delegate :authentication_check,
-          :authentication_for_summary,
-          :authentication_token,
-          :authentications,
-          :endpoints,
-          :zone,
-          :to        => :parent_manager,
-          :allow_nil => true
+           :authentication_for_summary,
+           :authentication_token,
+           :authentications,
+           :endpoints,
+           :default_endpoint,
+           :zone,
+           :to        => :parent_manager,
+           :allow_nil => true
 
   def self.hostname_required?
    false
