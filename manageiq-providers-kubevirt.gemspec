@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "fog-kubevirt",                  "~> 1.0"
+  spec.add_dependency "fog-kubevirt",                  "~> 1.0", ">= 1.3.5"
   spec.add_dependency "manageiq-providers-kubernetes", "~> 0.1.0"
 
   spec.add_development_dependency "manageiq-style"
