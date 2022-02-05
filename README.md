@@ -1,6 +1,6 @@
 # ManageIQ::Providers::Kubevirt
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-providers-kubevirt.svg?branch=master)](https://travis-ci.com/github/ManageIQ/manageiq-providers-kubevirt)
+[![CI](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/test_coverage)
 
