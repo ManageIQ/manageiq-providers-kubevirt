@@ -57,7 +57,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
       expect(vms_hardware_data.length).to eq(1)
       vm_hardware = vms_hardware.data.first
       expect(vm_hardware).to_not be_nil
-      expect(vm_hardware.memory_mb.to_s).to eq('1024.0')
+      expect(vm_hardware.memory_mb.to_s).to eq('1536.0')
       expect(vm_hardware.cpu_cores_per_socket).to eq(2)
       expect(vm_hardware.cpu_total_cores).to eq(2)
     end
