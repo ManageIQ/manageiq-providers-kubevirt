@@ -210,6 +210,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   def process_template(object)
     # Get the basic information:
     uid = object.uid
+    vm  = vm_from_objects(object.objects)
+    return if vm.nil?
 
     # Add the inventory object for the template:
     template_object = template_collection.find_or_build(uid)
@@ -222,8 +224,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     template_object.uid_ems = uid
     template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
     template_object.location = 'unknown'
-
-    vm = vm_from_objects(object.objects)
 
     # Add the inventory object for the hardware:
     process_hardware(template_object, object.parameters, object.labels, vm.dig(:spec, :template, :spec, :domain))
