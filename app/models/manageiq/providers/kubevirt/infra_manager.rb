@@ -131,9 +131,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   def self.raw_connect(opts)
     # Create the connection:
     Connection.new(
-      :host  => opts[:server],
-      :port  => opts[:port],
-      :token => ManageIQ::Password.try_decrypt(opts[:token])
+      :host      => opts[:server],
+      :port      => opts[:port],
+      :token     => ManageIQ::Password.try_decrypt(opts[:token]),
+      :namespace => "" # Collect resources across all namespaces
     )
   end
 
@@ -191,9 +192,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     # Create and return the connection:
     endpoint = default_endpoint
     self.class::Connection.new(
-      :host  => endpoint.hostname,
-      :port  => endpoint.port,
-      :token => token,
+      :host      => endpoint.hostname,
+      :port      => endpoint.port,
+      :token     => token,
+      :namespace => ""
     )
   end
 
