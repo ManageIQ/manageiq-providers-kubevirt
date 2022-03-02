@@ -36,7 +36,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
       end
 
       # delete vm instance
-      connection.delete_vm_instance(name) unless vm_instance.nil?
+      connection.delete_vm_instance(name, location) unless vm_instance.nil?
     end
   end
 end

@@ -31,15 +31,12 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   #
   def initialize(opts = {})
     require 'fog/kubevirt'
-    # Get options and assign default values:
-    @namespace = opts[:namespace] || 'default'
-
     # create fog based connection
     @conn = Fog::Kubevirt::Compute.new(
       :kubevirt_hostname  => opts[:host],
       :kubevirt_port      => opts[:port],
       :kubevirt_token     => opts[:token],
-      :kubevirt_namespace => @namespace,
+      :kubevirt_namespace => opts[:namespace] || 'default',
       :kubevirt_log       => $log
     )
 
@@ -171,8 +168,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   #
   # @param name [String] The name of the virtual machine to delete.
   #
-  def delete_vm_instance(name)
-    @conn.vminstances.destroy(name, @namespace)
+  def delete_vm_instance(name, namespace)
+    @conn.vminstances.destroy(name, namespace)
   end
 
   #
