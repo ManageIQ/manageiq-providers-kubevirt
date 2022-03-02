@@ -12,7 +12,7 @@
         "owner_reference": null,
         "annotations": null,
         "cpu_cores": 2,
-        "memory": "1024Mi",
+        "memory": "1.5Gi",
         "disks": [
                     {
                       "disk": {

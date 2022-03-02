@@ -164,12 +164,22 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
+    hw_object.memory_mb = parse_quantity(memory) / 1.megabytes.to_f
     hw_object.cpu_cores_per_socket = cores
     hw_object.cpu_total_cores = cores
 
     # Return the created inventory object:
     vm_object
+  end
+
+  def parse_quantity(value)
+    return nil if value.nil?
+
+    begin
+      value.iec_60027_2_to_i
+    rescue
+      value.decimal_si_to_f
+    end
   end
 
   def process_status(vm_object, ip_address, node_name)
@@ -237,7 +247,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     require 'fog/kubevirt/compute/models/template'
     hw_object = hw_collection.find_or_build(template_object)
     memory = default_value(params, 'MEMORY') || domain.dig(:resources, :requests, :memory)
-    hw_object.memory_mb = ManageIQ::Providers::Kubevirt::MemoryCalculator.convert(memory, 'Mi')
+    hw_object.memory_mb = parse_quantity(memory) / 1.megabytes.to_f
     cpu = default_value(params, 'CPU_CORES') || domain.dig(:cpu, :cores)
     hw_object.cpu_cores_per_socket = cpu
     hw_object.cpu_total_cores = cpu
