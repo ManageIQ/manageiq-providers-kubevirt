@@ -112,7 +112,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   def process_vm(object)
     # Process the domain:
-    vm_object = process_domain(object.memory, object.cpu_cores, object.uid, object.name)
+    vm_object = process_domain(object.namespace, object.memory, object.cpu_cores, object.uid, object.name)
 
     # Add the inventory object for the OperatingSystem
     process_os(vm_object, object.labels, object.annotations)
@@ -140,13 +140,13 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     end
 
     # Process the domain:
-    vm_object = process_domain(object.memory, object.cpu_cores, uid, name)
+    vm_object = process_domain(object.namespace, object.memory, object.cpu_cores, uid, name)
     process_status(vm_object, object.ip_address, object.node_name)
 
     vm_object.raw_power_state = object.status
   end
 
-  def process_domain(memory, cores, uid, name)
+  def process_domain(namespace, memory, cores, uid, name)
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
     # Create the inventory object for the virtual machine:
@@ -160,7 +160,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object.type = 'ManageIQ::Providers::Kubevirt::InfraManager::Vm'
     vm_object.uid_ems = uid
     vm_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
-    vm_object.location = 'unknown'
+    vm_object.location = namespace
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)

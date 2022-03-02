@@ -49,6 +49,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       source = double(
         :uid        => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :name       => "demo-vm",
+        :namespace  => "my-project",
         :memory     => "64M",
         :cpu_cores  => "2",
         :ip_address => "10.128.0.18",
@@ -65,7 +66,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :uid_ems          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
         :power_state      => "on",
-        :location         => "unknown",
+        :location         => "my-project",
         :connection_state => "connected",
       )
 
