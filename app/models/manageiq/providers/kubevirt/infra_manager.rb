@@ -134,7 +134,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
       :host      => opts[:server],
       :port      => opts[:port],
       :token     => ManageIQ::Password.try_decrypt(opts[:token]),
-      :namespace => ""
+      :namespace => "" # Collect resources across all namespaces
     )
   end
 
