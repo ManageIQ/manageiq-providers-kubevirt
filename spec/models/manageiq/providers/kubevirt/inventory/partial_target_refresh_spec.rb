@@ -19,9 +19,14 @@ require 'recursive_open_struct'
 
 describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh do
   describe '#parse' do
+    let(:manager) do
+      FactoryBot.create(:ems_kubevirt, :name => "mykubevirt").tap do |manager|
+        allow(manager).to receive(:with_provider_connection).and_yield(json_data("one_vm"))
+      end
+    end
+
     it 'works correctly with one node' do
       # Run the parser:
-      manager = create_manager('one_vm')
       collector = ManageIQ::Providers::Kubevirt::Inventory.collector_class_for(manager, nil).new(manager, nil)
       persister = ManageIQ::Providers::Kubevirt::Inventory.persister_class_for(manager, nil).new(manager, nil)
       inventory = ManageIQ::Providers::Kubevirt::Inventory.new(persister,
@@ -64,20 +69,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh 
   end
 
   private
-
-  #
-  # Creates a manager double.
-  #
-  # @return [Object] The manager object.
-  #
-  def create_manager(file_name)
-    manager = double
-    allow(manager).to receive(:name).and_return('mykubevirt')
-    allow(manager).to receive(:id).and_return(0)
-    allow(manager.class).to receive(:ems_type).and_return(::ManageIQ::Providers::Kubevirt::Constants::VENDOR)
-    allow(manager).to receive(:with_provider_connection).and_yield(json_data(file_name))
-    manager
-  end
 
   #
   # Creates a collector data from a JSON file. The file should be in the `spec/fixtures/files/collectors`
