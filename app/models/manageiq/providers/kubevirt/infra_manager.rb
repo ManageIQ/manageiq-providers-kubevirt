@@ -71,13 +71,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   def self.params_for_create
-    @params_for_create ||= {
+    {
       :title  => "Configure #{description}",
       :fields => [
         {
           :component  => "text-field",
           :name       => "endpoints.default.server",
-          :label      => "Hostname",
+          :label      => _("Hostname"),
           :isRequired => true,
           :validate   => [{:type => "required-validator"}]
         },
@@ -105,7 +105,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
         {
           :component  => "text-field",
           :name       => "endpoints.default.token",
-          :label      => "Token",
+          :label      => _("Token"),
           :type       => "password",
           :isRequired => true,
           :validate   => [{:type => "required-validator"}]
