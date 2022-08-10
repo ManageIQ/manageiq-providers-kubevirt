@@ -17,3 +17,7 @@ VCR.configure do |config|
     config.define_cassette_placeholder(secrets.kubevirt_defaults[secret]) { secrets.kubevirt[secret] }
   end
 end
+
+RSpec.configure do |config|
+  config.file_fixture_path = ManageIQ::Providers::Kubevirt::Engine.root.join("spec/fixtures/files")
+end
