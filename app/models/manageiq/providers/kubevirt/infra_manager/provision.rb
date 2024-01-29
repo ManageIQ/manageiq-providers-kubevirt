@@ -1,6 +1,6 @@
 class ManageIQ::Providers::Kubevirt::InfraManager::Provision < MiqProvision
-  include_concern 'Cloning'
-  include_concern 'StateMachine'
+  include Cloning
+  include StateMachine
 
   #
   # The ManageIQ core calls this method during the provision workflow to get the name of the object that is being

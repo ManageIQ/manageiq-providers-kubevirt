@@ -1,7 +1,6 @@
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   extend ActiveSupport::Concern
-
-  include_concern 'Power'
+  include Power
 
   included do
     supports :terminate do
