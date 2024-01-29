@@ -1,8 +1,4 @@
 class ManageIQ::Providers::Kubevirt::Inventory < ManageIQ::Providers::Inventory
-  require_nested :Collector
-  require_nested :Parser
-  require_nested :Persister
-
   def self.persister_class_for(_ems, _target)
     ManageIQ::Providers::Kubevirt::Inventory::Persister
   end
