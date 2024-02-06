@@ -1,5 +1,5 @@
 class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::InfraManager::Vm
-  include_concern 'Operations'
+  include Operations
 
   POWER_STATES = {
     'Running'    => 'on',
