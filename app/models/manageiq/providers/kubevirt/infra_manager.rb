@@ -3,7 +3,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
 
   belongs_to :parent_manager,
              :foreign_key => :parent_ems_id,
-             :class_name  => "ManageIQ::Providers::ContainerManager",
+             :class_name  => "ManageIQ::Providers::Kubernetes::ContainerManager",
              :inverse_of  => :infra_manager
 
   delegate :authentication_check,
