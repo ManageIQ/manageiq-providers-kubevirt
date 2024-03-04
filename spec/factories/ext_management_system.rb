@@ -3,6 +3,6 @@ FactoryBot.define do
           :aliases => ["manageiq/providers/kubevirt/infra_manager"],
           :class   => "ManageIQ::Providers::Kubevirt::InfraManager",
           :parent  => :ems_infra do
-    parent_manager { FactoryBot.create(:ems_container) }
+    parent_manager { FactoryBot.create(:ems_kubernetes) }
   end
 end
