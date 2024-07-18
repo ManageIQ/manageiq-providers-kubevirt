@@ -23,6 +23,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   # This is the list of features that this provider supports:
   #
+  supports :catalog
   supports :provisioning
 
   #
@@ -41,6 +42,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   def self.description
     @description ||= ManageIQ::Providers::Kubevirt::Constants::PRODUCT
+  end
+
+  def self.catalog_types
+    {"kubevirt" => N_("OpenShift Virtualization / KubeVirt")}
   end
 
   def self.params_for_create
