@@ -1,5 +1,5 @@
 class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraManager
-  ENDPOINT_ROLE = :kubevirt
+  DEFAULT_AUTH_TYPE = :kubevirt
 
   belongs_to :parent_manager,
              :foreign_key => :parent_ems_id,
@@ -31,7 +31,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @return [String] The provider type.
   #
   def self.ems_type
-    @ems_type ||= ManageIQ::Providers::Kubevirt::Constants::VENDOR
+    @ems_type ||= vendor
   end
 
   #
@@ -40,11 +40,23 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @return [String] The provider description.
   #
   def self.description
-    @description ||= ManageIQ::Providers::Kubevirt::Constants::PRODUCT
+    @description ||= product_name
+  end
+
+  def self.vendor
+    ManageIQ::Providers::Kubevirt::Constants::VENDOR
+  end
+
+  def self.product_name
+    ManageIQ::Providers::Kubevirt::Constants::PRODUCT
+  end
+
+  def self.version
+    ManageIQ::Providers::Kubevirt::Constants::VERSION
   end
 
   def self.catalog_types
-    {"kubevirt" => N_("OpenShift Virtualization / KubeVirt")}
+    {"kubevirt" => N_("KubeVirt")}
   end
 
   def self.params_for_create
@@ -149,12 +161,12 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     virt_supported
   end
 
-  def authentication_status_ok?(type = :kubevirt)
+  def authentication_status_ok?(type = default_authentication_type)
     authentication_best_fit(type).try(:status) == "Valid"
   end
 
   def authentication_for_providers
-    authentications.where(:authtype => :kubevirt)
+    authentications.where(:authtype => default_authentication_type)
   end
 
   #
@@ -164,7 +176,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   def connect(opts = {})
     # Get the authentication token:
-    token = opts[:token] || authentication_token(:kubevirt)
+    token = opts[:token] || authentication_token(default_authentication_type)
 
     # Create and return the connection:
     endpoint = default_endpoint
@@ -181,7 +193,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   def default_authentication_type
-    ENDPOINT_ROLE
+    DEFAULT_AUTH_TYPE
   end
 
   #
