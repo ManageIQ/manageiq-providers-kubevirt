@@ -65,11 +65,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     host_object.hostname = object.hostname
     host_object.ipaddress = object.ip_address
     host_object.name = name
-    host_object.type = 'ManageIQ::Providers::Kubevirt::InfraManager::Host'
     host_object.uid_ems = uid
-    host_object.vmm_product = ManageIQ::Providers::Kubevirt::Constants::PRODUCT
-    host_object.vmm_vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
-    host_object.vmm_version = ManageIQ::Providers::Kubevirt::Constants::VERSION
 
     # Add the inventory object for the operating system details:
     os_object = os_collection.find_or_build(host_object)
@@ -141,9 +137,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object.storage = storage_object
     vm_object.storages = [storage_object]
     vm_object.template = false
-    vm_object.type = 'ManageIQ::Providers::Kubevirt::InfraManager::Vm'
     vm_object.uid_ems = uid
-    vm_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
     vm_object.location = namespace
 
     # Create the inventory object for the hardware:
@@ -204,9 +198,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     template_object.name = object.name
     template_object.raw_power_state = 'never'
     template_object.template = true
-    template_object.type = 'ManageIQ::Providers::Kubevirt::InfraManager::Template'
     template_object.uid_ems = uid
-    template_object.vendor = ManageIQ::Providers::Kubevirt::Constants::VENDOR
     template_object.location = 'unknown'
 
     # Add the inventory object for the hardware:

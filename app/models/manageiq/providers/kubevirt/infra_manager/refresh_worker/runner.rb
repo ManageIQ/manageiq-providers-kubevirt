@@ -53,13 +53,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
 
   private
 
+  def provider_class
+    ManageIQ::Providers::Kubevirt
+  end
+
   #
   # Returns the reference to the manager.
   #
   # @return [ManageIQ::Providers::Kubevirt::InfraManager] The manager.
   #
   def manager
-    @manager ||= ManageIQ::Providers::Kubevirt::InfraManager.find(@cfg[:ems_id])
+    @manager ||= provider_class::InfraManager.find(@cfg[:ems_id])
   end
 
   #
@@ -68,7 +72,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @return [ManageIQ::Providers::Kubevirt::RefreshMemory] The refresh memory.
   #
   def memory
-    @memory ||= ManageIQ::Providers::Kubevirt::RefreshMemory.new
+    @memory ||= provider_class::RefreshMemory.new
   end
 
   #
@@ -77,7 +81,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   def full_refresh
     # Create and populate the collector, persister and parser
     # and parse inventories
-    inventory = ManageIQ::Providers::Kubevirt::Inventory.build(manager, nil)
+    inventory = provider_class::Inventory.build(manager, nil)
     collector = inventory.collector
     persister = inventory.parse
 
@@ -140,15 +144,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     relevant.reverse!
 
     # Create and populate the collector:
-    collector = ManageIQ::Providers::Kubevirt::Inventory::Collector.new(manager, nil)
+    collector = provider_class::Inventory::Collector.new(manager, nil)
     collector.nodes = notices_of_kind(relevant, 'Node')
     collector.vms = notices_of_kind(relevant, 'VirtualMachine')
     collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
     collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
 
     # Create the parser and persister, wire them, and execute the persist:
-    persister = ManageIQ::Providers::Kubevirt::Inventory::Persister.new(manager, nil)
-    parser = ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh.new
+    persister = provider_class::Inventory::Persister.new(manager, nil)
+    parser = provider_class::Inventory::Parser::PartialRefresh.new
     parser.collector = collector
     parser.persister = persister
     parser.parse

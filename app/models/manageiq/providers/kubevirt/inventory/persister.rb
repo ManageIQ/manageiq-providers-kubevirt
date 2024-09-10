@@ -17,6 +17,13 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
         :manager_uuids => ids,
         :targeted      => targeted
       )
+
+      builder.add_default_values(
+        :type        => "#{manager.class}::Host",
+        :vmm_product => manager.class.product_name,
+        :vmm_vendor  => manager.class.vendor,
+        :vmm_version => manager.class.version
+      )
     end
   end
 
@@ -69,6 +76,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
         :manager_uuids                => ids,
         :parent_inventory_collections => %i(vms)
       )
+
+      builder.add_default_values(
+        :type   => "#{manager.class}::Template",
+        :vendor => manager.class.vendor
+      )
     end
   end
 
@@ -86,6 +98,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
       builder.add_properties(
         :targeted      => targeted,
         :manager_uuids => ids,
+      )
+
+      builder.add_default_values(
+        :type   => "#{manager.class}::Vm",
+        :vendor => manager.class.vendor
       )
     end
   end
