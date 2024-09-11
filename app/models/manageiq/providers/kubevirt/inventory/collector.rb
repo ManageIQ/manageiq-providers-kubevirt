@@ -27,7 +27,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
     name = @target.name
     @nodes = {}
 
-    @manager.with_provider_connection do |connection|
+    @manager.with_provider_connection(:namespace => @target.location) do |connection|
       if @target.template?
         @templates = [connection.template(name)]
       else
