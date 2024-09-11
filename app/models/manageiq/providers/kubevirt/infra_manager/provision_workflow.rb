@@ -15,6 +15,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
     get_value(@values[:provision_type]).to_s == 'iso'
   end
 
+  def supports_customization_template?
+    true
+  end
+
   def supports_native_clone?
     get_value(@values[:provision_type]).to_s == 'native_clone'
   end

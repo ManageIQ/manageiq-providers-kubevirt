@@ -51,6 +51,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     merged_options = options.dup
     merged_options[:cpu_cores] = get_option(:cores_per_socket)
     merged_options[:memory] = get_option(:vm_memory)
+    merged_options[:cloud_user_password] = get_option(:root_password)
     merged_options.compact
   end
 end
