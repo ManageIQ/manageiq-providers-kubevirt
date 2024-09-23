@@ -199,7 +199,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     template_object.raw_power_state = 'never'
     template_object.template = true
     template_object.uid_ems = uid
-    template_object.location = 'unknown'
+    template_object.location = object.namespace
 
     # Add the inventory object for the hardware:
     process_hardware(template_object, object.parameters, object.labels, vm.dig(:spec, :template, :spec, :domain))
