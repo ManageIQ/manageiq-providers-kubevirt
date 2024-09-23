@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   name: template-without-parameters
+  namespace: default
   annotations:
     description: "OpenShift KubeVirt Cirros VM template"
     tags: "kubevirt,openshift,template,linux"

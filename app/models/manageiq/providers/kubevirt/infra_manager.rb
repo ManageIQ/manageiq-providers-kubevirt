@@ -184,7 +184,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
       :host      => endpoint.hostname,
       :port      => endpoint.port,
       :token     => token,
-      :namespace => ""
+      :namespace => opts[:namespace] || ""
     )
   end
 

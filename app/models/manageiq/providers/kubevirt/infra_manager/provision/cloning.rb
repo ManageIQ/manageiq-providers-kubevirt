@@ -28,7 +28,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   def start_clone(options)
     # Retrieve the details of the source template:
     template = nil
-    source.with_provider_connection do |connection|
+    source.with_provider_connection(:namespace => source.location) do |connection|
       template = connection.template(source.name)
       template.clone(user_options(options))
 

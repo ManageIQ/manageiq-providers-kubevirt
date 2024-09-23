@@ -8,7 +8,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
 
   def raw_destroy
     require 'fog/kubevirt'
-    ext_management_system.with_provider_connection do |connection|
+    ext_management_system.with_provider_connection(:namespace => location) do |connection|
       # Retrieve the details of the virtual machine:
       begin
         vm_instance = connection.vm_instance(name)

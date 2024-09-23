@@ -37,7 +37,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :objects     => json.objects,
         :parameters  => json.parameters,
         :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations
+        :annotations => json.metadata.annotations,
+        :namespace   => json.metadata.namespace
       )
 
       parser.send(:process_template, source)
@@ -49,7 +50,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :uid_ems          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
         :power_state      => "never",
-        :location         => "unknown",
+        :location         => "default",
         :connection_state => "connected",
       )
 
@@ -105,7 +106,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :objects     => json.objects,
         :parameters  => json.parameters,
         :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations
+        :annotations => json.metadata.annotations,
+        :namespace   => json.metadata.namespace
       )
 
       parser.send(:process_template, source)
@@ -156,7 +158,8 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :objects     => json.objects,
         :parameters  => json.parameters,
         :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations
+        :annotations => json.metadata.annotations,
+        :namespace   => json.metadata.namespace
       )
 
       parser.send(:process_template, source)
@@ -168,7 +171,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :uid_ems          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
         :power_state      => "never",
-        :location         => "unknown",
+        :location         => "default",
         :connection_state => "connected",
       )
 
