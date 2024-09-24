@@ -29,8 +29,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
     }
   end
 
-  def dialog_name_from_automate(message = 'get_dialog_name')
-    super(message, {'platform' => 'kubevirt'})
+  def dialog_name_from_automate(message = 'get_dialog_name', extra_attrs = {'platform' => 'kubevirt'})
+    super(message, extra_attrs)
   end
 
   def update_field_visibility
