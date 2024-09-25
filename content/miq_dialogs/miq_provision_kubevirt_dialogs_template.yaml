@@ -120,16 +120,11 @@
           :required: false
           :options:
             :include: []
-
             :order: []
-
             :single_select: []
-
             :exclude: []
-
           :display: :edit
           :required_tags: []
-
           :data_type: :integer
       :display: :show
       :field_order:
@@ -297,9 +292,19 @@
           :default: "1024"
           :data_type: :string
       :display: :show
+    :customize:
+      :description: Customize
+      :fields:
+        :root_password:
+          :description: Cloud User Password
+          :required: false
+          :display: :edit
+          :data_type: :string
+      :display: :show
   :dialog_order:
   - :requester
   - :purpose
   - :service
   - :hardware
+  - :customize
   - :schedule
