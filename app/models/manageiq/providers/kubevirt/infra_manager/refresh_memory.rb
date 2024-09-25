@@ -8,7 +8,7 @@ require 'set'
 # Current implementation stores the data in memory and there is no need to make it presistent
 # since we run full refresh every time we start the worker and when watches expire.
 #
-class ManageIQ::Providers::Kubevirt::RefreshMemory
+class ManageIQ::Providers::Kubevirt::InfraManager::RefreshMemory
   #
   # Creates a new object to hold the refresh data for the manager with the given identifier.
   #
