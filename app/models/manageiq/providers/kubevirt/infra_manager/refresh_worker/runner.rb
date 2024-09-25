@@ -57,13 +57,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     ManageIQ::Providers::Kubevirt
   end
 
+  def manager_class
+    provider_class::InfraManager
+  end
+
   #
   # Returns the reference to the manager.
   #
   # @return [ManageIQ::Providers::Kubevirt::InfraManager] The manager.
   #
   def manager
-    @manager ||= provider_class::InfraManager.find(@cfg[:ems_id])
+    @manager ||= manager_class.find(@cfg[:ems_id])
   end
 
   #
@@ -72,7 +76,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @return [ManageIQ::Providers::Kubevirt::RefreshMemory] The refresh memory.
   #
   def memory
-    @memory ||= provider_class::RefreshMemory.new
+    @memory ||= manager_class::RefreshMemory.new
   end
 
   #
