@@ -161,8 +161,12 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     virt_supported
   end
 
+  def authentication_status(type = default_authentication_type)
+    authentication_best_fit(type).try(:status)
+  end
+
   def authentication_status_ok?(type = default_authentication_type)
-    authentication_best_fit(type).try(:status) == "Valid"
+    authentication_status(type) == "Valid"
   end
 
   def authentication_for_providers
