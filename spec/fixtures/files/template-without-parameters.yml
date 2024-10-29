@@ -27,9 +27,8 @@ objects:
         domain:
           cpu:
             cores: 2
-          resources:
-            requests:
-              memory: 1Gi
+          memory:
+            guest: 1Gi
           devices:
             disks:
             - disk:
