@@ -222,7 +222,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     require 'fog/kubevirt'
     require 'fog/kubevirt/compute/models/template'
     hw_object = hw_collection.find_or_build(template_object)
-    memory = default_value(params, 'MEMORY') || domain.dig(:resources, :requests, :memory)
+    memory = default_value(params, 'MEMORY') || domain.dig(:memory, :guest)
     hw_object.memory_mb = parse_quantity(memory) / 1.megabytes.to_f if memory
     cpu = default_value(params, 'CPU_CORES') || domain.dig(:cpu, :cores)
     hw_object.cpu_cores_per_socket = cpu
