@@ -6,6 +6,9 @@
       :event_groups:
 :workers:
   :worker_base:
+    :event_catcher:
+      :event_catcher_kubevirt:
+        :poll: 1.seconds
     :queue_worker_base:
       :ems_refresh_worker:
         :ems_refresh_worker_kubevirt: {}
