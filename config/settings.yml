@@ -4,6 +4,26 @@
     :blacklisted_event_names: []
     :event_handling:
       :event_groups:
+        :addition:
+          :critical:
+            - VIRTUALMACHINE_CREATED
+            - VIRTUALMACHINEINSTANCE_CREATED
+            - VIRTUALMACHINE_SUCCESSFULCREATE
+            - VIRTUALMACHINEINSTANCE_SUCCESSFULCREATE
+        :status:
+          :critical:
+            - VIRTUALMACHINE_MIGRATED
+            - VIRTUALMACHINEINSTANCE_MIGRATED
+        :power:
+          :critical:
+            - VIRTUALMACHINE_STARTED
+            - VIRTUALMACHINEINSTANCE_STARTED
+            - VIRTUALMACHINE_SHUTTINGDOWN
+            - VIRTUALMACHINEINSTANCE_SHUTTINGDOWN
+        :deletion:
+          :critical:
+            - VIRTUALMACHINE_SUCCESSFULDELETE
+            - VIRTUALMACHINEINSTANCE_SUCCESSFULDELETE
 :workers:
   :worker_base:
     :event_catcher:
