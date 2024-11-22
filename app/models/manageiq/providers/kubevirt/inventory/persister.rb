@@ -15,7 +15,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
     add_collection(infra, :hosts) do |builder|
       builder.add_properties(
         :manager_uuids => ids,
-        :targeted      => targeted
+        :targeted      => targeted,
+        :secondary_refs => {:by_name => %i[name]}
       )
 
       builder.add_default_values(
