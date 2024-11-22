@@ -25,6 +25,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   supports :catalog
   supports :provisioning
 
+  supports :metrics do
+    _("No metrics endpoint has been added") unless metrics_endpoint_exists?
+  end
+
   #
   # Returns the string that corresponds to this kind of provider.
   #
@@ -194,6 +198,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
 
   def virtualization_endpoint
     connection_configurations.kubevirt.try(:endpoint)
+  end
+
+  def metrics_endpoint_exists?
+    endpoints.where(:role => "prometheus").exists?
   end
 
   def default_authentication_type
