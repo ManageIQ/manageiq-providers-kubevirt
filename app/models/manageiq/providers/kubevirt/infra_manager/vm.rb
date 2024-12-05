@@ -11,6 +11,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
     'Unknown'    => 'terminated'
   }.freeze
 
+  supports :capture
+
   def self.calculate_power_state(raw)
     POWER_STATES[raw] || super
   end
