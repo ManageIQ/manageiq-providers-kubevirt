@@ -11,6 +11,10 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       storage = FactoryBot.create(:storage)
       allow(storage_collection).to receive(:lazy_find).and_return(storage)
 
+      host_collection = double("host_collection")
+      host = FactoryBot.create(:host)
+      allow(host_collection).to receive(:lazy_find).and_return(host)
+
       hw_collection = double("hw_collection")
       hardware = FactoryBot.create(:hardware)
       allow(hw_collection).to receive(:find_or_build).and_return(hardware)
@@ -26,6 +30,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
 
       parser = described_class.new
       parser.instance_variable_set(:@storage_collection, storage_collection)
+      parser.instance_variable_set(:@host_collection, host_collection)
       parser.instance_variable_set(:@vm_collection, vm_collection)
       parser.instance_variable_set(:@hw_collection, hw_collection)
       parser.instance_variable_set(:@network_collection, network_collection)
@@ -53,6 +58,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :location         => "my-project",
         :connection_state => "connected",
       )
+      expect(vm.host).to eq(host)
 
       net = vm.hardware.networks.first
       expect(net).to_not be_nil

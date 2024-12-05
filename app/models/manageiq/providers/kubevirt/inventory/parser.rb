@@ -123,6 +123,8 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object = process_domain(object.namespace, object.memory, object.cpu_cores, uid, name)
     process_status(vm_object, object.ip_address, object.node_name)
 
+    vm_object.host = host_collection.lazy_find(object.node_name, :ref => :by_name)
+
     vm_object.raw_power_state = object.status
   end
 
