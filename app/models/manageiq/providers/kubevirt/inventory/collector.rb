@@ -43,11 +43,26 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
   end
 
   def initialize_for_full_refresh
-    @manager.with_provider_connection do |connection|
-      @nodes = connection.nodes
-      @vms = connection.vms
-      @vm_instances = connection.vm_instances
-      @templates = connection.templates
-    end
+    @nodes        = kube_client.get_nodes
+    @vms          = kubevirt_client.get_virtual_machines
+    @vm_instances = kubevirt_client.get_virtual_machine_instances
+    @templates    = openshift_template_client.get_templates
+  end
+
+  def kube_client(api_group = nil)
+    api_path, api_version = api_group&.split("/")
+
+    options = {:service => "kubernetes"}
+    options.merge!(:path => "/apis/#{api_path}", :version => api_version) if api_path
+
+    @manager.parent_manager.connect(options)
+  end
+
+  def kubevirt_client
+    @kubevirt_client ||= kube_client("kubevirt.io/v1")
+  end
+
+  def openshift_template_client
+    @openshift_template_client ||= kube_client("template.openshift.io/v1")
   end
 end
