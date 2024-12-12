@@ -14,12 +14,4 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Power
       vm.stop
     end
   end
-
-  def raw_reboot_guest
-    ext_management_system.with_provider_connection(:namespace => location) do |connection|
-      # Retrieve the details of the virtual machine:
-      vm = connection.vm(name)
-      vm.restart
-    end
-  end
 end
