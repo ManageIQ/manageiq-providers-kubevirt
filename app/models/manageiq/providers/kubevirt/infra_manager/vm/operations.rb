@@ -1,6 +1,7 @@
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   extend ActiveSupport::Concern
   include Power
+  include Guest
 
   included do
     supports(:terminate) { unsupported_reason(:control) }
