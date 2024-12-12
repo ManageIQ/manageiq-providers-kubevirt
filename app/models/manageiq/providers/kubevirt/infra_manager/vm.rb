@@ -1,6 +1,5 @@
 class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::InfraManager::Vm
   include Operations
-  include SupportsFeatureMixin
 
   POWER_STATES = {
     'Running'    => 'on',
