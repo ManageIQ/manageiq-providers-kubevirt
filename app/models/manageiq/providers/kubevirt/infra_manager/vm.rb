@@ -16,6 +16,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   supports :reboot_guest do
     _('The VM is not powered on') unless current_state == 'on'
   end
+  supports :reset
   def self.calculate_power_state(raw)
     POWER_STATES[raw] || super
   end
