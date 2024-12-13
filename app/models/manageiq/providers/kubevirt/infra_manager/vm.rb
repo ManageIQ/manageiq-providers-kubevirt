@@ -12,6 +12,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   }.freeze
 
   supports :capture
+  supports :snapshots
 
   def self.calculate_power_state(raw)
     POWER_STATES[raw] || super
@@ -90,5 +91,28 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
 
   def self.display_name(number = 1)
     n_('Virtual Machine (Kubevirt)', 'Virtual Machines (Kubevirt)', number)
+  end
+
+  def params_for_create_snapshot
+    {
+      :fields => [
+        {
+          :component  => 'text-field',
+          :name       => 'name',
+          :id         => 'name',
+          :label      => _('Name'),
+          :isRequired => true,
+          :validate   => [{:type => 'required'}],
+        },
+        {
+          :component  => 'textarea',
+          :name       => 'description',
+          :id         => 'description',
+          :label      => _('Description'),
+          :isRequired => true,
+          :validate   => [{:type => 'required'}],
+        },
+      ],
+    }
   end
 end
