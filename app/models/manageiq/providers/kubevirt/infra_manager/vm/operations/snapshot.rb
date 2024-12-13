@@ -1,6 +1,5 @@
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Snapshot
-
-  def raw_create_snapshot(snap_name, desc = nil, memory = false)
+  def raw_create_snapshot(snap_name, _desc = nil, _memory = false)
     kubevirt = ext_management_system.parent_manager.connect(:service => "kubernetes", :path => "/apis/snapshot.kubevirt.io", :version => "v1alpha1")
     kubevirt.create_virtual_machine_snapshot(
       :metadata => {
@@ -17,3 +16,4 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Snapshot
     )
   end
 end
+
