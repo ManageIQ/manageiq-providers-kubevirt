@@ -29,19 +29,9 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@vm_os_collection, os_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)
 
-      json = unprocessed_object("template.json")
+      template = unprocessed_object("template.json")
 
-      source = double(
-        :name        => "example",
-        :uid         => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :objects     => json.objects,
-        :parameters  => json.parameters,
-        :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations,
-        :namespace   => json.metadata.namespace
-      )
-
-      parser.send(:process_template, source)
+      parser.send(:process_template, template)
 
       expect(temp).to have_attributes(
         :name             => "example",
@@ -98,19 +88,9 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@vm_os_collection, os_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)
 
-      json = unprocessed_object("template_registry.json")
+      template_registry = unprocessed_object("template_registry.json")
 
-      source = double(
-        :name        => "working",
-        :uid         => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :objects     => json.objects,
-        :parameters  => json.parameters,
-        :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations,
-        :namespace   => json.metadata.namespace
-      )
-
-      parser.send(:process_template, source)
+      parser.send(:process_template, template_registry)
 
       expect(disk1).to have_attributes(
         :device_name => "registryvolume",
@@ -150,19 +130,9 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@vm_os_collection, os_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)
 
-      json = unprocessed_object("template-without-parameters.yml")
+      template = unprocessed_object("template-without-parameters.yml")
 
-      source = double(
-        :name        => "template-without-parameters",
-        :uid         => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :objects     => json.objects,
-        :parameters  => json.parameters,
-        :labels      => json.metadata.labels,
-        :annotations => json.metadata.annotations,
-        :namespace   => json.metadata.namespace
-      )
-
-      parser.send(:process_template, source)
+      parser.send(:process_template, template)
 
       expect(temp).to have_attributes(
         :name             => "template-without-parameters",
