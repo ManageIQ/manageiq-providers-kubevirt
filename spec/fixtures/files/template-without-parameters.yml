@@ -3,6 +3,7 @@ kind: Template
 metadata:
   name: template-without-parameters
   namespace: default
+  uid: 7e6fb1ac-00ef-11e8-8840-525400b2cba8
   annotations:
     description: "OpenShift KubeVirt Cirros VM template"
     tags: "kubevirt,openshift,template,linux"
