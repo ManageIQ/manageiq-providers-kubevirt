@@ -1,0 +1,73 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://METRICS_HOSTNAME/api/v1/query_range?end=1734557880&query=sum(rate(kubevirt_vmi_cpu_user_usage_seconds_total%7Bname=%22centos-stream9-scarlet-duck-44%22%7D%5B2m%5D))&start=1734557220&step=60s
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer KUBEVIRT_TOKEN
+      User-Agent:
+      - Faraday v1.10.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Length:
+      - '493'
+      Content-Security-Policy:
+      - frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 19 Dec 2024 19:38:10 GMT
+      Set-Cookie:
+      - 97f6663f1252f61343f526ad937cfc1a=bd6c4d04f502ad60c3349e0342b830d1; path=/;
+        HttpOnly; Secure; SameSite=None
+    body:
+      encoding: UTF-8
+      string: '{"status":"success","data":{"resultType":"matrix","result":[{"metric":{},"values":[[1734557220,"0.9143333333337471"],[1734557280,"0.9137777777750872"],[1734557340,"0.9141111111113179"],[1734557400,"0.914666666669978"],[1734557460,"0.9136666666664596"],[1734557520,"0.9141111111113179"],[1734557580,"0.913555555557832"],[1734557640,"0.9125555555543137"],[1734557700,"0.9134444444440304"],[1734557760,"0.9140000000026903"],[1734557820,"0.9137777777802611"],[1734557880,"0.9134444444440304"]]}]}}'
+  recorded_at: Thu, 19 Dec 2024 19:38:10 GMT
+- request:
+    method: get
+    uri: https://METRICS_HOSTNAME/api/v1/query_range?end=1734557880&query=sum(kubevirt_vmi_memory_domain_bytes%7Bname=%22centos-stream9-scarlet-duck-44%22%7D)&start=1734557220&step=60s
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer KUBEVIRT_TOKEN
+      User-Agent:
+      - Faraday v1.10.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Length:
+      - '399'
+      Content-Security-Policy:
+      - frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 19 Dec 2024 19:38:10 GMT
+      Set-Cookie:
+      - 97f6663f1252f61343f526ad937cfc1a=bd6c4d04f502ad60c3349e0342b830d1; path=/;
+        HttpOnly; Secure; SameSite=None
+    body:
+      encoding: UTF-8
+      string: '{"status":"success","data":{"resultType":"matrix","result":[{"metric":{},"values":[[1734557220,"2147483648"],[1734557280,"2147483648"],[1734557340,"2147483648"],[1734557400,"2147483648"],[1734557460,"2147483648"],[1734557520,"2147483648"],[1734557580,"2147483648"],[1734557640,"2147483648"],[1734557700,"2147483648"],[1734557760,"2147483648"],[1734557820,"2147483648"],[1734557880,"2147483648"]]}]}}'
+  recorded_at: Thu, 19 Dec 2024 19:38:10 GMT
+recorded_with: VCR 6.3.1
