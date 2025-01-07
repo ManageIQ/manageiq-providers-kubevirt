@@ -58,12 +58,6 @@ manually, or when a new virtual machine is added.
 always performs a full refresh, there are no specific targers (like
 virtual machines, or hosts) implemented yet.
 
-* The `kubeclient` gem that the provider uses to talk to the Kubernetes API
-doesn't support the sub-resource mechanism used by the KubeVirt API for SPICE
-details. In addition Kubernetes itself doesn't yet support sub-resources
-for custom resource definitions. As a result the provider has to extract
-the SPICE proxy URL from the configuration of the `spice-proxy` service.
-
 ## Notes
 
 ### How to get the default token from Kubernetes

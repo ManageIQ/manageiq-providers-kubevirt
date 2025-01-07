@@ -156,13 +156,4 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
   def delete_vm_instance(name, namespace)
     @conn.vminstances.destroy(name, namespace)
   end
-
-  #
-  # Calculates the URL of the SPICE proxy server.
-  #
-  # @return [String] The URL of the spice proxy server.
-  #
-  def spice_proxy_url
-    @conn.spice_proxy_url
-  end
 end
