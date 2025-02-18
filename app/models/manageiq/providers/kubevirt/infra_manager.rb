@@ -109,7 +109,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
 
   def self.verify_credentials(args)
     kubevirt = raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token")&.symbolize_keys)
-    kubevirt&.valid? && kubevirt&.virt_supported?
+    kubevirt&.get_api_group_list
+    kubevirt&.get_api_group_kubevirt_io
   end
 
   #
@@ -122,13 +123,20 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @option opts [String] :token The Kubernetes authentication token.
   #
   def self.raw_connect(opts)
-    # Create the connection:
-    Connection.new(
-      :host      => opts[:server],
-      :port      => opts[:port],
-      :token     => ManageIQ::Password.try_decrypt(opts[:token]),
-      :namespace => "" # Collect resources across all namespaces
-    )
+    require "kubevirt"
+
+    api_key = ManageIQ::Password.try_decrypt(opts[:token])
+
+    kubevirt_api_client = Kubevirt::ApiClient.new
+    kubevirt_api_client.config.api_key    = api_key
+    kubevirt_api_client.config.scheme     = "https"
+    kubevirt_api_client.config.host       = "#{opts[:server]}:#{opts[:port] || 6443}"
+    kubevirt_api_client.config.verify_ssl = false # TODO check security_protocol
+    kubevirt_api_client.config.logger     = $kubevirt_log
+    kubevirt_api_client.config.debugging  = Settings.log.level == "debug"
+    kubevirt_api_client.default_headers["Authorization"] = "Bearer #{api_key}"
+
+    Kubevirt::DefaultApi.new(kubevirt_api_client)
   end
 
   #
@@ -150,7 +158,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   # @param opts [Hash] Additional options to control how to perform the verification.
   #
   def verify_credentials(_type = nil, opts = {})
-    with_provider_connection(opts, &:valid?)
+    with_provider_connection(opts) do |kubevirt|
+      # First check that we're able to connect to the k8s API
+      kubevirt.get_api_group_list
+      # Then check that we can access the /apis/kubevirt.io API group
+      kubevirt.get_api_group_kubevirt_io
+    rescue Kubevirt::ApiError => err
+      raise MiqException::MiqInvalidCredentialsError, N_("Unauthorized") if err.code == 401
+      raise MiqException::MiqUnreachableError,        N_("Unreachable")  if err.code == 0
+      raise MiqException::MiqUnreachableError,        N_("Virtualization not enabled") if err.code == 404
+      raise
+    end
   end
 
   #
@@ -159,11 +177,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   #
   # @param opts [Hash] Additional options to control how to perform the verification.
   #
-  def verify_virt_supported(opts)
-    virt_supported = with_provider_connection(opts, &:virt_supported?)
-    raise "Kubevirt deployment was not found on provider" unless virt_supported
-    virt_supported
-  end
+  alias verify_virt_supported verify_credentials
 
   def authentication_status(type = default_authentication_type)
     authentication_best_fit(type).try(:status)
@@ -186,14 +200,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     # Get the authentication token:
     token = opts[:token] || authentication_token(default_authentication_type)
 
-    # Create and return the connection:
-    endpoint = default_endpoint
-    self.class::Connection.new(
-      :host      => endpoint.hostname,
-      :port      => endpoint.port,
-      :token     => token,
-      :namespace => opts[:namespace] || ""
-    )
+    self.class.raw_connect(:server => default_endpoint.hostname, :port => default_endpoint.port, :token => token)
   end
 
   def virtualization_endpoint
