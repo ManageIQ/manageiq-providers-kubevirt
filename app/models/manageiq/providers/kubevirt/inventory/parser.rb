@@ -132,7 +132,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     # Process the domain:
     vm_object = process_domain(object.metadata.namespace, object.spec.domain.memory&.guest, object.spec.domain.cpu&.cores, uid, name)
 
-    process_status(vm_object, object.status.interfaces.first&.ipAddress, object.status.nodeName)
+    process_status(vm_object, object.status.interfaces&.first&.ipAddress, object.status.nodeName)
 
     vm_object.host = host_collection.lazy_find(object.status.nodeName, :ref => :by_name)
 

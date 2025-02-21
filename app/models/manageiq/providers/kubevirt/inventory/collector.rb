@@ -29,11 +29,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
     @nodes = {}
 
     if @target.template?
-      @templates = [openshift_template_client.template(name, namespace)]
+      @templates = [@manager.kubeclient("template.openshift.io/v1").template(name, namespace)]
     else
-      @vms = [kubevirt_client.get_virtual_machine(name, namespace)]
+      @vms = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine(name, namespace)]
       begin
-        @vm_instances = [kubevirt_client.get_virtual_machine_instance(name, namespace)]
+        @vm_instances = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine_instance(name, namespace)]
       rescue
         # target refresh of a vm might fail if it has no vm instance
         _log.debug("The is no running vm resource for '#{name}'")
@@ -42,23 +42,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
   end
 
   def initialize_for_full_refresh
-    @nodes = kubernetes_client.get_nodes
-    @vms = kubevirt_client.get_virtual_machines
-    @vm_instances = kubevirt_client.get_virtual_machine_instances
-    @templates = openshift_template_client.get_templates
-  end
-
-  private
-
-  def kubernetes_client
-    @manager.parent_manager.connect(:service => "kubernetes")
-  end
-
-  def openshift_template_client
-    @manager.parent_manager.connect(:path => "/apis/template.openshift.io", :version => "v1")
-  end
-
-  def kubevirt_client
-    @manager.parent_manager.connect(:path => "/apis/kubevirt.io", :version => "v1")
+    @nodes = @manager.kubeclient.get_nodes
+    @vms = @manager.kubeclient("kubevirt.io/v1").get_virtual_machines
+    @vm_instances = @manager.kubeclient("kubevirt.io/v1").get_virtual_machine_instances
+    @templates = @manager.kubeclient("template.openshift.io/v1").get_templates
   end
 end

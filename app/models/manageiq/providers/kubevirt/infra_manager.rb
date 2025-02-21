@@ -203,6 +203,18 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     self.class.raw_connect(:server => default_endpoint.hostname, :port => default_endpoint.port, :token => token)
   end
 
+  def kubeclient(api_group = nil)
+    api_path, api_version = api_group&.split("/")
+
+    options = {:service => "kubernetes"}
+    if api_path
+      options[:path] = "/apis/#{api_path}"
+      options[:version] = api_version
+    end
+
+    parent_manager.connect(options)
+  end
+
   def virtualization_endpoint
     connection_configurations.kubevirt.try(:endpoint)
   end
