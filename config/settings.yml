@@ -24,6 +24,8 @@
           :critical:
             - VIRTUALMACHINE_SUCCESSFULDELETE
             - VIRTUALMACHINEINSTANCE_SUCCESSFULDELETE
+:log:
+  :level_kubevirt: info
 :workers:
   :worker_base:
     :event_catcher:
