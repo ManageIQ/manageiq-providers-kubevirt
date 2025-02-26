@@ -22,7 +22,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Connection
       :kubevirt_port      => opts[:port],
       :kubevirt_token     => opts[:token],
       :kubevirt_namespace => opts[:namespace] || 'default',
-      :kubevirt_log       => $log
+      :kubevirt_log       => $kubevirt_log
     )
 
     # Nothing else is done here, as this method should never throw an exception, even if the
