@@ -108,9 +108,18 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
   end
 
   def self.verify_credentials(args)
-    kubevirt = raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token")&.symbolize_keys)
+    kubevirt = raw_connect(args.dig("endpoints", "default")&.slice("server", "port", "token", "security_protocol", "certificate_authority")&.symbolize_keys)
     kubevirt&.get_api_group_list
     kubevirt&.get_api_group_kubevirt_io
+  rescue Kubevirt::ApiError => err
+    case err.code
+    when 404
+      raise MiqException::Error, N_("%{product_name} API Group Not found") % {:product_name => product_name}
+    when 0
+      raise MiqException::MiqUnreachableError, err.message
+    else
+      raise
+    end
   end
 
   #
@@ -131,7 +140,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     kubevirt_api_client.config.api_key    = api_key
     kubevirt_api_client.config.scheme     = "https"
     kubevirt_api_client.config.host       = "#{opts[:server]}:#{opts[:port] || 6443}"
-    kubevirt_api_client.config.verify_ssl = false # TODO check security_protocol
+    kubevirt_api_client.config.verify_ssl = opts[:security_protocol] != "ssl-without-validation"
+    kubevirt_api_client.config.cert_file  = opts[:certificate_authority]
     kubevirt_api_client.config.logger     = $kubevirt_log
     kubevirt_api_client.config.debugging  = Settings.log.level == "debug"
     kubevirt_api_client.default_headers["Authorization"] = "Bearer #{api_key}"
@@ -200,7 +210,13 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
     # Get the authentication token:
     token = opts[:token] || authentication_token(default_authentication_type)
 
-    self.class.raw_connect(:server => default_endpoint.hostname, :port => default_endpoint.port, :token => token)
+    self.class.raw_connect(
+      :server                => default_endpoint.hostname,
+      :port                  => default_endpoint.port,
+      :security_protocol     => default_endpoint.security_protocol,
+      :certificate_authority => default_endpoint.certificate_authority,
+      :token                 => token
+    )
   end
 
   def kubeclient(api_group = nil)
