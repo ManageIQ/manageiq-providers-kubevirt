@@ -1,12 +1,12 @@
 # ManageIQ::Providers::Kubevirt
 
-[![CI](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml)
+[![CI](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml/badge.svg?branch=spassky)](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions/workflows/ci.yaml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/164d3344f7d1a833e6ef/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-providers-kubevirt/test_coverage)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq-providers-kubevirt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build history for master branch](https://buildstats.info/github/chart/ManageIQ/manageiq-providers-kubevirt?branch=master&buildCount=50&includeBuildsFromPullRequest=false&showstats=false)](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions?query=branch%3Amaster)
+[![Build history for spassky branch](https://buildstats.info/github/chart/ManageIQ/manageiq-providers-kubevirt?branch=spassky&buildCount=50&includeBuildsFromPullRequest=false&showstats=false)](https://github.com/ManageIQ/manageiq-providers-kubevirt/actions?query=branch%3Amaster)
 
 ManageIQ plugin for the KubeVirt provider.
 
