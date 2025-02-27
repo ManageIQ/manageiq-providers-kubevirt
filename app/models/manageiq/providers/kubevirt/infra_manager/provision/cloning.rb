@@ -30,27 +30,39 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       template    = source.provider_object
       namespace ||= source.location
 
-      vm_params = values(template, user_options(options))
-      pvc_specs = template.objects.select { |o| o[:kind] == "PersistentVolumeClaim" }
-      # TODO create pvcs
+      params    = values(template, user_options(options))
+      pvc_specs = template.objects.select { |o| o[:kind] == "PersistentVolumeClaim" }&.map(&:to_h)
       vm_spec   = template.objects.detect { |o| o[:kind] == "VirtualMachine" }&.to_h
       raise N_("No Virtual Machine defined in template") if vm_spec.nil?
 
-      param_substitution!(vm_spec, vm_params)
+      param_substitution!(vm_spec, params)
       vm_spec.deep_merge!(:spec => {:running => false}, :metadata => {:namespace => namespace})
+
+      create_persistent_volume_claims(pvc_specs, params, namespace) if pvc_specs.any?
 
       begin
         vm, _, _ = connection.create_namespaced_virtual_machine(namespace, vm_spec)
+        phase_context[:new_vm_ems_ref] = vm.metadata.uid
       rescue
-        # TODO: check if we need to roll back if one object creation fails
+        pvc_specs.each { |pvc| kubeclient.delete_persistent_volume_claim(pvc) }
       end
-
-      phase_context[:new_vm_ems_ref] = vm.metadata.uid
     end
 
   end
 
   private
+
+  def kubeclient
+    @kubeclient ||= source.ext_management_system.kubeclient
+  end
+
+  def create_persistent_volume_claims(pvc_specs, params, namespace)
+    pvc_specs.map do |pvc_spec|
+      param_substitution!(pvc_spec, params)
+      pvc_spec.deep_merge!(:metadata => {:namespace => namespace})
+      kubeclient.create_persistent_volume_claim(pvc_spec)
+    end
+  end
 
   #
   # Merges user given options with user options that are specified on the request.
