@@ -96,7 +96,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     when Array
       object.map! { |v| param_substitution!(v, params) }
     when String
-      object = sub_specific_object(params, object)
+      object = substitute_string_param(object, params)
     end
   end
 
@@ -107,7 +107,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   # @params object [String] Object on which substitution takes place.
   # @returns [String] The outcome of substitution.
   #
-  def sub_specific_object(params, object)
+  def substitute_string_param(object, params)
     result = object
     params.each_key do |name|
       token = "${#{name.upcase}}"
