@@ -22,6 +22,13 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
         :parameters => parameters
       )
     end
+    let(:new_vm) do
+      require 'kubevirt'
+      Kubevirt::V1VirtualMachine.new(
+        :metadata => Kubevirt::K8sIoApimachineryPkgApisMetaV1ObjectMeta.new(:uid => SecureRandom.uuid),
+        :spec     => Kubevirt::V1VirtualMachineSpec.new(:template => Kubevirt::V1VirtualMachineInstanceTemplateSpec.new)
+      )
+    end
 
     before do
       allow(source).to receive(:provider_object).and_return(template)
@@ -32,8 +39,6 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
     it "calls clone on template" do
       connection = double("Kubevirt::DefaultApi")
 
-      require 'kubevirt'
-      new_vm = Kubevirt::V1VirtualMachine.new(:metadata => Kubevirt::K8sIoApimachineryPkgApisMetaV1ObjectMeta.new(:uid => SecureRandom.uuid))
       allow(connection).to receive(:create_namespaced_virtual_machine).with(namespace, hash_including(:metadata => hash_including(:name => "test"))).and_return(new_vm, 200, {})
       allow(source).to     receive(:with_provider_connection).and_yield(connection)
 
@@ -50,8 +55,6 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
         connection = double("Kubevirt::DefaultApi")
         kubeclient = double("Kubeclient")
 
-        require 'kubevirt'
-        new_vm = Kubevirt::V1VirtualMachine.new(:metadata => Kubevirt::K8sIoApimachineryPkgApisMetaV1ObjectMeta.new(:uid => SecureRandom.uuid))
         allow(connection).to receive(:create_namespaced_virtual_machine).with(namespace, hash_including(:metadata => hash_including(:name => "test"))).and_return(new_vm, 200, {})
         allow(source).to     receive(:with_provider_connection).and_yield(connection)
         allow(subject).to    receive(:kubeclient).and_return(kubeclient)
