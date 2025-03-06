@@ -1,5 +1,7 @@
 module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   extend ActiveSupport::Concern
+
+  include Configuration
   include Power
   include Snapshot
   include Guest
