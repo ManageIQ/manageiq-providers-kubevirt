@@ -1,5 +1,6 @@
 class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::InfraManager::Vm
   include Operations
+  include Reconfigure
 
   POWER_STATES = {
     'Running'    => 'on',
