@@ -10,4 +10,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Template < ManageIQ::Provider
   def self.display_name(number = 1)
     n_('Template (Kubevirt)', 'Templates (Kubevirt)', number)
   end
+
+  def provider_object
+    ext_management_system.kubeclient("template.openshift.io/v1").get_template(name, location)
+  end
 end

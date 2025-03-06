@@ -10,10 +10,9 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     raise MiqException::MiqProvisionError, "Provision request's destination virtual machine cannot be blank" if dest_name.blank?
     raise MiqException::MiqProvisionError, "A virtual machine with name '#{dest_name}' already exists" if source.ext_management_system.vms.where(:name => dest_name).any?
 
-    clone_options = {
+    {
       :name => dest_name,
     }
-    clone_options
   end
 
   def log_clone_options(clone_options)
@@ -26,18 +25,43 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   end
 
   def start_clone(options)
-    # Retrieve the details of the source template:
-    template = nil
-    source.with_provider_connection(:namespace => source.location) do |connection|
-      template = connection.template(source.name)
-      template.clone(user_options(options))
+    source.with_provider_connection do |connection|
+      # Retrieve the details of the source template:
+      template    = source.provider_object
+      namespace ||= source.location
 
-      vm = connection.vm(options[:name])
+      params    = values(template, user_options(options))
+      pvc_specs = template.objects.select { |o| o[:kind] == "PersistentVolumeClaim" }&.map(&:to_h)
+      vm_spec   = template.objects.detect { |o| o[:kind] == "VirtualMachine" }&.to_h
+      raise N_("No Virtual Machine defined in template") if vm_spec.nil?
 
-      phase_context[:new_vm_ems_ref] = vm.uid
+      param_substitution!(vm_spec, params)
+      vm_spec.deep_merge!(:spec => {:running => false}, :metadata => {:namespace => namespace})
+
+      create_persistent_volume_claims(pvc_specs, params, namespace) if pvc_specs.any?
+
+      begin
+        vm, _, _ = connection.create_namespaced_virtual_machine(namespace, vm_spec)
+        phase_context[:new_vm_ems_ref] = vm.metadata.uid
+      rescue
+        pvc_specs.each { |pvc| kubeclient.delete_persistent_volume_claim(pvc) }
+      end
     end
 
-    # TODO: check if we need to roll back if one object creation fails
+  end
+
+  private
+
+  def kubeclient
+    @kubeclient ||= source.ext_management_system.kubeclient
+  end
+
+  def create_persistent_volume_claims(pvc_specs, params, namespace)
+    pvc_specs.map do |pvc_spec|
+      param_substitution!(pvc_spec, params)
+      pvc_spec.deep_merge!(:metadata => {:namespace => namespace})
+      kubeclient.create_persistent_volume_claim(pvc_spec)
+    end
   end
 
   #
@@ -53,5 +77,61 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     merged_options[:memory] = get_option(:vm_memory)
     merged_options[:cloud_user_password] = ManageIQ::Password.try_decrypt(get_option(:root_password))
     merged_options.compact
+  end
+
+  def values(template, options)
+    default_params = {}
+    template.parameters.each do |param|
+      name = param[:name].downcase
+      value = options[name.to_sym]
+      if value && name == "memory"
+        value = "#{value}Mi"
+      end
+
+      default_params[name] = value || param[:value]
+    end
+    default_params
+  end
+
+  def param_substitution!(object, params)
+    result = object
+    case result
+    when Hash
+      result.each do |k, v|
+        result[k] = param_substitution!(v, params)
+      end
+    when Array
+      result.map { |v| param_substitution!(v, params) }
+    when String
+      result = sub_specific_object(params, object)
+    end
+    result
+  end
+
+  #
+  # Performs substitution on specific object.
+  #
+  # @params params [Hash] Containing parameter names and values used for substitution.
+  # @params object [String] Object on which substitution takes place.
+  # @returns [String] The outcome of substitution.
+  #
+  def sub_specific_object(params, object)
+    result = object
+    params.each_key do |name|
+      token = "${#{name.upcase}}"
+      os_token = "${{#{name.upcase}}}"
+      next unless object.include?(token) || object.include?(os_token)
+
+      result = if params[name].kind_of?(String)
+                 if object.include?(os_token)
+                   object.sub!(os_token, params[name])
+                 else
+                   object.sub!(token, params[name])
+                 end
+               else
+                 params[name]
+               end
+    end
+    result
   end
 end

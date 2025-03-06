@@ -35,17 +35,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       parser.instance_variable_set(:@hw_collection, hw_collection)
       parser.instance_variable_set(:@network_collection, network_collection)
 
-      source = double(
-        :uid        => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
-        :name       => "demo-vm",
-        :namespace  => "my-project",
-        :memory     => "64M",
-        :cpu_cores  => "2",
-        :ip_address => "10.128.0.18",
-        :node_name  => "vm-17-235.eng.lab.tlv.redhat.com",
-        :owner_name => nil,
-        :status     => "Running"
-      )
+      source = unprocessed_object("vm.json")
 
       parser.send(:process_vm_instance, source)
       expect(vm).to have_attributes(
@@ -55,7 +45,7 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
         :uid_ems          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
         :power_state      => "on",
-        :location         => "my-project",
+        :location         => "default",
         :connection_state => "connected",
       )
       expect(vm.host).to eq(host)
