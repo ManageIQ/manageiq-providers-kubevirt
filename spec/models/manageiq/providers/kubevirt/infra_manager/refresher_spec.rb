@@ -67,6 +67,10 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :vmm_version      => "0.1.0",
         :ems_cluster      => ems.ems_clusters.find_by(:ems_ref => "0")
       )
+      expect(host.hardware).to have_attributes(
+        :cpu_total_cores => 8,
+        :memory_mb       => 24_024
+      )
     end
 
     def assert_specific_cluster
