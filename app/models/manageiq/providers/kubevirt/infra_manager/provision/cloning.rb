@@ -80,32 +80,24 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   end
 
   def values(template, options)
-    default_params = {}
-    template.parameters.each do |param|
-      name = param[:name].downcase
+    template.parameters.each_with_object({}) do |param, default_params|
+      name  = param[:name].downcase
       value = options[name.to_sym]
-      if value && name == "memory"
-        value = "#{value}Mi"
-      end
+      value = "#{value}Mi" if value && name == "memory"
 
       default_params[name] = value || param[:value]
     end
-    default_params
   end
 
   def param_substitution!(object, params)
-    result = object
-    case result
+    case object
     when Hash
-      result.each do |k, v|
-        result[k] = param_substitution!(v, params)
-      end
+      object.transform_values! { |v| param_substitution!(v, params) }
     when Array
-      result.map { |v| param_substitution!(v, params) }
+      object.map! { |v| param_substitution!(v, params) }
     when String
-      result = sub_specific_object(params, object)
+      object = sub_specific_object(params, object)
     end
-    result
   end
 
   #
