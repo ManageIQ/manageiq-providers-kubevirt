@@ -96,34 +96,29 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
     when Array
       object.map! { |v| param_substitution!(v, params) }
     when String
-      object = substitute_string_param(object, params)
+      substitute_string_param!(object, params)
     end
   end
 
   #
   # Performs substitution on specific object.
   #
-  # @params params [Hash] Containing parameter names and values used for substitution.
   # @params object [String] Object on which substitution takes place.
+  # @params params [Hash] Containing parameter names and values used for substitution.
   # @returns [String] The outcome of substitution.
   #
-  def substitute_string_param(object, params)
-    result = object
+  def substitute_string_param!(object, params)
     params.each_key do |name|
-      token = "${#{name.upcase}}"
+      token    = "${#{name.upcase}}"
       os_token = "${{#{name.upcase}}}"
       next unless object.include?(token) || object.include?(os_token)
 
-      result = if params[name].kind_of?(String)
-                 if object.include?(os_token)
-                   object.sub!(os_token, params[name])
-                 else
-                   object.sub!(token, params[name])
-                 end
-               else
-                 params[name]
-               end
+      if params[name].kind_of?(String)
+        object.include?(os_token) ? object.sub!(os_token, params[name]) : object.sub!(token, params[name])
+      else
+        object = params[name]
+      end
     end
-    result
+    object
   end
 end
