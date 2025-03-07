@@ -22,6 +22,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   attr_reader :cluster_collection
   attr_reader :host_collection
   attr_reader :host_storage_collection
+  attr_reader :host_hw_collection
   attr_reader :hw_collection
   attr_reader :network_collection
   attr_reader :os_collection
@@ -81,6 +82,18 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     os_object.product_name = node_info.osImage
     os_object.product_type = node_info.operatingSystem
     os_object.version = node_info.kernelVersion
+
+    hw_object = host_hw_collection.find_or_build(host_object)
+
+    memory = object.status&.capacity&.memory
+    memory &&= begin
+      memory.iec_60027_2_to_i
+    rescue
+      memory.decimal_si_to_f
+    end
+
+    hw_object.memory_mb = (memory.to_f / 1.megabyte).round if memory
+    hw_object.cpu_total_cores = object.status&.capacity&.cpu
 
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
