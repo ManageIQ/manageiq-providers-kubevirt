@@ -92,7 +92,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
       memory.decimal_si_to_f
     end
 
-    hw_object.memory_mb = memory / 1.megabyte if memory
+    hw_object.memory_mb = (memory.to_f / 1.megabyte).round if memory
     hw_object.cpu_total_cores = object.status&.capacity&.cpu
 
     # Find the storage:
