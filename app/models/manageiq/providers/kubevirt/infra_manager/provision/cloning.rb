@@ -80,58 +80,45 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
   end
 
   def values(template, options)
-    default_params = {}
-    template.parameters.each do |param|
-      name = param[:name].downcase
+    template.parameters.each_with_object({}) do |param, default_params|
+      name  = param[:name].downcase
       value = options[name.to_sym]
-      if value && name == "memory"
-        value = "#{value}Mi"
-      end
+      value = "#{value}Mi" if value && name == "memory"
 
       default_params[name] = value || param[:value]
     end
-    default_params
   end
 
   def param_substitution!(object, params)
-    result = object
-    case result
+    case object
     when Hash
-      result.each do |k, v|
-        result[k] = param_substitution!(v, params)
-      end
+      object.transform_values! { |v| param_substitution!(v, params) }
     when Array
-      result.map { |v| param_substitution!(v, params) }
+      object.map! { |v| param_substitution!(v, params) }
     when String
-      result = sub_specific_object(params, object)
+      substitute_object_value!(object, params)
     end
-    result
   end
 
   #
-  # Performs substitution on specific object.
+  # Performs substitution on specific value.
   #
-  # @params params [Hash] Containing parameter names and values used for substitution.
   # @params object [String] Object on which substitution takes place.
+  # @params params [Hash] Containing parameter names and values used for substitution.
   # @returns [String] The outcome of substitution.
   #
-  def sub_specific_object(params, object)
-    result = object
+  def substitute_object_value!(object, params)
     params.each_key do |name|
-      token = "${#{name.upcase}}"
+      token    = "${#{name.upcase}}"
       os_token = "${{#{name.upcase}}}"
       next unless object.include?(token) || object.include?(os_token)
 
-      result = if params[name].kind_of?(String)
-                 if object.include?(os_token)
-                   object.sub!(os_token, params[name])
-                 else
-                   object.sub!(token, params[name])
-                 end
-               else
-                 params[name]
-               end
+      if params[name].kind_of?(String)
+        object.include?(os_token) ? object.sub!(os_token, params[name]) : object.sub!(token, params[name])
+      else
+        object = params[name]
+      end
     end
-    result
+    object
   end
 end
