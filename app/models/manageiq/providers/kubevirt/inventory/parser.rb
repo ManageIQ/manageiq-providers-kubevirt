@@ -169,12 +169,13 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object.location = namespace
 
     cpu_sockets          = cpu&.sockets || 1
-    cpu_total_cores      = cpu&.cores || 1
-    cpu_cores_per_socket = cpu_total_cores / cpu_sockets
+    cpu_cores_per_socket = cpu&.cores   || 1
+    cpu_threads_per_core = cpu&.threads || 1
+    cpu_total_cores      = cpu_sockets * cpu_cores_per_socket * cpu_threads_per_core
 
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb            = parse_quantity(memory) / 1.megabytes.to_f if memory
+    hw_object.memory_mb            = parse_quantity(memory) / 1.megabyte.to_f if memory
     hw_object.cpu_sockets          = cpu_sockets
     hw_object.cpu_cores_per_socket = cpu_cores_per_socket
     hw_object.cpu_total_cores      = cpu_total_cores
