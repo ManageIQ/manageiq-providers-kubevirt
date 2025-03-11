@@ -145,7 +145,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     end
 
     # Process the domain:
-    vm_object = process_domain(object.metadata.namespace, object.spec.domain.memory&.guest, object.spec.domain.cpu&.cores, uid, name)
+    vm_object = process_domain(object.metadata.namespace, object.spec.domain.memory&.guest, object.spec.domain.cpu, uid, name)
 
     process_status(vm_object, object.status.interfaces&.first&.ipAddress, object.status.nodeName)
 
@@ -154,7 +154,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object.raw_power_state = object.status.phase
   end
 
-  def process_domain(namespace, memory, cores, uid, name)
+  def process_domain(namespace, memory, cpu, uid, name)
     # Find the storage:
     storage_object = storage_collection.lazy_find(STORAGE_ID)
     # Create the inventory object for the virtual machine:
@@ -168,11 +168,17 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     vm_object.uid_ems = uid
     vm_object.location = namespace
 
+    cpu_sockets          = cpu&.sockets || 1
+    cpu_cores_per_socket = cpu&.cores   || 1
+    cpu_threads_per_core = cpu&.threads || 1
+    cpu_total_cores      = cpu_sockets * cpu_cores_per_socket * cpu_threads_per_core
+
     # Create the inventory object for the hardware:
     hw_object = hw_collection.find_or_build(vm_object)
-    hw_object.memory_mb = parse_quantity(memory) / 1.megabytes.to_f if memory
-    hw_object.cpu_cores_per_socket = cores
-    hw_object.cpu_total_cores = cores
+    hw_object.memory_mb            = parse_quantity(memory) / 1.megabyte.to_f if memory
+    hw_object.cpu_sockets          = cpu_sockets
+    hw_object.cpu_cores_per_socket = cpu_cores_per_socket
+    hw_object.cpu_total_cores      = cpu_total_cores
 
     # Return the created inventory object:
     vm_object
