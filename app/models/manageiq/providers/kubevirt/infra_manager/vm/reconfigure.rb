@@ -6,16 +6,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Reconfigure
   end
 
   def max_vcpus
-    host ? host.hardware.cpu_total_cores : raise # TOOD
+    ext_management_system.host_hardwares.pluck(:cpu_total_cores).max
   end
   alias max_total_vcpus max_vcpus
-
-  def max_cpu_cores_per_socket(_total_vcpus = nil)
-    max_vcpus
-  end
+  alias max_cpu_cores_per_socket max_vcpus
 
   def max_memory_mb
-    host.hardware.memory_mb
+    ext_management_system.host_hardwares.pluck(:memory_mb).max
   end
 
   def build_config_spec(options)
