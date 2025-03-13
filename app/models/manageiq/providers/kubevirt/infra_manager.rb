@@ -15,8 +15,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
            :to        => :parent_manager,
            :allow_nil => true
 
+  has_many :flavors, :dependent => :destroy, :foreign_key => :ems_id, :inverse_of => :ext_management_system
+
   def self.hostname_required?
-   false
+    false
   end
 
   #

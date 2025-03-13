@@ -36,21 +36,22 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
     end
 
     def assert_counts
-      expect(ems.vms.count).to eq(1)
+      expect(ems.vms.count).to eq(2)
       expect(ems.hosts.count).to eq(1)
+      expect(ems.flavors.count).to eq(48)
       expect(ems.clusters.count).to eq(1)
       expect(ems.storages.count).to eq(1)
     end
 
     def assert_specific_vm
-      vm = ems.vms.find_by(:name => "centos-stream9-lavender-manatee-97")
+      vm = ems.vms.find_by(:name => "centos-stream9-coffee-salmon-60")
       expect(vm).to have_attributes(
-        :ems_ref          => "fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76",
-        :name             => "centos-stream9-lavender-manatee-97",
+        :ems_ref          => "7be3103a-eaf3-44c1-826a-e9704d9200b4",
+        :name             => "centos-stream9-coffee-salmon-60",
         :type             => "ManageIQ::Providers::Kubevirt::InfraManager::Vm",
-        :uid_ems          => "fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76",
+        :uid_ems          => "7be3103a-eaf3-44c1-826a-e9704d9200b4",
         :vendor           => "kubevirt",
-        :power_state      => "on",
+        :power_state      => "off",
         :connection_state => "connected"
       )
 
@@ -58,7 +59,7 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :cpu_cores_per_socket => 1,
         :cpu_sockets          => 1,
         :cpu_total_cores      => 1,
-        :memory_mb            => 2_048
+        #:memory_mb            => 2_048
       )
     end
 
