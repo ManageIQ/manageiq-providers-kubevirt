@@ -7,6 +7,7 @@
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers::Inventory::Collector
   attr_accessor :nodes
+  attr_accessor :instance_types
   attr_accessor :vms
   attr_accessor :vm_instances
   attr_accessor :templates
@@ -24,9 +25,11 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
   protected
 
   def initialize_for_targeted_refresh
-    name = @target.name
+    name      = @target.name
     namespace = @target.location
-    @nodes = {}
+
+    @nodes          = {}
+    @instance_types = {}
 
     if @target.template?
       @templates = [@manager.kubeclient("template.openshift.io/v1").template(name, namespace)]
@@ -43,6 +46,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
 
   def initialize_for_full_refresh
     @nodes = @manager.kubeclient.get_nodes
+    @instance_types = @manager.kubeclient("instancetype.kubevirt.io/v1beta1").get_virtual_machine_cluster_instancetypes
     @vms = @manager.kubeclient("kubevirt.io/v1").get_virtual_machines
     @vm_instances = @manager.kubeclient("kubevirt.io/v1").get_virtual_machine_instances
     @templates = @manager.kubeclient("template.openshift.io/v1").get_templates
