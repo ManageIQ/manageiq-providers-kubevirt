@@ -31,6 +31,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   attr_reader :vm_collection
   attr_reader :vm_os_collection
   attr_reader :disk_collection
+  attr_reader :flavor_collection
 
   def add_builtin_clusters
     cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
@@ -102,6 +103,23 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     host_storage_collection.find_or_build_by(
       :host    => host_object,
       :storage => storage_object,
+    )
+  end
+
+  def process_instance_types(objects)
+    objects.each { |obj| process_instance_type(obj) }
+  end
+
+  def process_instance_type(object)
+    cpu      = object.spec.cpu&.guest
+    memory   = object.spec.memory&.guest
+    memory &&= parse_quantity(memory) / 1.megabyte.to_f
+
+    flavor_collection.build(
+      :name            => object.metadata.name,
+      :ems_ref         => object.metadata.uid,
+      :cpu_total_cores => cpu,
+      :memory          => memory
     )
   end
 
