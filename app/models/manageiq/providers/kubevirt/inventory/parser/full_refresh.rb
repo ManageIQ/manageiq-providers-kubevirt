@@ -8,6 +8,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     vms = collector.vms
     vm_instances = collector.vm_instances
     templates = collector.templates
+    snapshots = collector.snapshots
 
     # Create the collections:
     @cluster_collection = persister.cluster_collection
@@ -22,6 +23,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     @vm_collection = persister.vm_collection
     @vm_os_collection = persister.vm_os_collection
     @disk_collection = persister.disk_collection
+    @snapshot_collection = persister.snapshot_collection
 
     # Add the built-in objects:
     add_builtin_clusters
@@ -32,5 +34,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     process_vms(vms)
     process_vm_instances(vm_instances)
     process_templates(templates)
+    process_snapshots(snapshots)
   end
 end

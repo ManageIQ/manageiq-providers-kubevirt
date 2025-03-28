@@ -133,6 +133,12 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
     end
   end
 
+  def snapshot_collection(targeted: false)
+    add_collection(infra, :snapshots) do |builder|
+      builder.add_properties(:targeted => targeted)
+    end
+  end
+
   protected
 
   def strategy

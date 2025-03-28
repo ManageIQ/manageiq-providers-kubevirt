@@ -109,6 +109,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     memory.add_list_version(:vms, collector.vms.resourceVersion)
     memory.add_list_version(:vm_instances, collector.vm_instances.resourceVersion)
     memory.add_list_version(:templates, collector.templates.resourceVersion)
+    memory.add_list_version(:snapshots, collector.snapshots.resourceVersion)
 
     manager.update(:last_refresh_error => nil, :last_refresh_date => Time.now.utc)
   rescue StandardError => error
@@ -165,6 +166,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     collector.vms = notices_of_kind(relevant, 'VirtualMachine')
     collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
     collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
+    collector.snapshots = notices_of_kind(relevant, 'VirtualMachineSnapshot')
 
     # Create the parser and persister, wire them, and execute the persist:
     persister = persister_class.new(manager, nil)
@@ -210,6 +212,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     @watches << @manager.kubeclient("kubevirt.io/v1").watch_virtual_machines(:resource_version => memory.get_list_version(:vms))
     @watches << @manager.kubeclient("kubevirt.io/v1").watch_virtual_machine_instances(:resource_version => memory.get_list_version(:vm_instances))
     @watches << @manager.kubeclient("template.openshift.io/v1").watch_templates(:resource_version => memory.get_list_version(:templates))
+    @watches << @manager.kubeclient("snapshot.kubevirt.io/v1beta1").watch_virtual_machine_snapshots(:resource_version => memory.get_list_version(:snapshots))
 
     # Create the threads that run the watches and put the notices in the queue:
     @watchers = []
