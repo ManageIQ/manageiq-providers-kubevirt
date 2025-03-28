@@ -31,6 +31,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   attr_reader :vm_collection
   attr_reader :vm_os_collection
   attr_reader :disk_collection
+  attr_reader :snapshot_collection
 
   def add_builtin_clusters
     cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
@@ -296,5 +297,22 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
                              else
                                "other"
                              end
+  end
+
+  def process_snapshots(snapshots)
+    snapshots.each do |snapshot|
+      process_snapshot(snapshot)
+    end
+  end
+
+  def process_snapshot(snapshot)
+    persister.snapshots.build(
+      :name           => snapshot.metadata.name,
+      :description    => snapshot.metadata.annotations&.description,
+      :uid            => snapshot.metadata.uid,
+      :ems_ref        => snapshot.metadata.uid,
+      :create_time    => snapshot.metadata.creationTimestamp,
+      :vm_or_template => persister.vms.lazy_find(snapshot.status.sourceUID)
+    )
   end
 end

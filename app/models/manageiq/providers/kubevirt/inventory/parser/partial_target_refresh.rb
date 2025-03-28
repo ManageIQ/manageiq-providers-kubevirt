@@ -8,6 +8,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh < M
     vms = collector.vms || []
     vm_instances = collector.vm_instances || []
     templates = collector.templates || []
+    snapshots = collector.snapshots || []
 
     vm_ids = get_object_ids(vms)
     template_ids = get_object_ids(templates)
@@ -30,6 +31,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh < M
     @vm_collection = persister.vm_collection(:targeted => true, :ids => vm_ids)
     @vm_os_collection = persister.vm_os_collection(:targeted => true)
     @disk_collection = persister.disk_collection(:targeted => true)
+    @snapshot_collection = persister.snapshot_collection(:targeted => true)
 
     # We need to add the built-in objects, otherwise other objects that reference them are removed:
     add_builtin_clusters
@@ -40,6 +42,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialTargetRefresh < M
     process_vms(vms)
     process_vm_instances(vm_instances)
     process_templates(templates)
+    process_snapshots(snapshots)
   end
 
   private

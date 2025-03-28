@@ -60,6 +60,15 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :cpu_total_cores      => 1,
         :memory_mb            => 2_048
       )
+
+      expect(vm.snapshots.count).to eq(2)
+      expect(vm.snapshots.find_by(:name => "snapshot-20250327-143348")).to have_attributes(
+        :name        => "snapshot-20250327-143348",
+        :uid         => "94a26b94-3408-466b-91e1-a82ea573891a",
+        :description => "Snapshot!",
+        :ems_ref     => "94a26b94-3408-466b-91e1-a82ea573891a",
+        :type        => "ManageIQ::Providers::Kubevirt::InfraManager::Snapshot"
+      )
     end
 
     def assert_specific_host

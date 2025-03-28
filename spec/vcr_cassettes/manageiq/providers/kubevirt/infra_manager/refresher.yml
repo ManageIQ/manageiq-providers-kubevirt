@@ -4327,4 +4327,94 @@ http_interactions:
 
         '
   recorded_at: Wed, 26 Feb 2025 19:06:32 GMT
+- request:
+    method: get
+    uri: https://host.example.com:8443/apis/snapshot.kubevirt.io/v1beta1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux-gnu x86_64) ruby/3.3.7p123
+      Authorization:
+      - Bearer theToken
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Audit-Id:
+      - 881c888e-d40b-40e5-a18a-793fcbf59bc3
+      Cache-Control:
+      - no-cache, private
+      Content-Type:
+      - application/json
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Kubernetes-Pf-Flowschema-Uid:
+      - 1deef9d8-0e80-4942-b8f4-7f15731ec1ac
+      X-Kubernetes-Pf-Prioritylevel-Uid:
+      - 7aec329e-b4b2-4fa2-af06-d4f660ca25ec
+      Date:
+      - Thu, 27 Mar 2025 18:42:42 GMT
+      Content-Length:
+      - '1062'
+    body:
+      encoding: UTF-8
+      string: '{"kind":"APIResourceList","apiVersion":"v1","groupVersion":"snapshot.kubevirt.io/v1beta1","resources":[{"name":"virtualmachinesnapshotcontents","singularName":"virtualmachinesnapshotcontent","namespaced":true,"kind":"VirtualMachineSnapshotContent","verbs":["delete","deletecollection","get","list","patch","create","update","watch"],"shortNames":["vmsnapshotcontent","vmsnapshotcontents"],"categories":["all"],"storageVersionHash":"4l2dafNe//o="},{"name":"virtualmachinerestores","singularName":"virtualmachinerestore","namespaced":true,"kind":"VirtualMachineRestore","verbs":["delete","deletecollection","get","list","patch","create","update","watch"],"shortNames":["vmrestore","vmrestores"],"categories":["all"],"storageVersionHash":"97z7JTp7QxI="},{"name":"virtualmachinesnapshots","singularName":"virtualmachinesnapshot","namespaced":true,"kind":"VirtualMachineSnapshot","verbs":["delete","deletecollection","get","list","patch","create","update","watch"],"shortNames":["vmsnapshot","vmsnapshots"],"categories":["all"],"storageVersionHash":"tcrm72ZnB7w="}]}
+
+        '
+  recorded_at: Thu, 27 Mar 2025 18:42:42 GMT
+- request:
+    method: get
+    uri: https://host.example.com:8443/apis/snapshot.kubevirt.io/v1beta1/virtualmachinesnapshots
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux-gnu x86_64) ruby/3.3.7p123
+      Authorization:
+      - Bearer theToken
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Audit-Id:
+      - 1905076a-524a-44e6-b91b-00477500f2b1
+      Cache-Control:
+      - no-cache, private
+      Content-Type:
+      - application/json
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Kubernetes-Pf-Flowschema-Uid:
+      - 1deef9d8-0e80-4942-b8f4-7f15731ec1ac
+      X-Kubernetes-Pf-Prioritylevel-Uid:
+      - 7aec329e-b4b2-4fa2-af06-d4f660ca25ec
+      Date:
+      - Thu, 27 Mar 2025 18:42:42 GMT
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"apiVersion":"snapshot.kubevirt.io/v1beta1","items":[{"apiVersion":"snapshot.kubevirt.io/v1beta1","kind":"VirtualMachineSnapshot","metadata":{"annotations":{"description":"Snapshot!"},"creationTimestamp":"2025-03-27T18:33:57Z","finalizers":["snapshot.kubevirt.io/vmsnapshot-protection"],"generation":3,"managedFields":[{"apiVersion":"snapshot.kubevirt.io/v1alpha1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:description":{}},"f:ownerReferences":{".":{},"k:{\"uid\":\"fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76\"}":{}}},"f:spec":{".":{},"f:source":{}}},"manager":"Mozilla","operation":"Update","time":"2025-03-27T18:33:57Z"},{"apiVersion":"snapshot.kubevirt.io/v1beta1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:finalizers":{".":{},"v:\"snapshot.kubevirt.io/vmsnapshot-protection\"":{}}},"f:status":{".":{},"f:conditions":{},"f:indications":{".":{},"v:\"NoGuestAgent\"":{},"v:\"Online\"":{}},"f:phase":{},"f:readyToUse":{},"f:sourceUID":{}}},"manager":"virt-controller","operation":"Update","time":"2025-03-27T18:39:25Z"}],"name":"snapshot-20250327-143348","namespace":"openshift","ownerReferences":[{"apiVersion":"kubevirt.io/v1","blockOwnerDeletion":false,"kind":"VirtualMachine","name":"centos-stream9-lavender-manatee-97","uid":"fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76"}],"resourceVersion":"69176","uid":"94a26b94-3408-466b-91e1-a82ea573891a"},"spec":{"source":{"apiGroup":"kubevirt.io","kind":"VirtualMachine","name":"centos-stream9-lavender-manatee-97"}},"status":{"conditions":[{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T18:33:57Z","reason":"Source
+        not locked","status":"False","type":"Progressing"},{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T18:33:57Z","reason":"Not
+        ready","status":"False","type":"Ready"},{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T18:39:25Z","reason":"snapshot
+        deadline exceeded","status":"True","type":"Failure"}],"indications":["Online","NoGuestAgent"],"phase":"Failed","readyToUse":false,"sourceUID":"fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76"}},{"apiVersion":"snapshot.kubevirt.io/v1beta1","kind":"VirtualMachineSnapshot","metadata":{"creationTimestamp":"2025-03-27T17:56:06Z","finalizers":["snapshot.kubevirt.io/vmsnapshot-protection"],"generation":3,"managedFields":[{"apiVersion":"snapshot.kubevirt.io/v1beta1","fieldsType":"FieldsV1","fieldsV1":{"f:spec":{".":{},"f:source":{}}},"manager":"OpenAPI-Generator","operation":"Update","time":"2025-03-27T17:56:06Z"},{"apiVersion":"snapshot.kubevirt.io/v1beta1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:finalizers":{".":{},"v:\"snapshot.kubevirt.io/vmsnapshot-protection\"":{}}},"f:status":{".":{},"f:conditions":{},"f:indications":{".":{},"v:\"NoGuestAgent\"":{},"v:\"Online\"":{}},"f:phase":{},"f:readyToUse":{},"f:sourceUID":{}}},"manager":"virt-controller","operation":"Update","time":"2025-03-27T18:03:35Z"}],"name":"ag-snapshot-test","namespace":"openshift","resourceVersion":"54909","uid":"42d4a20c-d0b1-47cc-90de-4df5e311729f"},"spec":{"source":{"apiGroup":"kubevirt.io","kind":"VirtualMachine","name":"centos-stream9-lavender-manatee-97"}},"status":{"conditions":[{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T17:56:06Z","reason":"Source
+        not locked","status":"False","type":"Progressing"},{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T17:56:06Z","reason":"Not
+        ready","status":"False","type":"Ready"},{"lastProbeTime":null,"lastTransitionTime":"2025-03-27T18:03:35Z","reason":"snapshot
+        deadline exceeded","status":"True","type":"Failure"}],"indications":["Online","NoGuestAgent"],"phase":"Failed","readyToUse":false,"sourceUID":"fb22c624-ae4c-4e1e-8fd9-7e7a7aadde76"}}],"kind":"VirtualMachineSnapshotList","metadata":{"continue":"","resourceVersion":"70432"}}
+
+        '
+  recorded_at: Thu, 27 Mar 2025 18:42:42 GMT
 recorded_with: VCR 6.3.1
