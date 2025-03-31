@@ -19,28 +19,15 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   OS_LABEL_SYMBOL = :'kubevirt.io/os'
 
-  attr_reader :cluster_collection
-  attr_reader :host_collection
-  attr_reader :host_storage_collection
-  attr_reader :host_hw_collection
-  attr_reader :hw_collection
-  attr_reader :network_collection
-  attr_reader :os_collection
-  attr_reader :storage_collection
-  attr_reader :template_collection
-  attr_reader :vm_collection
-  attr_reader :vm_os_collection
-  attr_reader :disk_collection
-
   def add_builtin_clusters
-    cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
+    cluster_object = persister.clusters.find_or_build(CLUSTER_ID)
     cluster_object.ems_ref = CLUSTER_ID
     cluster_object.name = collector.manager.name
     cluster_object.uid_ems = CLUSTER_ID
   end
 
   def add_builtin_storages
-    storage_object = storage_collection.find_or_build(STORAGE_ID)
+    storage_object = persister.storages.find_or_build(STORAGE_ID)
     storage_object.ems_ref = STORAGE_ID
     storage_object.name = collector.manager.name
     storage_object.store_type = 'UNKNOWN'
@@ -65,9 +52,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     ipaddress = addresses["InternalIP"]&.address
 
     # Add the inventory object for the host:
-    host_object = host_collection.find_or_build(uid)
+    host_object = persister.hosts.find_or_build(uid)
     host_object.connection_state = 'connected'
-    host_object.ems_cluster = cluster_collection.lazy_find(CLUSTER_ID)
+    host_object.ems_cluster = persister.clusters.lazy_find(CLUSTER_ID)
     host_object.ems_ref = uid
     host_object.hostname = hostname
     host_object.ipaddress = ipaddress
@@ -77,13 +64,13 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     node_info = object.status.nodeInfo
 
     # Add the inventory object for the operating system details:
-    os_object = os_collection.find_or_build(host_object)
+    os_object = persister.host_operating_systems.find_or_build(host_object)
     os_object.name = hostname
     os_object.product_name = node_info.osImage
     os_object.product_type = node_info.operatingSystem
     os_object.version = node_info.kernelVersion
 
-    hw_object = host_hw_collection.find_or_build(host_object)
+    hw_object = persister.host_hardwares.find_or_build(host_object)
 
     memory = object.status&.capacity&.memory
     memory &&= begin
@@ -96,10 +83,10 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     hw_object.cpu_total_cores = object.status&.capacity&.cpu
 
     # Find the storage:
-    storage_object = storage_collection.lazy_find(STORAGE_ID)
+    storage_object = persister.storages.lazy_find(STORAGE_ID)
 
     # Add the inventory object for the host storage:
-    host_storage_collection.find_or_build_by(
+    persister.host_storages.find_or_build_by(
       :host    => host_object,
       :storage => storage_object,
     )
@@ -149,16 +136,16 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
     process_status(vm_object, object.status.interfaces&.first&.ipAddress, object.status.nodeName)
 
-    vm_object.host = host_collection.lazy_find(object.status.nodeName, :ref => :by_name)
+    vm_object.host = persister.hosts.lazy_find(object.status.nodeName, :ref => :by_name)
 
     vm_object.raw_power_state = object.status.phase
   end
 
   def process_domain(namespace, memory, cpu, uid, name)
     # Find the storage:
-    storage_object = storage_collection.lazy_find(STORAGE_ID)
+    storage_object = persister.storages.lazy_find(STORAGE_ID)
     # Create the inventory object for the virtual machine:
-    vm_object = vm_collection.find_or_build(uid)
+    vm_object = persister.vms.find_or_build(uid)
     vm_object.connection_state = 'connected'
     vm_object.ems_ref = uid
     vm_object.name = name
@@ -174,7 +161,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     cpu_total_cores      = cpu_sockets * cpu_cores_per_socket * cpu_threads_per_core
 
     # Create the inventory object for the hardware:
-    hw_object = hw_collection.find_or_build(vm_object)
+    hw_object = persister.hardwares.find_or_build(vm_object)
     hw_object.memory_mb            = parse_quantity(memory) / 1.megabyte.to_f if memory
     hw_object.cpu_sockets          = cpu_sockets
     hw_object.cpu_cores_per_socket = cpu_cores_per_socket
@@ -195,7 +182,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_status(vm_object, ip_address, node_name)
-    hw_object = hw_collection.find_or_build(vm_object)
+    hw_object = persister.hardwares.find_or_build(vm_object)
 
     # Create the inventory object for vm network device
     hardware_networks(hw_object, ip_address, node_name)
@@ -204,7 +191,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   def hardware_networks(hw_object, ip_address, node_name)
     return nil unless ip_address
 
-    network_collection.find_or_build_by(
+    persister.networks.find_or_build_by(
       :hardware  => hw_object,
       :ipaddress => ip_address,
     ).assign_attributes(
@@ -226,7 +213,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     return if vm.nil?
 
     # Add the inventory object for the template:
-    template_object = template_collection.find_or_build(uid)
+    template_object = persister.miq_templates.find_or_build(uid)
     template_object.connection_state = 'connected'
     template_object.ems_ref = uid
     template_object.name = object.metadata.name
@@ -253,7 +240,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_hardware(template_object, params, labels, domain)
-    hw_object = hw_collection.find_or_build(template_object)
+    hw_object = persister.hardwares.find_or_build(template_object)
     memory = default_value(params, 'MEMORY') || domain.dig(:memory, :guest)
     hw_object.memory_mb = parse_quantity(memory) / 1.megabytes.to_f if memory
     cpu = default_value(params, 'CPU_CORES') || domain.dig(:cpu, :cores)
@@ -272,7 +259,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   def process_disks(hw_object, domain)
     domain.dig(:devices, :disks).each do |disk|
-      disk_object = disk_collection.find_or_build_by(
+      disk_object = persister.disks.find_or_build_by(
         :hardware    => hw_object,
         :device_name => disk[:name]
       )
@@ -286,7 +273,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_os(template_object, labels, annotations)
-    os_object = vm_os_collection.find_or_build(template_object)
+    os_object = persister.operating_systems.find_or_build(template_object)
     os_object.product_name = labels&.dig(OS_LABEL_SYMBOL)
     tags = annotations&.dig(:tags) || []
     os_object.product_type = if tags.include?("linux")

@@ -61,16 +61,16 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     provider_class::InfraManager
   end
 
-  def collector_class
-    provider_class::Inventory::Collector
+  def watch_notice_collector_class
+    provider_class::Inventory::Collector::InfraManager::WatchNotice
   end
 
-  def partial_refresh_parser_class
-    provider_class::Inventory::Parser::PartialRefresh
+  def watch_notice_parser_class
+    provider_class::Inventory::Parser::InfraManager::WatchNotice
   end
 
-  def persister_class
-    provider_class::Inventory::Persister
+  def watch_notice_persister_class
+    provider_class::Inventory::Persister::InfraManager
   end
 
   #
@@ -160,15 +160,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     relevant.reverse!
 
     # Create and populate the collector:
-    collector = collector_class.new(manager, nil)
-    collector.nodes = notices_of_kind(relevant, 'Node')
-    collector.vms = notices_of_kind(relevant, 'VirtualMachine')
+    collector = watch_notice_collector_class.new(manager, nil)
+    collector.nodes        = notices_of_kind(relevant, 'Node')
+    collector.vms          = notices_of_kind(relevant, 'VirtualMachine')
     collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
-    collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
+    collector.templates    = notices_of_kind(relevant, 'VirtualMachineTemplate')
 
     # Create the parser and persister, wire them, and execute the persist:
-    persister = persister_class.new(manager, nil)
-    parser = partial_refresh_parser_class.new
+    persister = watch_notice_persister_class.new(manager, nil)
+    parser = watch_notice_parser_class.new
     parser.collector = collector
     parser.persister = persister
     parser.parse
