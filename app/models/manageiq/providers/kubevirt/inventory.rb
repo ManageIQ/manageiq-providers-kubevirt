@@ -7,33 +7,17 @@ class ManageIQ::Providers::Kubevirt::Inventory < ManageIQ::Providers::Inventory
     ManageIQ::Providers::Kubevirt::Inventory::Collector
   end
 
-  def self.parser_class_for(_ems, target)
-    parser_type = if target_is_vm?(target)
-                    "PartialTargetRefresh"
-                  else
-                    "FullRefresh"
-                  end
-    "ManageIQ::Providers::Kubevirt::Inventory::Parser::#{parser_type}".safe_constantize
+  def self.parser_class_for(_ems, _target)
+    ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh
   end
 
   def self.build(ems, target)
-    collector_class = collector_class_for(ems, target)
-
-    collector = if target_is_vm?(target)
-                  collector_class.new(ems, target)
-                else
-                  collector_class.new(ems, ems)
-                end
-
+    collector = collector_class_for(ems, target).new(ems, target)
     persister = persister_class_for(ems, target).new(ems, target)
     new(
       persister,
       collector,
       parser_classes_for(ems, target).map(&:new)
     )
-  end
-
-  def self.target_is_vm?(target)
-    target.kind_of?(ManageIQ::Providers::Kubevirt::InfraManager::Vm)
   end
 end
