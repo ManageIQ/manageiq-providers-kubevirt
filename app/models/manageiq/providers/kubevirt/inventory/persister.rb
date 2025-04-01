@@ -2,6 +2,21 @@
 # This class is responsible for persisting the inventory for a partial refresh.
 #
 class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers::Inventory::Persister
+  def initialize_inventory_collections
+    cluster_collection
+    host_collection
+    host_storage_collection
+    host_hw_collection
+    hw_collection
+    network_collection
+    os_collection
+    storage_collection
+    template_collection
+    vm_collection
+    vm_os_collection
+    disk_collection
+  end
+
   def cluster_collection(targeted: false, ids: [])
     add_collection(infra, :clusters) do |builder|
       builder.add_properties(
