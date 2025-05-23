@@ -45,7 +45,7 @@ describe 'VM::Operations' do
   context '#raw_destroy' do
     let(:infra_manager) { container_manager.infra_manager }
     let(:vm) { FactoryBot.create(:vm_kubevirt, :ext_management_system => infra_manager) }
-    let(:connection) { double("connection") }
+    let(:connection) { double("Kubevirt::DefaultApi") }
     let(:vm_instance_metadata) { double("vm_instance_metadata", :namespace => "default") }
     let(:vm_instance) { double("vm_instance", :metadata => vm_instance_metadata) }
     let(:vm_metadata) { double("vm_metadata", :namespace => "default") }
@@ -57,11 +57,8 @@ describe 'VM::Operations' do
 
     context 'running vm' do
       it 'removes an running vm from kubevirt provider' do
-        allow(connection).to receive(:vm_instance).and_return(vm_instance)
-        allow(connection).to receive(:vm).and_return(provider_vm)
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
-
-        expect(connection).to receive(:delete_vm_instance)
+        expect(connection).to receive(:delete_namespaced_virtual_machine).with(vm.name, vm.location, any_args)
 
         vm.raw_destroy
       end
@@ -69,13 +66,8 @@ describe 'VM::Operations' do
 
     context 'stopped vm' do
       it 'removes a stopped vm from kubevirt provider' do
-        require 'fog/kubevirt'
-        error = Fog::Kubevirt::Errors::ClientError.new
-        allow(connection).to receive(:vm_instance).and_raise(error)
-        allow(connection).to receive(:vm).and_return(provider_vm)
         allow(infra_manager).to receive(:with_provider_connection).and_yield(connection)
-
-        expect(connection).not_to receive(:delete_vm_instance)
+        expect(connection).to receive(:delete_namespaced_virtual_machine).with(vm.name, vm.location, any_args)
 
         vm.raw_destroy
       end

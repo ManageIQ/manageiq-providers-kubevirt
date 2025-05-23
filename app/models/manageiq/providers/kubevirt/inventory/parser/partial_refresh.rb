@@ -11,9 +11,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
 
     # We need to find the identifiers of the objects *before* removing notices of type `DELETED`, because we need the
     # identifiers of all the objects, even of those that have been deleted.
-    host_ids = get_object_ids(nodes)
-    vm_ids = get_object_ids(vms)
-    template_ids = get_object_ids(templates)
+    host_ids = get_object_ids(nodes.map(&:object))
+    vm_ids = get_object_ids(vms.map(&:object))
+    template_ids = get_object_ids(templates.map(&:object))
 
     # Build the list of identifiers for built-in objects:
     cluster_ids = [CLUSTER_ID]
@@ -30,6 +30,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     @cluster_collection = persister.cluster_collection(:targeted => true, :ids => cluster_ids)
     @host_collection = persister.host_collection(:targeted => true, :ids => host_ids)
     @host_storage_collection = persister.host_storage_collection(:targeted => true)
+    @host_hw_collection = persister.host_hw_collection(:targeted => true)
     @hw_collection = persister.hw_collection(:targeted => true)
     @network_collection = persister.network_collection(:targeted => true)
     @os_collection = persister.os_collection(:targeted => true)
@@ -44,16 +45,16 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     add_builtin_storages
 
     # Process the real objects:
-    process_nodes(nodes)
-    process_vms(vms)
-    process_vm_instances(vm_instances)
-    process_templates(templates)
+    process_nodes(nodes.map(&:object))
+    process_vms(vms.map(&:object))
+    process_vm_instances(vm_instances.map(&:object))
+    process_templates(templates.map(&:object))
   end
 
   private
 
-  def get_object_ids(notices)
-    notices.map { |notice| notice.metadata.uid }.uniq
+  def get_object_ids(objects)
+    objects.map { |object| object.metadata.uid }.uniq
   end
 
   def discard_deleted_notices(notices)

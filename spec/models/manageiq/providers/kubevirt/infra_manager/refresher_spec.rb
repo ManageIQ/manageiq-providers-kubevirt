@@ -53,6 +53,13 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :power_state      => "on",
         :connection_state => "connected"
       )
+
+      expect(vm.hardware).to have_attributes(
+        :cpu_cores_per_socket => 1,
+        :cpu_sockets          => 1,
+        :cpu_total_cores      => 1,
+        :memory_mb            => 2_048
+      )
     end
 
     def assert_specific_host
@@ -66,6 +73,10 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :vmm_vendor       => "kubevirt",
         :vmm_version      => "0.1.0",
         :ems_cluster      => ems.ems_clusters.find_by(:ems_ref => "0")
+      )
+      expect(host.hardware).to have_attributes(
+        :cpu_total_cores => 8,
+        :memory_mb       => 24_024
       )
     end
 

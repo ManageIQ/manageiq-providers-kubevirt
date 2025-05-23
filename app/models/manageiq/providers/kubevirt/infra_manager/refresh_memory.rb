@@ -88,6 +88,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshMemory
   # Calculates the key that will be used to store a notice.
   #
   def notice_key(notice)
-    "#{notice.kind}:#{notice.resource_version}"
+    "#{notice.object.kind}:#{notice.object.metadata.resourceVersion}"
   end
 end

@@ -105,10 +105,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     persister&.persist!
 
     # Update the memory:
-    memory.add_list_version(:nodes, collector.nodes.resource_version)
-    memory.add_list_version(:vms, collector.vms.resource_version)
-    memory.add_list_version(:vm_instances, collector.vm_instances.resource_version)
-    memory.add_list_version(:templates, collector.templates.resource_version)
+    memory.add_list_version(:nodes, collector.nodes.resourceVersion)
+    memory.add_list_version(:vms, collector.vms.resourceVersion)
+    memory.add_list_version(:vm_instances, collector.vm_instances.resourceVersion)
+    memory.add_list_version(:templates, collector.templates.resourceVersion)
 
     manager.update(:last_refresh_error => nil, :last_refresh_date => Time.now.utc)
   rescue StandardError => error
@@ -144,7 +144,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     notices.reject! do |notice|
       if memory.contains_notice?(notice)
         _log.info(
-          "Notice of kind '#{notice.kind}, id '#{notice.uid}', type '#{notice.type}' and version '#{notice.resource_version}' " \
+          "Notice of kind '#{notice.object.kind}, id '#{notice.object.metadata.uid}', type '#{notice.type}' and version '#{notice.resource_version}' " \
           "has already been processed, will ignore it."
         )
         true
@@ -194,7 +194,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
   # @return [Array] An array containing the notices that have the given kind.
   #
   def notices_of_kind(notices, kind)
-    notices.select { |notice| notice.kind == kind }
+    notices.select { |notice| notice.object.kind == kind }
   end
 
   #
@@ -206,12 +206,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
 
     # Create the watches:
     @watches = []
-    manager.with_provider_connection do |connection|
-      @watches << connection.watch_nodes(:resource_version => memory.get_list_version(:nodes))
-      @watches << connection.watch_vms(:resource_version => memory.get_list_version(:vms))
-      @watches << connection.watch_vm_instances(:resource_version => memory.get_list_version(:vm_instances))
-      @watches << connection.watch_templates(:resource_version => memory.get_list_version(:templates))
-    end
+    @watches << @manager.kubeclient.watch_nodes(:resource_version => memory.get_list_version(:nodes))
+    @watches << @manager.kubeclient("kubevirt.io/v1").watch_virtual_machines(:resource_version => memory.get_list_version(:vms))
+    @watches << @manager.kubeclient("kubevirt.io/v1").watch_virtual_machine_instances(:resource_version => memory.get_list_version(:vm_instances))
+    @watches << @manager.kubeclient("template.openshift.io/v1").watch_templates(:resource_version => memory.get_list_version(:templates))
 
     # Create the threads that run the watches and put the notices in the queue:
     @watchers = []

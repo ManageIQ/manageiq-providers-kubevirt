@@ -13,6 +13,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     @cluster_collection = persister.cluster_collection
     @host_collection = persister.host_collection
     @host_storage_collection = persister.host_storage_collection
+    @host_hw_collection = persister.host_hw_collection
     @hw_collection = persister.hw_collection
     @network_collection = persister.network_collection
     @os_collection = persister.os_collection

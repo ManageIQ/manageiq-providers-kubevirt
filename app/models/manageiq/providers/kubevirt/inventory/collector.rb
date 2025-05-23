@@ -25,29 +25,26 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
 
   def initialize_for_targeted_refresh
     name = @target.name
+    namespace = @target.location
     @nodes = {}
 
-    @manager.with_provider_connection(:namespace => @target.location) do |connection|
-      if @target.template?
-        @templates = [connection.template(name)]
-      else
-        @vms = [connection.vm(name)]
-        begin
-          @vm_instances = [connection.vm_instance(name)]
-        rescue
-          # target refresh of a vm might fail if it has no vm instance
-          _log.debug("The is no running vm resource for '#{name}'")
-        end
+    if @target.template?
+      @templates = [@manager.kubeclient("template.openshift.io/v1").template(name, namespace)]
+    else
+      @vms = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine(name, namespace)]
+      begin
+        @vm_instances = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine_instance(name, namespace)]
+      rescue
+        # target refresh of a vm might fail if it has no vm instance
+        _log.debug("The is no running vm resource for '#{name}'")
       end
     end
   end
 
   def initialize_for_full_refresh
-    @manager.with_provider_connection do |connection|
-      @nodes = connection.nodes
-      @vms = connection.vms
-      @vm_instances = connection.vm_instances
-      @templates = connection.templates
-    end
+    @nodes = @manager.kubeclient.get_nodes
+    @vms = @manager.kubeclient("kubevirt.io/v1").get_virtual_machines
+    @vm_instances = @manager.kubeclient("kubevirt.io/v1").get_virtual_machine_instances
+    @templates = @manager.kubeclient("template.openshift.io/v1").get_templates
   end
 end
