@@ -53,6 +53,7 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
         :cpu_total_cores => 1,
         :memory          => 2_048
       )
+      expect(flavor.vms).to include(ems.vms.find_by(:name => "centos-stream9-aqua-gull-95"))
     end
 
     def assert_specific_vm

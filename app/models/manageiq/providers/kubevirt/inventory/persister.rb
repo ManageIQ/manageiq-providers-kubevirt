@@ -14,8 +14,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
   def flavor_collection(targeted: false)
     add_collection(infra, :flavors) do |builder|
       builder.add_properties(
-        :targeted => targeted,
-        :manager_ref => %i[ems_ref]
+        :targeted       => targeted,
+        :manager_ref    => %i[ems_ref],
+        :secondary_refs => {:by_name => %i[name]}
       )
       builder.add_default_values(:ext_management_system => manager)
     end
