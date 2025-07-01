@@ -1,9 +1,9 @@
 describe ManageIQ::Providers::Kubevirt::InfraManager::Refresher do
   context '#refresh' do
     let(:ems) do
-      host = Rails.application.secrets.kubevirt[:hostname]
-      token = Rails.application.secrets.kubevirt[:token]
-      port = Rails.application.secrets.kubevirt[:port]
+      host = VcrSecrets.kubevirt.hostname
+      token = VcrSecrets.kubevirt.token
+      port = VcrSecrets.kubevirt.port
       zone = EvmSpecHelper.local_miq_server.zone
 
       FactoryBot.create(:ems_kubevirt,
