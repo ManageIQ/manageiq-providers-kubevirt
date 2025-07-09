@@ -25,6 +25,10 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Configuratio
     )
   end
 
+  def raw_set_flavor(flavor_id)
+    raw_reconfigure(build_config_spec(:flavor_id => flavor_id))
+  end
+
   def raw_reconfigure(options)
     with_provider_connection do |connection|
       connection.patch_namespaced_virtual_machine(name, location, options)
