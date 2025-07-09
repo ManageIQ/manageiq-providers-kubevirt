@@ -17,9 +17,14 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Reconfigure
 
   def build_config_spec(options)
     patches = []
-    patches << {"op" => "replace", "path" => "/spec/template/spec/domain/cpu/sockets",  "value" => options[:number_of_sockets]} if options[:number_of_sockets]
-    patches << {"op" => "replace", "path" => "/spec/template/spec/domain/cpu/cores",    "value" => options[:cores_per_socket]}  if options[:cores_per_socket]
-    patches << {"op" => "replace", "path" => "/spec/template/spec/domain/memory/guest", "value" => "#{options[:vm_memory]}Mi"}  if options[:vm_memory]
+    if options[:flavor_id]
+      flavor = ext_management_system.flavors.find(options[:flavor_id])
+      patches << {"op" => "replace", "path" => "/spec/instancetype", "value" => {"kind" => "VirtualMachineClusterInstancetype", "name" => flavor.name}}
+    else
+      patches << {"op" => "replace", "path" => "/spec/template/spec/domain/cpu/sockets",  "value" => options[:number_of_sockets]} if options[:number_of_sockets]
+      patches << {"op" => "replace", "path" => "/spec/template/spec/domain/cpu/cores",    "value" => options[:cores_per_socket]}  if options[:cores_per_socket]
+      patches << {"op" => "replace", "path" => "/spec/template/spec/domain/memory/guest", "value" => "#{options[:vm_memory]}Mi"}  if options[:vm_memory]
+    end
     patches
   end
 end
