@@ -41,7 +41,6 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
             "json-patch",
             vm.location
             )
-        Rails.logger.info("Patch result: #{result}")
 
     end
 
@@ -86,7 +85,6 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
             "json-patch",
             vm.location
         )
-        Rails.logger.info("Patch result: #{result}")
 
     end
 
