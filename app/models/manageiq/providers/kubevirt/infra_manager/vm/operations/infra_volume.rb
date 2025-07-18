@@ -14,10 +14,10 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
         "op"    => "add",
         "path"  => "/spec/template/spec/volumes/-",
         "value" => {
-            "name"                  => pvc_name || volume_name,
-            "persistentVolumeClaim" => {
-              "claimName" => pvc_name
-            }
+          "name"                  => pvc_name || volume_name,
+          "persistentVolumeClaim" => {
+            "claimName" => pvc_name
+          }
         }
       },
       {
@@ -39,6 +39,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
       vm.location
     )
   end
+
   def raw_detach_volume(vm, volume_name)
     ems = vm.ext_management_system
     raise _("VM has no EMS, unable to detach volume") unless ems
@@ -59,12 +60,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
 
     patch_ops = [
       {
-      "op"   => "remove",
-      "path" => "/spec/template/spec/volumes/#{volume_index}"
+        "op"   => "remove",
+        "path" => "/spec/template/spec/volumes/#{volume_index}"
       },
       {
-      "op"   => "remove",
-      "path" => "/spec/template/spec/domain/devices/disks/#{disk_index}"
+        "op"   => "remove",
+        "path" => "/spec/template/spec/domain/devices/disks/#{disk_index}"
       }
     ]
     kubevirt.patch_entity(
@@ -75,6 +76,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
       vm.location
     )
   end
+
   def attached_volumes(vm)
     ems = vm.ext_management_system
     kubevirt = ems.parent_manager.connect(
@@ -88,6 +90,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
       {:metadata => {:name => v}}
     end
   end
+  
   def persistentvolumeclaims(vm)
     ems = vm.ext_management_system
     kubevirt = ems.parent_manager.connect(
@@ -118,10 +121,11 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
     unattached_pvcs = pvcs.reject do |pvc|
       attached_pvc_names.include?(pvc.metadata.name)
     end
-    unattached_pvcs.map do |pvc| 
+    unattached_pvcs.map do |pvc|
       {:metadata => {:name => pvc.metadata.name}}
     end
   end
+
   def create_pvc(vm, volume_name, volume_size)
     ems = vm.ext_management_system
     kubevirt = ems.parent_manager.connect(
@@ -150,4 +154,5 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
     kubevirt.create_persistent_volume_claim(pvc)
     raw_attach_volume(vm, volume_name)
   end
+
 end
