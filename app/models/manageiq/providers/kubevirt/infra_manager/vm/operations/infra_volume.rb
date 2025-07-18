@@ -90,7 +90,6 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
       {:metadata => {:name => v}}
     end
   end
-  
   def persistentvolumeclaims(vm)
     ems = vm.ext_management_system
     kubevirt = ems.parent_manager.connect(
@@ -154,5 +153,4 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
     kubevirt.create_persistent_volume_claim(pvc)
     raw_attach_volume(vm, volume_name)
   end
-
 end
