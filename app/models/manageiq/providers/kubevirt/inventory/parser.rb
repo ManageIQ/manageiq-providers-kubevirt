@@ -31,6 +31,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   attr_reader :vm_collection
   attr_reader :vm_os_collection
   attr_reader :disk_collection
+  attr_reader :flavor_collection
 
   def add_builtin_clusters
     cluster_object = cluster_collection.find_or_build(CLUSTER_ID)
@@ -105,6 +106,23 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     )
   end
 
+  def process_instance_types(objects)
+    objects.each { |obj| process_instance_type(obj) }
+  end
+
+  def process_instance_type(object)
+    cpu      = object.spec.cpu&.guest
+    memory   = object.spec.memory&.guest
+    memory &&= parse_quantity(memory) / 1.megabyte.to_f
+
+    flavor_collection.build(
+      :name            => object.metadata.name,
+      :ems_ref         => object.metadata.uid,
+      :cpu_total_cores => cpu,
+      :memory          => memory
+    )
+  end
+
   def process_vms(objects)
     objects.each do |object|
       process_vm(object)
@@ -113,8 +131,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
   def process_vm(object)
     # Process the domain:
-    spec = object.spec.template.spec
-    domain = spec.domain
+    spec          = object.spec.template.spec
+    domain        = spec.domain
+    instance_type = object.spec.instancetype&.name
 
     vm_object = process_domain(object.metadata.namespace, domain.resources&.requests&.memory, domain.cpu, object.metadata.uid, object.metadata.name)
 
@@ -123,6 +142,7 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
     # The power status is initially off, it will be set to on later if the virtual machine instance exists:
     vm_object.raw_power_state = 'Succeeded'
+    vm_object.flavor = flavor_collection.lazy_find({:name => instance_type}, :ref => :by_name) if instance_type
   end
 
   def process_vm_instances(objects)
