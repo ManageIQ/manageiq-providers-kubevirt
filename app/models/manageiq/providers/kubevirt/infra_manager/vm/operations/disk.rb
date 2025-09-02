@@ -1,9 +1,7 @@
-module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
+module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Disk
   def raw_attach_volume(vm, pvc_name, volume_name = nil)
-    ems = vm.ext_management_system
-    raise _("VM has no EMS, unable to attach volume") unless ems
-
-    kubevirt = ems.parent_manager.connect(
+    raise _("Unable to attach volume") unless ext_management_system
+    kubevirt = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/apis/kubevirt.io",
       :version => "v1"
@@ -41,10 +39,8 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
   end
 
   def raw_detach_volume(vm, volume_name)
-    ems = vm.ext_management_system
-    raise _("VM has no EMS, unable to detach volume") unless ems
-
-    kubevirt = ems.parent_manager.connect(
+    raise _("Unable to detach volume") unless ext_management_system
+    kubevirt = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/apis/kubevirt.io",
       :version => "v1"
@@ -78,8 +74,8 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
   end
 
   def attached_volumes(vm)
-    ems = vm.ext_management_system
-    kubevirt = ems.parent_manager.connect(
+    raise _("Unable to list attached volumes") unless ext_management_system
+    kubevirt = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/apis/kubevirt.io",
       :version => "v1"
@@ -92,14 +88,14 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
   end
   
   def persistentvolumeclaims(vm)
-    ems = vm.ext_management_system
-    kubevirt = ems.parent_manager.connect(
+    raise _("Unable to list PVCs") unless ext_management_system
+    kubevirt = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/apis/kubevirt.io",
       :version => "v1"
     )
 
-    kube = ems.parent_manager.connect(
+    kube = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/api",
       :version => "v1"
@@ -126,9 +122,9 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
     end
   end
 
-  def create_pvc(vm, volume_name, volume_size)
-    ems = vm.ext_management_system
-    kubevirt = ems.parent_manager.connect(
+  def create_pvc(vm, data)
+    raise _("Unable to create PVC") unless ext_management_system
+    kubevirt = ext_management_system.parent_manager.connect(
       :service => "kubernetes",
       :path    => "/api",
       :version => "v1"
@@ -138,20 +134,31 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::InfraVolume
       :apiVersion => "v1",
       :kind       => "PersistentVolumeClaim",
       :metadata   => {
-        :name      => volume_name,
+        :name      => data['volume_name'],
         :namespace => namespace
       },
       :spec       => {
-        :accessModes      => ["ReadWriteOnce"],
+        :accessModes      => [data['access_mode'].presence || "ReadWriteOnce"],
         :resources        => {
           :requests => {
-            :storage => volume_size
+            :storage => data['volume_size']
           }
         },
-        :storageClassName => "lvms-vg1"
+        :storageClassName => data['storage_class']
       }
     }
     kubevirt.create_persistent_volume_claim(pvc)
-    raw_attach_volume(vm, volume_name)
+    raw_attach_volume(vm, data['volume_name'])
+  end
+
+  def storage_classes
+    raise _("Unable to list storage classes") unless ext_management_system
+    storage_client = ext_management_system.parent_manager.connect(
+      :service => "kubernetes",
+      :path    => "/apis/storage.k8s.io",
+      :version => "v1"
+    )
+    sc=storage_client.get_storage_classes
+    sc.map { |s| { :name => s.metadata.name } }
   end
 end
