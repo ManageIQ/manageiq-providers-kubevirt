@@ -43,8 +43,19 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       begin
         vm, _, _ = connection.create_namespaced_virtual_machine(namespace, vm_spec)
         phase_context[:new_vm_ems_ref] = vm.metadata.uid
-      rescue
+      rescue => err
+        # Cleanup any PersistentVolumeClaims that were created for the virtual machine
         pvc_specs.each { |pvc| kubeclient.delete_persistent_volume_claim(pvc) }
+
+        parsed_error = begin
+                         JSON.parse(err.response_body)
+                       rescue
+                         nil
+                       end
+
+        message = parsed_error&.dig("details", "causes", 0, "message") || err.message
+
+        raise MiqException::MiqProvisionError, message
       end
     end
 
