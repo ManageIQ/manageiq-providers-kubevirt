@@ -36,7 +36,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Provision::Cloning
       raise N_("No Virtual Machine defined in template") if vm_spec.nil?
 
       param_substitution!(vm_spec, params)
-      vm_spec.deep_merge!(:spec => {:running => false}, :metadata => {:namespace => namespace})
+      vm_spec.deep_merge!(:spec => {:runStrategy => "Halted"}, :metadata => {:namespace => namespace})
 
       create_persistent_volume_claims(pvc_specs, params, namespace) if pvc_specs.any?
 
