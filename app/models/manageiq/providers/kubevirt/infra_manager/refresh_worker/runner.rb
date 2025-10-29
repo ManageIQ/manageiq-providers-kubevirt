@@ -61,8 +61,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     provider_class::InfraManager
   end
 
-  def collector_class
-    provider_class::Inventory::Collector
+  def partial_refresh_collector_class
+    provider_class::Inventory::Collector::PartialRefresh
   end
 
   def partial_refresh_parser_class
@@ -161,7 +161,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     relevant.reverse!
 
     # Create and populate the collector:
-    collector = collector_class.new(manager, nil)
+    collector = partial_refresh_collector_class.new(manager, nil)
     collector.nodes = notices_of_kind(relevant, 'Node')
     collector.vms = notices_of_kind(relevant, 'VirtualMachine')
     collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
