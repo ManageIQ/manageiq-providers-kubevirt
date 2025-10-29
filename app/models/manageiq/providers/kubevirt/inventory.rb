@@ -4,7 +4,7 @@ class ManageIQ::Providers::Kubevirt::Inventory < ManageIQ::Providers::Inventory
   end
 
   def self.collector_class_for(_ems, _target)
-    ManageIQ::Providers::Kubevirt::Inventory::Collector
+    ManageIQ::Providers::Kubevirt::Inventory::Collector::FullRefresh
   end
 
   def self.parser_class_for(_ems, _target)
