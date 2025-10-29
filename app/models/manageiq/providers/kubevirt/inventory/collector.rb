@@ -34,9 +34,9 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
     if @target.template?
       @templates = [@manager.kubeclient("template.openshift.io/v1").template(name, namespace)]
     else
-      @vms = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine(name, namespace)]
+      @vms = [@manager.kubeclient("kubevirt.io/v1").get_virtual_machine(name, namespace)]
       begin
-        @vm_instances = [@manager.kubeclient("kubevirt.io/v1")..get_virtual_machine_instance(name, namespace)]
+        @vm_instances = [@manager.kubeclient("kubevirt.io/v1").get_virtual_machine_instance(name, namespace)]
       rescue
         # target refresh of a vm might fail if it has no vm instance
         _log.debug("The is no running vm resource for '#{name}'")
