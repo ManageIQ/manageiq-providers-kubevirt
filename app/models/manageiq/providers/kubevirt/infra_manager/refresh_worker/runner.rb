@@ -61,8 +61,8 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     provider_class::InfraManager
   end
 
-  def collector_class
-    provider_class::Inventory::Collector
+  def partial_refresh_collector_class
+    provider_class::Inventory::Collector::PartialRefresh
   end
 
   def partial_refresh_parser_class
@@ -154,23 +154,9 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
       end
     end
 
-    # The notices returned by the Kubernetes API contain always the complete representation of the object, so it isn't
-    # necessary to process all of them, only the last one for each object.
-    relevant = notices.reverse!
-    relevant.uniq!(&:uid)
-    relevant.reverse!
-
-    # Create and populate the collector:
-    collector = collector_class.new(manager, nil)
-    collector.nodes = notices_of_kind(relevant, 'Node')
-    collector.vms = notices_of_kind(relevant, 'VirtualMachine')
-    collector.vm_instances = notices_of_kind(relevant, 'VirtualMachineInstance')
-    collector.templates = notices_of_kind(relevant, 'VirtualMachineTemplate')
-    collector.instance_types = notices_of_kind(relevant, 'VirtualMachineClusterInstanceType')
-
-    # Create the parser and persister, wire them, and execute the persist:
+    collector = partial_refresh_collector_class.new(manager, notices)
     persister = persister_class.new(manager, nil)
-    parser = partial_refresh_parser_class.new
+    parser    = partial_refresh_parser_class.new
     parser.collector = collector
     parser.persister = persister
     parser.parse
@@ -186,17 +172,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::RefreshWorker::Runner < Manag
     _log.error('Partial refresh failed.')
     _log.log_backtrace(error)
     manager.update(:last_refresh_error => error.to_s, :last_refresh_date => Time.now.utc)
-  end
-
-  #
-  # Returns the notices that contain objects of the given kind.
-  #
-  # @param notices [Array] An array of notices.
-  # @param kind [String] The kind of object, for example `Node`.
-  # @return [Array] An array containing the notices that have the given kind.
-  #
-  def notices_of_kind(notices, kind)
-    notices.select { |notice| notice.object.kind == kind }
   end
 
   #
