@@ -49,17 +49,17 @@ class ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::PrometheusCap
     cpu_resid = "sum(rate(kubevirt_vmi_cpu_user_usage_seconds_total{#{labels}}[#{AVG_OVER}]))"
     fetch_counters_data(cpu_resid, 'cpu_usage_rate_average', @vm_cores / 100.0)
 
-    # prometheus field is in bytes, @vm_memory is in mb
+    # prometheus field is in bytes, @vm_memory is in MiB
     # miq field is in pct of vm memory
-    mem_resid = "sum(kubevirt_vmi_memory_domain_bytes{#{labels}})"
-    fetch_counters_data(mem_resid, 'mem_usage_absolute_average', @vm_memory * 1e6 / 100.0)
+    mem_resid = "sum(kubevirt_vmi_memory_used_bytes{#{labels}})"
+    fetch_counters_data(mem_resid, 'mem_usage_absolute_average', @vm_memory * 1.megabyte.to_f / 100.0)
 
     # prometheus field is in bytes
-    # miq field is on kb ( / 1000 )
+    # miq field is on KiB ( / 1024 )
     if @metrics.include?('net_usage_rate_average')
       net_resid = "sum(rate(kubevirt_vmi_network_receive_bytes_total{#{labels}\"}[#{AVG_OVER}])) + " \
                   "sum(rate(kubevirt_vmi_network_transmit_bytes_total{#{labels}\"}[#{AVG_OVER}]))"
-      fetch_counters_data(net_resid, 'net_usage_rate_average', 1000.0)
+      fetch_counters_data(net_resid, 'net_usage_rate_average', 1024.0)
     end
 
     @ts_values
