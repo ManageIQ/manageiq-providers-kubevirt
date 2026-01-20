@@ -70,10 +70,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::PrometheusCap
   end
 
   def validate_target
-    raise TargetValidationError, "ems not defined" unless @ext_management_system
-    raise TargetValidationWarning, "no associated hardware" unless @vm_hardware
+    raise ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::TargetValidationError, "ems not defined" unless @ext_management_system
+    raise ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::TargetValidationWarning, "no associated hardware" unless @vm_hardware
 
-    raise TargetValidationError, "cores not defined" unless @vm_cores.to_i > 0
-    raise TargetValidationError, "memory not defined" unless @vm_memory.to_i > 0
+    raise ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::TargetValidationError, "cores not defined" unless @vm_cores.to_i > 0
+    raise ManageIQ::Providers::Kubevirt::InfraManager::MetricsCapture::TargetValidationError, "memory not defined" unless @vm_memory.to_i > 0
   end
 end
