@@ -11,7 +11,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector::PartialRefresh < Mana
     @nodes          = notices_of_kind(notices, 'Node')
     @vms            = notices_of_kind(notices, 'VirtualMachine')
     @vm_instances   = notices_of_kind(notices, 'VirtualMachineInstance')
-    @templates      = notices_of_kind(notices, 'VirtualMachineTemplate')
     @instance_types = notices_of_kind(notices, 'VirtualMachineClusterInstanceType')
   end
 
