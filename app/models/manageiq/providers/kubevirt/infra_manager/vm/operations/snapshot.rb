@@ -20,5 +20,15 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Snapshot
       connection.create_namespaced_virtual_machine_snapshot(location, snapshot_spec)
     end
   end
-end
 
+  def raw_remove_snapshot(snapshot_id)
+    snapshot = snapshots.find_by(:id => snapshot_id)
+    raise _("Requested VM snapshot not found, unable to remove snapshot") unless snapshot
+
+    with_provider_connection do |connection|
+      _log.info("removing snapshot ID: [#{snapshot.id}] uid_ems: [#{snapshot.uid_ems}] ems_ref: [#{snapshot.ems_ref}] name: [#{snapshot.name}] description [#{snapshot.description}]")
+
+      connection.delete_namespaced_virtual_machine_snapshot(snapshot.name, location, {})
+    end
+  end
+end
