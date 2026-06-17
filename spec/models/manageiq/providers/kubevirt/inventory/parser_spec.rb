@@ -5,164 +5,55 @@ RSpec.configure do |c|
 end
 
 describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
-  describe '#process_templates' do
-    it 'parses a template' do
-      disk_collection = double("disk_collection")
-      disk = FactoryBot.create(:disk)
-      allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
+  describe '#process_vms' do
+    it 'parses a vm' do
+      storage_collection = double("storage_collection")
+      storage = FactoryBot.create(:storage)
+      allow(storage_collection).to receive(:lazy_find).and_return(storage)
+
+      host_collection = double("host_collection")
+      host = FactoryBot.create(:host)
+      allow(host_collection).to receive(:lazy_find).and_return(host)
 
       hw_collection = double("hw_collection")
       hardware = FactoryBot.create(:hardware)
-      allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk])
+      allow(hw_collection).to receive(:find_or_build).and_return(hardware)
 
-      os_collection = double("os_collection")
-      os = FactoryBot.create(:operating_system)
-      allow(os_collection).to receive(:find_or_build).and_return(os)
+      network_collection = double("network_collection")
+      network = FactoryBot.create(:network, :hardware => hardware)
+      allow(network_collection).to receive(:find_or_build_by).and_return(network)
+      allow(hardware).to receive(:networks).and_return([network])
 
-      template_collection = double("template_collection")
-      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
-      allow(template_collection).to receive(:find_or_build).and_return(temp)
+      vm_collection = double("vm_collection")
+      vm = FactoryBot.create(:vm_kubevirt, :hardware => hardware)
+      allow(vm_collection).to receive(:find_or_build).and_return(vm)
 
       parser = described_class.new
-      parser.instance_variable_set(:@template_collection, template_collection)
+      parser.instance_variable_set(:@storage_collection, storage_collection)
+      parser.instance_variable_set(:@host_collection, host_collection)
+      parser.instance_variable_set(:@vm_collection, vm_collection)
       parser.instance_variable_set(:@hw_collection, hw_collection)
-      parser.instance_variable_set(:@vm_os_collection, os_collection)
-      parser.instance_variable_set(:@disk_collection, disk_collection)
+      parser.instance_variable_set(:@network_collection, network_collection)
 
-      template = unprocessed_object("template.json")
+      source = unprocessed_object("vm.json")
 
-      parser.send(:process_template, template)
-
-      expect(temp).to have_attributes(
-        :name             => "example",
-        :template         => true,
-        :ems_ref          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :uid_ems          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
+      parser.send(:process_vm_instance, source)
+      expect(vm).to have_attributes(
+        :name             => "demo-vm",
+        :template         => false,
+        :ems_ref          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
+        :uid_ems          => "9f3a8f56-1bc8-11e8-a746-001a4a23138b",
         :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
-        :power_state      => "never",
+        :power_state      => "on",
         :location         => "default",
         :connection_state => "connected",
       )
+      expect(vm.host).to eq(host)
 
-      expect(temp.hardware).to have_attributes(
-        :guest_os             => "rhel-7",
-        :cpu_cores_per_socket => 4,
-        :cpu_total_cores      => 4,
-        :memory_mb            => 4096
-      )
-
-      expect(temp.operating_system).to have_attributes(
-        :product_name => "rhel-7",
-        :product_type => "linux"
-      )
-
-      expect(disk).to have_attributes(
-        :device_name => "disk0-pvc",
-        :device_type => "disk",
-        :present     => true,
-        :mode        => "persistent"
-      )
-    end
-
-    it "parses a template with registry disk" do
-      disk_collection = double("disk_collection")
-      disk1 = FactoryBot.create(:disk)
-      disk2 = FactoryBot.create(:disk)
-      allow(disk_collection).to receive(:find_or_build_by).and_return(disk1, disk2)
-
-      hw_collection = double("hw_collection")
-      hardware = FactoryBot.create(:hardware)
-      allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk1, disk2])
-
-      os_collection = double("os_collection")
-      os = FactoryBot.create(:operating_system)
-      allow(os_collection).to receive(:find_or_build).and_return(os)
-
-      template_collection = double("template_collection")
-      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
-      allow(template_collection).to receive(:find_or_build).and_return(temp)
-
-      parser = described_class.new
-      parser.instance_variable_set(:@template_collection, template_collection)
-      parser.instance_variable_set(:@hw_collection, hw_collection)
-      parser.instance_variable_set(:@vm_os_collection, os_collection)
-      parser.instance_variable_set(:@disk_collection, disk_collection)
-
-      template_registry = unprocessed_object("template_registry.json")
-
-      parser.send(:process_template, template_registry)
-
-      expect(disk1).to have_attributes(
-        :device_name => "registryvolume",
-        :device_type => "disk",
-        :present     => true,
-        :mode        => "persistent"
-      )
-
-      expect(disk2).to have_attributes(
-        :device_name => "cloudinitvolume",
-        :device_type => "disk",
-        :present     => true,
-        :mode        => "persistent"
-      )
-    end
-
-    it 'parses a template without parameters' do
-      disk_collection = double("disk_collection")
-      disk = FactoryBot.create(:disk)
-      allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
-
-      hw_collection = double("hw_collection")
-      hardware = FactoryBot.create(:hardware)
-      allow(hw_collection).to receive(:find_or_build).and_return(hardware, :disks => [disk])
-
-      os_collection = double("os_collection")
-      os = FactoryBot.create(:operating_system)
-      allow(os_collection).to receive(:find_or_build).and_return(os)
-
-      template_collection = double("template_collection")
-      temp = FactoryBot.create(:template_kubevirt, :hardware => hardware, :operating_system => os)
-      allow(template_collection).to receive(:find_or_build).and_return(temp)
-
-      parser = described_class.new
-      parser.instance_variable_set(:@template_collection, template_collection)
-      parser.instance_variable_set(:@hw_collection, hw_collection)
-      parser.instance_variable_set(:@vm_os_collection, os_collection)
-      parser.instance_variable_set(:@disk_collection, disk_collection)
-
-      template = unprocessed_object("template-without-parameters.yml")
-
-      parser.send(:process_template, template)
-
-      expect(temp).to have_attributes(
-        :name             => "template-without-parameters",
-        :template         => true,
-        :ems_ref          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :uid_ems          => "7e6fb1ac-00ef-11e8-8840-525400b2cba8",
-        :vendor           => ManageIQ::Providers::Kubevirt::Constants::VENDOR,
-        :power_state      => "never",
-        :location         => "default",
-        :connection_state => "connected",
-      )
-
-      expect(temp.hardware).to have_attributes(
-        :guest_os             => "fedora28",
-        :cpu_cores_per_socket => 2,
-        :cpu_total_cores      => 2,
-        :memory_mb            => 1024
-      )
-
-      expect(temp.operating_system).to have_attributes(
-        :product_name => "fedora28",
-        :product_type => "linux"
-      )
-
-      expect(disk).to have_attributes(
-        :device_name => "cloudinitvolume",
-        :device_type => "disk",
-        :present     => true,
-        :mode        => "persistent"
-      )
+      net = vm.hardware.networks.first
+      expect(net).to_not be_nil
+      expect(net.ipaddress).to eq("10.128.0.18")
+      expect(net.hostname).to eq("vm-17-235.eng.lab.tlv.redhat.com")
     end
   end
 end

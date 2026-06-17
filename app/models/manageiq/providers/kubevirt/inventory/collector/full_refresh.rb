@@ -13,6 +13,5 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector::FullRefresh < ManageI
     @instance_types = @manager.kubeclient("instancetype.kubevirt.io/v1beta1").get_virtual_machine_cluster_instancetypes
     @vms            = @manager.kubeclient("kubevirt.io/v1").get_virtual_machines
     @vm_instances   = @manager.kubeclient("kubevirt.io/v1").get_virtual_machine_instances
-    @templates      = @manager.kubeclient("template.openshift.io/v1").get_templates
   end
 end
