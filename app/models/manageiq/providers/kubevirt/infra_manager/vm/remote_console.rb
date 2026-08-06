@@ -84,6 +84,11 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::RemoteConsole
   end
 
   def kubevirt_namespace
-    "default"
+    location.presence.tap do |ns|
+      if ns.blank? || ns == "unknown"
+        raise MiqException::RemoteConsoleNotSupportedError,
+              "Unable to determine the namespace for VM #{name}. A provider refresh may be required."
+      end
+    end
   end
 end
