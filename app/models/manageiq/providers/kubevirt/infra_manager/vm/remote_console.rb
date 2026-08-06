@@ -80,15 +80,13 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::RemoteConsole
   end
 
   def kubevirt_vnc_path
-    "/apis/subresources.kubevirt.io/v1/namespaces/#{kubevirt_namespace}/virtualmachineinstances/#{name}/vnc"
+    "/apis/subresources.kubevirt.io/v1/namespaces/#{location}/virtualmachineinstances/#{name}/vnc"
   end
 
-  def kubevirt_namespace
-    location.presence.tap do |ns|
-      if ns.blank? || ns == "unknown"
-        raise MiqException::RemoteConsoleNotSupportedError,
-              "Unable to determine the namespace for VM #{name}. A provider refresh may be required."
-      end
+  def validate_vm_namespace
+    if location.blank? || location == "unknown"
+      raise MiqException::RemoteConsoleNotSupportedError,
+            "Unable to determine the namespace for VM #{name}. A provider refresh may be required."
     end
   end
 end

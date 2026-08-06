@@ -2,7 +2,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager::Vm < ManageIQ::Providers::Inf
   include Operations
   include Reconfigure
   include RemoteConsole
-  
+
   POWER_STATES = {
     'Running'    => 'on',
     'Pending'    => 'powering_up',
