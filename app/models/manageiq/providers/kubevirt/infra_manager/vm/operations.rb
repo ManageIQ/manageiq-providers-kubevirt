@@ -5,6 +5,7 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations
   include Power
   include Snapshot
   include Guest
+  include InfraVolume
 
   included do
     supports(:terminate) { unsupported_reason(:control) }
