@@ -10,7 +10,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Collector::PartialRefresh do
       expect(collector.nodes).to          be_empty
       expect(collector.vms).to            be_empty
       expect(collector.vm_instances).to   be_empty
-      expect(collector.templates).to      be_empty
       expect(collector.instance_types).to be_empty
     end
   end

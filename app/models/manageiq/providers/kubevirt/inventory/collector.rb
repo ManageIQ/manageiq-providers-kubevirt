@@ -3,5 +3,4 @@ class ManageIQ::Providers::Kubevirt::Inventory::Collector < ManageIQ::Providers:
   attr_reader :instance_types
   attr_reader :vms
   attr_reader :vm_instances
-  attr_reader :templates
 end
