@@ -7,10 +7,6 @@ end
 describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
   describe '#process_vm_instance' do
     it 'parses a vm instance including disks' do
-      storage_collection = double("storage_collection")
-      storage = FactoryBot.create(:storage)
-      allow(storage_collection).to receive(:lazy_find).and_return(storage)
-
       host_collection = double("host_collection")
       host = FactoryBot.create(:host)
       allow(host_collection).to receive(:lazy_find).and_return(host)
@@ -40,7 +36,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       allow(collector).to receive(:pvc).and_return(nil)
 
       parser = described_class.new
-      parser.instance_variable_set(:@storage_collection, storage_collection)
       parser.instance_variable_set(:@host_collection, host_collection)
       parser.instance_variable_set(:@vm_collection, vm_collection)
       parser.instance_variable_set(:@hw_collection, hw_collection)
@@ -103,10 +98,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
 
   describe '#process_vm' do
     it 'parses a vm including disks' do
-      storage_collection = double("storage_collection")
-      storage = FactoryBot.create(:storage)
-      allow(storage_collection).to receive(:lazy_find).and_return(storage)
-
       disk_collection = double("disk_collection")
       disk = FactoryBot.create(:disk)
       allow(disk_collection).to receive(:find_or_build_by).and_return(disk)
@@ -143,7 +134,6 @@ describe ManageIQ::Providers::Kubevirt::Inventory::Parser do
       allow(collector).to receive(:pvc).with("demo-vm-rootdisk", "default").and_return(pvc)
 
       parser = described_class.new
-      parser.instance_variable_set(:@storage_collection, storage_collection)
       parser.instance_variable_set(:@vm_collection, vm_collection)
       parser.instance_variable_set(:@hw_collection, hw_collection)
       parser.instance_variable_set(:@disk_collection, disk_collection)

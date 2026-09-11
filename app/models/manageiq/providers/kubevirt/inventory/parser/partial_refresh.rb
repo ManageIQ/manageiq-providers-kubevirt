@@ -18,7 +18,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
 
     # Build the list of identifiers for built-in objects:
     cluster_ids = [CLUSTER_ID]
-    storage_ids = [STORAGE_ID]
 
     # In order to remove objects from the database we need to include the identifiers, but not the actual data, so we
     # must now discard all the notices of type `DELETED`.
@@ -31,12 +30,10 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
     # Create the collections:
     @cluster_collection = persister.cluster_collection(:targeted => true, :ids => cluster_ids)
     @host_collection = persister.host_collection(:targeted => true, :ids => host_ids)
-    @host_storage_collection = persister.host_storage_collection(:targeted => true)
     @host_hw_collection = persister.host_hw_collection(:targeted => true)
     @hw_collection = persister.hw_collection(:targeted => true)
     @network_collection = persister.network_collection(:targeted => true)
     @os_collection = persister.os_collection(:targeted => true)
-    @storage_collection = persister.storage_collection(:targeted => true, :ids => storage_ids)
     @template_collection = persister.template_collection(:targeted => true, :ids => template_ids)
     @vm_collection = persister.vm_collection(:targeted => true, :ids => vm_ids)
     @vm_os_collection = persister.vm_os_collection(:targeted => true, :ids => vm_ids)
@@ -45,7 +42,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::PartialRefresh < ManageI
 
     # We need to add the built-in objects, otherwise other objects that reference them are removed:
     add_builtin_clusters
-    add_builtin_storages
 
     # Process the real objects:
     process_nodes(nodes.map(&:object))

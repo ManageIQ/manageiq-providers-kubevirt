@@ -33,36 +33,6 @@ class ManageIQ::Providers::Kubevirt::InfraManager::ProvisionWorkflow < MiqProvis
     super(message, extra_attrs)
   end
 
-  def update_field_visibility
-    super(:force_platform => 'linux')
-  end
-
-  def allowed_datacenters(_options = {})
-    super.slice(datacenter_by_vm.try(:id))
-  end
-
-  def datacenter_by_vm
-    @datacenter_by_vm ||= begin
-                            vm = resources_for_ui[:vm]
-                            VmOrTemplate.find(vm.id).parent_datacenter if vm
-                          end
-  end
-
-  def set_on_vm_id_changed
-    @datacenter_by_vm = nil
-    super
-  end
-
-  def allowed_hosts_obj(_options = {})
-    super(:datacenter => datacenter_by_vm)
-  end
-
-  def allowed_storages(options = {})
-    return [] if resources_for_ui.blank?
-    result = super
-    result.select { |s| s.storage_domain_type == "data" }
-  end
-
   def source_ems
     src = get_source_and_targets
     load_ar_obj(src[:ems])

@@ -12,21 +12,14 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   #
   CLUSTER_ID = '0'.freeze
 
-  #
-  # The identifier of the built-in storage:
-  #
-  STORAGE_ID = '0'.freeze
-
   OS_LABEL_SYMBOL = :'kubevirt.io/os'
 
   attr_reader :cluster_collection
   attr_reader :host_collection
-  attr_reader :host_storage_collection
   attr_reader :host_hw_collection
   attr_reader :hw_collection
   attr_reader :network_collection
   attr_reader :os_collection
-  attr_reader :storage_collection
   attr_reader :template_collection
   attr_reader :vm_collection
   attr_reader :vm_os_collection
@@ -38,16 +31,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
     cluster_object.ems_ref = CLUSTER_ID
     cluster_object.name = collector.manager.name
     cluster_object.uid_ems = CLUSTER_ID
-  end
-
-  def add_builtin_storages
-    storage_object = storage_collection.find_or_build(STORAGE_ID)
-    storage_object.ems_ref = STORAGE_ID
-    storage_object.name = collector.manager.name
-    storage_object.store_type = 'UNKNOWN'
-    storage_object.total_space = 0
-    storage_object.free_space = 0
-    storage_object.uncommitted = 0
   end
 
   def process_nodes(objects)
@@ -95,15 +78,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
 
     hw_object.memory_mb = (memory.to_f / 1.megabyte).round if memory
     hw_object.cpu_total_cores = object.status&.capacity&.cpu
-
-    # Find the storage:
-    storage_object = storage_collection.lazy_find(STORAGE_ID)
-
-    # Add the inventory object for the host storage:
-    host_storage_collection.find_or_build_by(
-      :host    => host_object,
-      :storage => storage_object,
-    )
   end
 
   def process_instance_types(objects)
@@ -183,15 +157,13 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser < ManageIQ::Providers::In
   end
 
   def process_domain(namespace, memory, cpu, uid, name)
-    # Find the storage:
-    storage_object = storage_collection.lazy_find(STORAGE_ID)
     # Create the inventory object for the virtual machine:
     vm_object = vm_collection.find_or_build(uid)
     vm_object.connection_state = 'connected'
     vm_object.ems_ref = uid
     vm_object.name = name
-    vm_object.storage = storage_object
-    vm_object.storages = [storage_object]
+    vm_object.storage = nil
+    vm_object.storages = []
     vm_object.template = false
     vm_object.uid_ems = uid
     vm_object.location = namespace
