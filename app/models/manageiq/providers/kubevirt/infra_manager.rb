@@ -74,7 +74,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
           :name       => "endpoints.default.server",
           :label      => _("Hostname"),
           :isRequired => true,
-          :validate   => [{:type => "required-validator"}]
+          :validate   => [{:type => "required"}]
         },
         {
           :component  => "text-field",
@@ -83,15 +83,15 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
           :isRequired => true,
           :validate   => [
             {
-              :type => "required-validator"
+              :type => "required"
             },
             {
-              :type             => "validatorTypes.MIN_NUMBER_VALUE",
+              :type             => "min-number-value",
               :includeThreshold => true,
               :value            => 1
             },
             {
-              :type             => "validatorTypes.MAX_NUMBER_VALUE",
+              :type             => "max-number-value",
               :includeThreshold => true,
               :value            => 65_535
             }
@@ -103,7 +103,7 @@ class ManageIQ::Providers::Kubevirt::InfraManager < ManageIQ::Providers::InfraMa
           :label      => _("Token"),
           :type       => "password",
           :isRequired => true,
-          :validate   => [{:type => "required-validator"}]
+          :validate   => [{:type => "required"}]
         }
       ]
     }.freeze
