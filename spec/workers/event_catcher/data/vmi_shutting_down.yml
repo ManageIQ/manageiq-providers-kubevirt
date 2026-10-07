@@ -1,0 +1,12 @@
+---
+:object:
+  :lastTimestamp: '2024-11-19T16:30:00Z'
+  :involvedObject:
+    :kind: VirtualMachineInstance
+    :name: test-vm
+    :namespace: test-namespace
+    :uid: '123-456-789'
+  :reason: ShuttingDown
+  :message: VirtualMachineInstance shutting down
+  :metadata:
+    :uid: '987-654-322'
