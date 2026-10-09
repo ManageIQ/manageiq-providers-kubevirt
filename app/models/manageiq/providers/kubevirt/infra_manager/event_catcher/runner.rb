@@ -31,4 +31,10 @@ class ManageIQ::Providers::Kubevirt::InfraManager::EventCatcher::Runner < Manage
     supported_reasons = ENABLED_EVENTS[kind] || []
     supported_reasons.exclude?(reason) || filtered_events.include?(event_type)
   end
+
+  private
+
+  def worker_cmdline
+    ManageIQ::Providers::Kubevirt::Engine.root.join("workers/manageiq/providers/kubevirt/infra_manager/event_catcher/worker").to_s
+  end
 end

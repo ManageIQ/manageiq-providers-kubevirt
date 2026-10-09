@@ -1,0 +1,12 @@
+---
+:object:
+  :lastTimestamp: '2024-11-19T16:29:11Z'
+  :involvedObject:
+    :kind: VirtualMachine
+    :name: test-vm
+    :namespace: test-namespace
+    :uid: '123-456-789'
+  :reason: Started
+  :message: VirtualMachine started
+  :metadata:
+    :uid: '987-654-321'
