@@ -1,5 +1,5 @@
-require_relative '../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_parser'
-require_relative '../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_catcher'
+require_relative '../../../../../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_parser'
+require_relative '../../../../../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_catcher'
 
 RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventCatcher do
   let(:ems)            { {'id' => 1, 'type' => 'ManageIQ::Providers::Kubevirt::InfraManager', 'ems_type' => 'kubevirt'} }
@@ -46,10 +46,12 @@ RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventCatche
       end
     end
 
-    it 'filters VM events whose event_type is blacklisted' do
-      scoped_settings = {'blacklisted_event_names' => ['VIRTUALMACHINE_STARTED']}
-      c = described_class.new(ems, endpoint, authentication, scoped_settings, {}, logger)
-      expect(c.send(:filtered?, event_data('VirtualMachine', 'Started'))).to be(true)
+    context 'with blacklisted events' do
+      let(:settings) { {'ems' => {'ems_kubevirt' => {'blacklisted_event_names' => %w[VIRTUALMACHINE_STARTED]}}} }
+
+      it 'filters VM events whose event_type is blacklisted' do
+        expect(catcher.send(:filtered?, event_data('VirtualMachine', 'Started'))).to be(true)
+      end
     end
   end
 

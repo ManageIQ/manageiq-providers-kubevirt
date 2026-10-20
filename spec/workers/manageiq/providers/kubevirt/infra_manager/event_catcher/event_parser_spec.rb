@@ -1,13 +1,14 @@
-require_relative '../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_parser'
+require_relative '../../../../../../../workers/manageiq/providers/kubevirt/infra_manager/event_catcher/event_parser'
 
 RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventParser do
+  let(:ems)         { FactoryBot.create(:ems_kubevirt) }
   let(:fixture_dir) { File.expand_path('data', __dir__) }
 
   def load_event(name)
     RecursiveOpenStruct.new(YAML.unsafe_load(File.read(File.join(fixture_dir, name))), :recurse_over_arrays => true)
   end
 
-  def parse(name, ems_id = 42)
+  def parse(name, ems_id = ems.id)
     described_class.event_to_hash_from_data(described_class.extract_event_data(load_event(name)), ems_id)
   end
 
@@ -45,7 +46,7 @@ RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventParser
         :event_type => 'VIRTUALMACHINE_STARTED',
         :vm_name    => 'test-vm',
         :vm_ems_ref => '123-456-789',
-        :ems_id     => 42,
+        :ems_id     => ems.id,
         :ems_ref    => '987-654-321',
         :timestamp  => '2024-11-19T16:29:11Z'
       )
@@ -71,7 +72,7 @@ RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventParser
         }
       )
       data = described_class.extract_event_data(raw)
-      hash = described_class.event_to_hash_from_data(data, 1)
+      hash = described_class.event_to_hash_from_data(data, ems.id)
       expect(hash).not_to have_key(:vm_name)
       expect(hash).not_to have_key(:vm_ems_ref)
     end
