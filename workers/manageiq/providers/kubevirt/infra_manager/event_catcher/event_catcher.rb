@@ -7,10 +7,8 @@ module ManageIQ
       module Workers
         module InfraManager
           class EventCatcher < ManageIQ::Providers::Kubernetes::Workers::EventCatcherBase
-            ENABLED_EVENTS = EventParser::ENABLED_EVENTS
-
             def filtered?(event_data)
-              supported_reasons = ENABLED_EVENTS[event_data[:kind]] || []
+              supported_reasons = event_parser::ENABLED_EVENTS[event_data[:kind]] || []
               !supported_reasons.include?(event_data[:reason]) || filtered_events.include?(event_data[:event_type])
             end
 

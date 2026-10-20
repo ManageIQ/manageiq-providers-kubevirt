@@ -25,7 +25,7 @@ RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventCatche
 
   describe '#filtered?' do
     context 'VM/VMI kinds' do
-      described_class::ENABLED_EVENTS.each do |kind, reasons|
+      ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventParser::ENABLED_EVENTS.each do |kind, reasons|
         reasons.each do |reason|
           it "allows #{kind}/#{reason}" do
             expect(catcher.send(:filtered?, event_data(kind, reason))).to be(false)
@@ -51,6 +51,28 @@ RSpec.describe ManageIQ::Providers::Kubevirt::Workers::InfraManager::EventCatche
 
       it 'filters VM events whose event_type is blacklisted' do
         expect(catcher.send(:filtered?, event_data('VirtualMachine', 'Started'))).to be(true)
+      end
+    end
+
+    context 'with a subclass overriding event_parser' do
+      let(:custom_event_parser) do
+        Class.new do
+          const_set(:ENABLED_EVENTS, {'CustomKind' => %w[CustomReason]}.freeze)
+        end
+      end
+
+      let(:subclass) do
+        parser = custom_event_parser
+        Class.new(described_class) do
+          define_method(:event_parser) { parser }
+        end
+      end
+
+      subject(:custom_catcher) { subclass.new(ems, endpoint, authentication, settings, {}, logger) }
+
+      it 'respects ENABLED_EVENTS from the subclassed event_parser' do
+        expect(custom_catcher.send(:filtered?, {:kind => 'CustomKind', :reason => 'CustomReason', :event_type => 'CUSTOM_KIND_CUSTOM_REASON'})).to be(false)
+        expect(custom_catcher.send(:filtered?, {:kind => 'VirtualMachine', :reason => 'Started', :event_type => 'VIRTUALMACHINE_STARTED'})).to be(true)
       end
     end
   end
