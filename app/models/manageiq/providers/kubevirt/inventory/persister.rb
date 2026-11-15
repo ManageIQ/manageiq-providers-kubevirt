@@ -39,21 +39,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
     end
   end
 
-  def host_storage_collection(targeted: false)
-    add_collection(infra, :host_storages) do |builder|
-      builder.add_properties(
-        :targeted                     => targeted,
-        :parent_inventory_collections => %i(hosts)
-      )
-      builder.add_targeted_arel(lambda do |collection|
-                                  host_ids = collection.parent_inventory_collections.flat_map { |c| c.manager_uuids.to_a }
-                                  collection.parent.host_storages.references(:host).where(
-                                    :hosts => { :ems_ref => host_ids }
-                                  )
-                                end)
-    end
-  end
-
   def host_hw_collection(targeted: false)
     add_collection(infra, :host_hardwares) do |builder|
       builder.add_properties(:targeted => targeted)
@@ -98,15 +83,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Persister < ManageIQ::Providers:
       builder.add_default_values(
         :type   => "#{manager.class}::Template",
         :vendor => manager.class.vendor
-      )
-    end
-  end
-
-  def storage_collection(targeted: false, ids: [])
-    add_collection(infra, :storages) do |builder|
-      builder.add_properties(
-        :targeted      => targeted,
-        :manager_uuids => ids,
       )
     end
   end

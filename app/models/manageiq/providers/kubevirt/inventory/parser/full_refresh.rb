@@ -13,12 +13,10 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
     # Create the collections:
     @cluster_collection = persister.cluster_collection
     @host_collection = persister.host_collection
-    @host_storage_collection = persister.host_storage_collection
     @host_hw_collection = persister.host_hw_collection
     @hw_collection = persister.hw_collection
     @network_collection = persister.network_collection
     @os_collection = persister.os_collection
-    @storage_collection = persister.storage_collection
     @template_collection = persister.template_collection
     @vm_collection = persister.vm_collection
     @vm_os_collection = persister.vm_os_collection
@@ -27,7 +25,6 @@ class ManageIQ::Providers::Kubevirt::Inventory::Parser::FullRefresh < ManageIQ::
 
     # Add the built-in objects:
     add_builtin_clusters
-    add_builtin_storages
 
     # Process the real objects:
     process_nodes(nodes)
