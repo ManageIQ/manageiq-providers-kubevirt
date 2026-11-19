@@ -4,12 +4,12 @@ module ManageIQ::Providers::Kubevirt::InfraManager::Vm::Operations::Snapshot
       snapshot_spec = Kubevirt::V1beta1VirtualMachineSnapshot.new(
         :api_version => "snapshot.kubevirt.io/v1beta1",
         :kind        => "VirtualMachineSnapshot",
-        :metadata    => Kubevirt::K8sIoApimachineryPkgApisMetaV1ObjectMeta.new(
+        :metadata    => Kubevirt::IoK8sApimachineryPkgApisMetaV1ObjectMeta.new(
           :name      => snap_name,
           :namespace => location
         ),
         :spec        => Kubevirt::V1beta1VirtualMachineSnapshotSpec.new(
-          :source => Kubevirt::K8sIoApiCoreV1TypedLocalObjectReference.new(
+          :source => Kubevirt::IoK8sApiCoreV1TypedLocalObjectReference.new(
             :api_group => "kubevirt.io",
             :kind      => "VirtualMachine",
             :name      => name

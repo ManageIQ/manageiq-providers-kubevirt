@@ -25,7 +25,7 @@ describe ManageIQ::Providers::Kubevirt::InfraManager::Provision do
     let(:new_vm) do
       require 'kubevirt'
       Kubevirt::V1VirtualMachine.new(
-        :metadata => Kubevirt::K8sIoApimachineryPkgApisMetaV1ObjectMeta.new(:uid => SecureRandom.uuid),
+        :metadata => Kubevirt::IoK8sApimachineryPkgApisMetaV1ObjectMeta.new(:uid => SecureRandom.uuid),
         :spec     => Kubevirt::V1VirtualMachineSpec.new(:template => Kubevirt::V1VirtualMachineInstanceTemplateSpec.new)
       )
     end
